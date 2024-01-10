@@ -89,27 +89,67 @@ class Collective < ApplicationRecord
     puts "Error syncing #{url}"
   end
 
+  def website
+    return read_attribute(:website) if read_attribute(:website).present?
+    (social_links || {}).select{|x| ['WEBSITE'].include? x['type']}.first.try(:[], 'url') || ''
+  end
+
   def project_url
     return "https://github.com/#{github}" if github.present?
     return repository_url if repository_url.present?
-    (social_links || {}).select{|x| ['GITHUB', 'GITLAB', 'GIT'].include? x['type']}.first.try(:[], 'url')
+    social_link =(social_links || {}).select{|x| ['GITHUB', 'GITLAB', 'GIT'].include? x['type']}.first.try(:[], 'url')
+    return social_link if social_link.present?
+
+    # check if website is a github repo
+    return website if website.match(/github.com\/(.*)/)
+
+    # check if website is a github pages site
+    return github_pages_to_repo_url(website) if website.match(/github.io/)
+    
+    # check if website is a gitlab repo
+    return website if website.match(/gitlab.com\/(.*)/)
+
+    nil
   end
 
-  def project_url_is_github?
-    project_url.present? && project_url.include?('github.com')
+  def github_pages_to_repo_url(github_pages_url)
+    match = github_pages_url.chomp('/').match(/https?:\/\/(.+)\.github\.io(\/(.+))?/)
+    return nil unless match
+
+    username = match[1]
+    repo_name = match[3]
+
+    "https://github.com/#{username}#{repo_name ? "/#{repo_name}" : ""}"
   end
 
-  def project_url_is_an_organization?
-    project_url_is_github? && project_url.gsub('https://github.com/', '').split('/').length > 1
+
+  def project_org?
+    case URI.parse(project_url).host
+    when 'github.com'
+      project_url.match(/github.com\/(.*)/)[1].split('/').count == 1
+    when 'gitlab.com'
+      project_url.match(/gitlab.com\/(.*)/)[1].split('/').count == 1
+    when 'codeberg.org'
+      project_url.match(/codeberg.org\/(.*)/)[1].split('/').count == 1
+    else
+      false
+    end
   end
 
   def load_projects
-    # .each do |link|
-    #   project = Project.find_or_create_by(url: link[:url])
-    #   project.sync_async if project.last_synced_at.nil?
-    #   collective_project = collective_projects.find_or_create_by(project_id: project.id)
-    #   collective_project.update(name: link[:name], description: link[:description], category: link[:category], sub_category: link[:sub_category])
-    # end
+    if project_org?
+      # find org
+      # load repos
+
+      # .each do |link|
+      #   project = Project.find_or_create_by(url: link[:url])
+      #   project.sync_async if project.last_synced_at.nil?
+      #   collective_project = collective_projects.find_or_create_by(project_id: project.id)
+      #   collective_project.update(name: link[:name], description: link[:description], category: link[:category], sub_category: link[:sub_category])
+      # end
+    else
+      # load repo
+    end
   end  
 
   def self.discover

@@ -1,0 +1,31 @@
+<div class="container-md">
+  <h2>
+    <%= number_with_delimiter @pagy.count %>
+    <% if params[:topic] %>
+      "<%= params[:topic] %>"
+    <% end %>
+    Collective<%= 's' if @pagy.count > 1 %>
+  </h2>
+  <div class="row">
+    <div class="col-md-8">
+      <%= render @collectives %>
+      <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  
+    </div>
+    <div class="col-md-4">
+      <div class='card mb-3'>
+        <div class="card-header">
+          Keywords
+        </div>
+        <div class="collective-group collective-group-flush">
+          <% Collective.tags.first(500).each do |topic, count| %>
+            <% next if topic.blank? %>
+            <a class="collective-group-item collective-group-item-action d-flex justify-content-between align-items-center <%= 'active' if topic == params[:topic]%>" href="<%= collectives_path(topic: topic) %>">
+              <%= topic %>
+              <span class="badge bg-primary rounded-pill"><%= number_with_delimiter count%></span>
+            </a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

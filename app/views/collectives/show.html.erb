@@ -1,0 +1,13 @@
+<% @meta_title = "#{@collective}" %>
+
+<div class="container-md">
+  <h1>
+    <%= @collective.to_s %><br/>
+  </h1>
+
+  <p>
+    <%= @collective.description %> <br/>
+    <%= link_to @collective.website, @collective.website %>
+  </p>
+
+</div>

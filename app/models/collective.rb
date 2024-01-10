@@ -49,6 +49,10 @@ class Collective < ApplicationRecord
           githubHandle
           twitterHandle
           currency
+          socialLinks {
+            type
+            url
+          }
         }
       }
     GRAPHQL
@@ -83,6 +87,20 @@ class Collective < ApplicationRecord
     load_projects
   rescue
     puts "Error syncing #{url}"
+  end
+
+  def project_url
+    return "https://github.com/#{github}" if github.present?
+    return repository_url if repository_url.present?
+    (social_links || {}).select{|x| ['GITHUB', 'GITLAB', 'GIT'].include? x['type']}.first.try(:[], 'url')
+  end
+
+  def project_url_is_github?
+    project_url.present? && project_url.include?('github.com')
+  end
+
+  def project_url_is_an_organization?
+    project_url_is_github? && project_url.gsub('https://github.com/', '').split('/').length > 1
   end
 
   def load_projects

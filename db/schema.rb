@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_07_163331) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_10_151224) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -43,6 +43,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_07_163331) do
     t.datetime "last_synced_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "transactions_count"
     t.index ["slug"], name: "index_collectives_on_slug", unique: true
   end
 
@@ -54,6 +55,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_07_163331) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["url"], name: "index_projects_on_url", unique: true
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.integer "collective_id"
+    t.string "uuid"
+    t.float "amount"
+    t.float "net_amount"
+    t.string "kind"
+    t.string "currency"
+    t.string "account"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collective_id"], name: "index_transactions_on_collective_id"
+    t.index ["uuid"], name: "index_transactions_on_uuid", unique: true
   end
 
 end

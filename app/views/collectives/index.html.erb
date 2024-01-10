@@ -6,7 +6,18 @@
     <% end %>
     Collective<%= 's' if @pagy.count > 1 %>
   </h2>
-  <div class="row">
+
+  <%= line_chart [
+    {name: 'Donations', data: Transaction.donations.created_after(5.year.ago).group_by_month(:created_at).sum(:net_amount)},
+    {name: 'Expenses', data: Transaction.expenses.created_after(5.year.ago).group_by_month(:created_at).sum(:net_amount)},
+    ] %>
+
+      <%= line_chart [
+    {name: 'Donors', data: Transaction.donations.created_after(5.year.ago).group_by_month(:created_at).distinct.count(:account)},
+    {name: 'Spenders', data: Transaction.expenses.created_after(5.year.ago).group_by_month(:created_at).distinct.count(:account)}
+    ] %>
+
+  <div class="row my-5">
     <div class="col-md-8">
       <%= render @collectives %>
       <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  

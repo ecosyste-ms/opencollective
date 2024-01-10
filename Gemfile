@@ -34,6 +34,7 @@ gem 'google-protobuf'
 gem 'groupdate'
 gem 'simple_form'
 gem 'appsignal'
+gem 'chartkick'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

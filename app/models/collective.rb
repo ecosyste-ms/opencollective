@@ -85,6 +85,7 @@ class Collective < ApplicationRecord
   def sync
     update(map_from_open_collective_graphql)
     load_projects
+    sync_transactions
   rescue
     puts "Error syncing #{url}"
   end
@@ -122,7 +123,6 @@ class Collective < ApplicationRecord
     "https://github.com/#{username}#{repo_name ? "/#{repo_name}" : ""}"
   end
 
-
   def project_org?
     case URI.parse(project_url).host
     when 'github.com'
@@ -137,18 +137,26 @@ class Collective < ApplicationRecord
   end
 
   def load_projects
+    return if project_url.nil?
     if project_org?
-      # find org
-      # load repos
-
-      # .each do |link|
-      #   project = Project.find_or_create_by(url: link[:url])
-      #   project.sync_async if project.last_synced_at.nil?
-      #   collective_project = collective_projects.find_or_create_by(project_id: project.id)
-      #   collective_project.update(name: link[:name], description: link[:description], category: link[:category], sub_category: link[:sub_category])
-      # end
+      host = URI.parse(project_url).host
+      host = 'GitHub' if host == 'github.com'
+      org = URI.parse(project_url).path.split('/').reject(&:blank?).first
+      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{host}/owners/#{org}/repositories?per_page=1000")
+      if resp.status == 200
+        data = JSON.parse(resp.body)
+        urls = data.map{|p| p['html_url'] }.uniq.reject(&:blank?)
+        urls.each do |url|
+          puts url
+          project = projects.find_or_create_by(url: url)
+          project.sync_async unless project.last_synced_at.present?
+          collective_project = collective_projects.find_or_create_by(project_id: project.id)
+        end
+      end
     else
-      # load repo
+      project = Project.find_or_create_by(url: project_url)
+      project.sync_async if project.last_synced_at.nil?
+      collective_project = collective_projects.find_or_create_by(project_id: project.id)
     end
   end  
 

@@ -2,7 +2,7 @@ class Transaction < ApplicationRecord
   belongs_to :collective
   validates :uuid, uniqueness: true
 
-  counter_culture :collective
+  counter_culture :collective, execute_after_commit: true
 
   scope :donations, -> { where(kind: 'CREDIT') }
   scope :expenses, -> { where(kind: 'DEBIT') }

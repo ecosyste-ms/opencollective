@@ -35,6 +35,7 @@ gem 'groupdate'
 gem 'simple_form'
 gem 'appsignal'
 gem 'chartkick'
+gem "after_commit_action"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

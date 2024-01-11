@@ -87,7 +87,7 @@ class Collective < ApplicationRecord
     load_projects
     sync_transactions
   rescue
-    puts "Error syncing #{url}"
+    puts "Error syncing #{slug}"
   end
 
   def website
@@ -158,6 +158,8 @@ class Collective < ApplicationRecord
       project.sync_async if project.last_synced_at.nil?
       collective_project = collective_projects.find_or_create_by(project_id: project.id)
     end
+  rescue
+    puts "Error loading projects for #{slug}"
   end  
 
   def self.discover
@@ -225,7 +227,7 @@ class Collective < ApplicationRecord
   end
 
   def sync_transactions
-    first_page = fetch_transactions_from_graphql
+    first_page = fetch_transactions_from_graphql # TODO handle errors
     total_count = first_page['data']['transactions']['totalCount']
     puts "Total count: #{total_count}"
     offset = 0

@@ -13,7 +13,7 @@
 
         <p class="card-subtitle mb-2 text-muted">
           <i><small>
-            <%= number_with_delimiter collective.projects_count %> projects
+            <%= number_with_delimiter collective.projects_count %> projects - <%= number_with_delimiter collective.transactions_count %> transactions - <%= number_to_currency collective.balance.round(2) %> <%= collective.currency %>
           </small></i>
         </p>
         <p class="card-subtitle mb-2 text-muted"><i><small>

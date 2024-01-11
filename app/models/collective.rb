@@ -142,7 +142,8 @@ class Collective < ApplicationRecord
       host = URI.parse(project_url).host
       host = 'GitHub' if host == 'github.com'
       org = URI.parse(project_url).path.split('/').reject(&:blank?).first
-      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{host}/owners/#{org}/repositories?per_page=1000")
+      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{host}/owners/#{org}/repositories?per_page=100")
+      # TODO pagination
       if resp.status == 200
         data = JSON.parse(resp.body)
         urls = data.map{|p| p['html_url'] }.uniq.reject(&:blank?)

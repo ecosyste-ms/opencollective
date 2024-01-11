@@ -48,4 +48,41 @@ class CollectivesController < ApplicationController
     
     render json: data
   end
+
+  def charts_data
+    scope = Transaction.all
+
+    period = (params[:period].presence || 'month').to_sym
+
+    start_date = params[:start_date].presence || Transaction.order(:created_at).first.try(:created_at)
+    end_date = params[:end_date].presence || Date.today 
+
+    scope = scope.created_after(start_date) if start_date.present?
+    scope = scope.created_before(end_date) if end_date.present?
+
+    case params[:chart]
+    when 'all_transactions'
+      data = scope.group_by_period(period, :created_at).sum(:net_amount)
+    when 'expenses'
+      data = scope.expenses.group_by_period(period, :created_at).sum(:net_amount).map{|k,v| [k, -v]}.to_h
+    when 'donations'
+      data = scope.donations.group_by_period(period, :created_at).sum(:net_amount)
+    when 'unique_donors'
+      data = scope.donations.group_by_period(period, :created_at).distinct.count(:account)
+    when 'unique_expenses'
+      data = scope.expenses.group_by_period(period, :created_at).distinct.count(:account)
+    when 'donations_and_expenses'
+      data = [
+        {name: 'Donations', data: scope.donations.group_by_period(period, :created_at).sum(:net_amount)},
+        {name: 'Expenses', data: scope.expenses.group_by_period(period, :created_at).sum(:net_amount).map{|k,v| [k, -v]}},
+        ]
+    when 'unique_donors_and_spenders'
+      data = [
+        {name: 'Donors', data: scope.donations.group_by_period(period, :created_at).distinct.count(:account)},
+        {name: 'Spenders', data: scope.expenses.group_by_period(period, :created_at).distinct.count(:account)}
+        ]
+    end
+    
+    render json: data
+  end
 end

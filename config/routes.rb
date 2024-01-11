@@ -37,6 +37,9 @@ Rails.application.routes.draw do
     member do
       get :chart_data
     end
+    collection do
+      get :charts_data
+    end
   end
   
   resources :exports, only: [:index], path: 'open-data'

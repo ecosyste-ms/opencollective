@@ -11,11 +11,18 @@
     <%= link_to @collective.website, @collective.website, target: :_blank %>
   </p>
 
-  <%= line_chart chart_data_collective_path(chart: 'all_transactions'), title: 'All Transactions' %>
-  <%= line_chart chart_data_collective_path(chart: 'expenses'), title: 'Expenses' %>
-  <%= line_chart chart_data_collective_path(chart: 'donations'), title: 'Donations' %>
-  <%= line_chart chart_data_collective_path(chart: 'unique_donors'), title: 'Donors' %>
-  <%= line_chart chart_data_collective_path(chart: 'unique_expenses'), title: 'Spenders' %>
+  <% if @collective.transactions_count > 0 %>
 
+    <%= line_chart chart_data_collective_path(chart: 'all_transactions'), title: 'All Transactions' %>
+    <%= line_chart chart_data_collective_path(chart: 'expenses'), title: 'Expenses' %>
+    <%= line_chart chart_data_collective_path(chart: 'donations'), title: 'Donations' %>
+    <%= line_chart chart_data_collective_path(chart: 'unique_donors'), title: 'Donors' %>
+    <%= line_chart chart_data_collective_path(chart: 'unique_expenses'), title: 'Spenders' %>
+
+  <% else %>
+    <p>
+      No transactions yet.
+    </p>
+  <% end %>
 
 </div>

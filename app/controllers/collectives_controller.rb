@@ -10,7 +10,7 @@ class CollectivesController < ApplicationController
         scope = scope.order(Arel.sql(sort).desc.nulls_last)
       end
     else
-      scope = scope.order(transactions_count: :desc)
+      scope = scope.order(balance: :desc)
     end
 
     @pagy, @collectives = pagy(scope)

@@ -9,7 +9,7 @@
 
   <%= line_chart [
     {name: 'Donations', data: Transaction.donations.created_after(5.year.ago).group_by_month(:created_at).sum(:net_amount)},
-    {name: 'Expenses', data: Transaction.expenses.created_after(5.year.ago).group_by_month(:created_at).sum(:net_amount)},
+    {name: 'Expenses', data: Transaction.expenses.created_after(5.year.ago).group_by_month(:created_at).sum(:net_amount).map{|k,v| [k, -v]}},
     ] %>
 
       <%= line_chart [

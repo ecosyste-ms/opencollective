@@ -26,6 +26,10 @@ class Collective < ApplicationRecord
     "https://opencollective.com/#{slug}"
   end
 
+  def icon_url(size: 40)
+    "https://images.opencollective.com/#{slug}/logo/#{size}.png"
+  end
+
   def self.tags
     pluck(Arel.sql("unnest(tags)")).flatten.reject(&:blank?).group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end

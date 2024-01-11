@@ -251,7 +251,7 @@ class Collective < ApplicationRecord
       Transaction.upsert_all(transactions, unique_by: :uuid)
       offset += 1000
     end
-    update(balance: balance)
+    update(balance: current_balance)
   end
 
   def fetch_transactions_from_graphql(offset: 0)
@@ -316,7 +316,7 @@ class Collective < ApplicationRecord
     transactions.expenses.sum(:net_amount)
   end
 
-  def balance
+  def current_balance
     transactions.sum(:net_amount)
   end
 end

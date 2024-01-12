@@ -11,6 +11,8 @@
     <%= link_to @collective.website, @collective.website, target: :_blank %>
   </p>
 
+  <h2>Transactions</h2>
+
   <% if @collective.transactions_count > 0 %>
 
     <%= line_chart chart_data_collective_path(chart: 'all_transactions'), title: 'All Transactions' %>
@@ -24,5 +26,9 @@
       No transactions yet.
     </p>
   <% end %>
+
+  <h2>Repositories</h2>
+
+  <%= render @collective.projects %>
 
 </div>

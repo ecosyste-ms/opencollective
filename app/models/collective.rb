@@ -3,6 +3,7 @@ class Collective < ApplicationRecord
 
   has_many :collective_projects, dependent: :destroy
   has_many :projects, through: :collective_projects
+  has_many :issues, through: :projects
 
   has_many :transactions, dependent: :destroy
 

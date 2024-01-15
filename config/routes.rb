@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   resources :collectives do
     member do
       get :chart_data
+      get :issue_chart_data
     end
     collection do
       get :charts_data

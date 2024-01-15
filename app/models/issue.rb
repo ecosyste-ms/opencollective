@@ -1,5 +1,6 @@
 class Issue < ApplicationRecord
   belongs_to :project
+  counter_culture :project, column_name: 'issues_count', execute_after_commit: true
 
   scope :label, ->(labels) { where("labels && ARRAY[?]::varchar[]", labels) }
   scope :past_year, -> { where('issues.created_at > ?', 1.year.ago) }

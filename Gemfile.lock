@@ -188,6 +188,11 @@ GEM
     nokogiri (1.16.0-x86_64-linux)
       racc (~> 1.4)
     numerizer (0.1.1)
+    octicons (19.8.0)
+    octicons_helper (19.8.0)
+      actionview
+      octicons (= 19.8.0)
+      railties
     pagy (6.4.0)
     pg (1.5.4)
     pg_query (5.1.0)
@@ -350,6 +355,7 @@ DEPENDENCIES
   jbuilder
   jquery-rails
   mocha
+  octicons_helper
   pagy
   pg (~> 1.5)
   pg_query

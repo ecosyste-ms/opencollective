@@ -38,4 +38,8 @@ module ApplicationHelper
       line_chart issue_chart_data_collective_path(@collective, chart: name, period: @period, exclude_bots: @exclude_bots, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
     end
   end
+
+  def diff_class(count)
+    count > 0 ? 'text-success' : 'text-danger'
+  end
 end

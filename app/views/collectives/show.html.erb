@@ -11,6 +11,8 @@
     <%= link_to @collective.website, @collective.website, target: :_blank %>
   </p>
 
+  <%= render 'stats' %>
+
   <h2>Transactions</h2>
 
   <% if @collective.transactions_count > 0 %>

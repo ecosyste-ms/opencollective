@@ -16,6 +16,18 @@ class Issue < ApplicationRecord
   scope :pull_request, -> { where(pull_request: true) }
   scope :issue, -> { where(pull_request: false) }
 
+  scope :this_period, ->(period) { where('issues.created_at > ?', period.days.ago) }
+  scope :last_period, ->(period) { where('issues.created_at > ?', (period*2).days.ago).where('issues.created_at < ?', period.days.ago) }
+
+  scope :closed_this_period, ->(period) { where('issues.closed_at > ?', period.days.ago) }
+  scope :closed_last_period, ->(period) { where('issues.closed_at > ?', (period*2).days.ago).where('issues.closed_at < ?', period.days.ago) }
+
+  scope :merged_this_period, ->(period) { where('issues.merged_at > ?', period.days.ago) }
+  scope :merged_last_period, ->(period) { where('issues.merged_at > ?', (period*2).days.ago).where('issues.merged_at < ?', period.days.ago) }
+
+  scope :not_merged_this_period, ->(period) { where('issues.closed_at > ?', period.days.ago).where(merged_at: nil) }
+  scope :not_merged_last_period, ->(period) { where('issues.closed_at > ?', (period*2).days.ago).where('issues.closed_at < ?', period.days.ago).where(merged_at: nil) }
+
   def to_param
     number.to_s
   end

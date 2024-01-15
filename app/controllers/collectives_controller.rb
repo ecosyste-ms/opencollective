@@ -18,6 +18,7 @@ class CollectivesController < ApplicationController
 
   def show
     @collective = Collective.find_by_slug!(params[:id])
+    @range = (params[:range].presence || 30).to_i
   end
 
   def chart_data

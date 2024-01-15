@@ -11,7 +11,6 @@ class Project < ApplicationRecord
   scope :language, ->(language) { where("(repository ->> 'language') = ?", language) }
   scope :owner, ->(owner) { where("(repository ->> 'owner') = ?", owner) }
   scope :keyword, ->(keyword) { where("keywords @> ARRAY[?]::varchar[]", keyword) }
-  scope :with_readme, -> { where.not(readme: nil) }
   scope :with_repository, -> { where.not(repository: nil) }
 
   def self.sync_least_recently_synced
@@ -167,13 +166,8 @@ class Project < ApplicationRecord
     repository['license'] || repository.dig('metadata', 'files', 'license')
   end
 
-  def readme_license
-    return nil unless readme.present?
-    readme_image_urls.select{|u| u.downcase.include?('license') }.any?
-  end
-
   def open_source_license?
-    (packages_licenses + [repository_license] + [readme_license]).compact.uniq.any?
+    (packages_licenses + [repository_license]).compact.uniq.any?
   end
 
   def archived?
@@ -200,35 +194,6 @@ class Project < ApplicationRecord
     "https://archives.ecosyste.ms/api/v1/archives/contents?url=#{download_url}&path=#{path}"
   end
 
-  def readme_file_name
-    return unless repository.present?
-    return unless repository['metadata'].present?
-    return unless repository['metadata']['files'].present?
-    repository['metadata']['files']['readme']
-  end
-
-  def fetch_readme
-    return unless readme_file_name.present?
-    return unless download_url.present?
-    conn = Faraday.new(url: archive_url(readme_file_name)) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
-    response = conn.get
-    return unless response.success?
-    json = JSON.parse(response.body)
-
-    self.readme = json['contents']
-    self.save
-  rescue
-    puts "Error fetching readme for #{repository_url}"
-  end
-
-  def readme_url
-    return unless repository.present?
-    "#{repository['html_url']}/blob/#{repository['default_branch']}/#{readme_file_name}"
-  end
-
   def blob_url(path)
     return unless repository.present?
     "#{repository['html_url']}/blob/#{repository['default_branch']}/#{path}"
@@ -240,7 +205,7 @@ class Project < ApplicationRecord
   end 
 
   def funding_links
-    (repo_funding_links + readme_funding_links).uniq
+    (repo_funding_links).uniq
   end
 
   def repo_funding_links

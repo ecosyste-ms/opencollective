@@ -149,13 +149,7 @@ components:
           type: string
         monthly_downloads:
           type: integer
-        readme:
-          type: string
         funding_links:
-          type: array
-          items:
-            type: string
-        readme_doi_urls:
           type: array
           items:
             type: string

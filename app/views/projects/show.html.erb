@@ -10,12 +10,6 @@
     <%= link_to @project.url, @project.url %>
   </p>
 
-  <% if @project.matching_collective && @project.matching_collective.readme.present? %>
-    <p>
-      Collective: <%= link_to @project.matching_collective, collective_path(@project.matching_collective) %>
-    </p>
-  <% end %>
-
   <% if @project.last_synced_at %>
   
     <% if @project.keywords.any? %>

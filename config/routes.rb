@@ -31,6 +31,9 @@ Rails.application.routes.draw do
     collection do
       post :lookup
     end
+    member do
+      get :chart_data
+    end
   end
 
   resources :collectives do

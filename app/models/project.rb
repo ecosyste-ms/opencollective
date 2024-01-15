@@ -2,6 +2,7 @@ class Project < ApplicationRecord
 
   has_many :collective_projects, dependent: :destroy
   has_many :collectives, through: :collective_projects
+  has_many :issues, dependent: :delete_all
 
   validates :url, presence: true, uniqueness: { case_sensitive: false }
 
@@ -60,7 +61,7 @@ class Project < ApplicationRecord
     return if last_synced_at.present? && last_synced_at > 1.day.ago
     check_url
     fetch_repository
-    fetch_readme
+    sync_issues
     return if destroyed?
     update_column(:last_synced_at, Time.now) 
     ping
@@ -97,12 +98,17 @@ class Project < ApplicationRecord
   end
 
   def ping_urls
-    [repos_ping_url].compact
+    [repos_ping_url, issues_ping_url].compact
   end
 
   def repos_ping_url
     return unless repository.present?
     "https://repos.ecosyste.ms/api/v1/hosts/#{repository['host']['name']}/repositories/#{repository['full_name']}/ping"
+  end
+
+  def issues_ping_url
+    return unless repository.present?
+    "https://issues.ecosyste.ms/api/v1/hosts/#{repository['host']['name']}/repositories/#{repository['full_name']}/ping"
   end
   
   def description
@@ -238,62 +244,36 @@ class Project < ApplicationRecord
     end.flatten.compact
   end
 
-  def readme_urls
-    return [] unless readme.present?
-    urls = URI.extract(readme.gsub(/[\[\]]/, ' '), ['http', 'https']).uniq
-    # remove trailing garbage
-    urls.map{|u| u.gsub(/\:$/, '').gsub(/\*$/, '').gsub(/\.$/, '').gsub(/\,$/, '').gsub(/\*$/, '').gsub(/\)$/, '').gsub(/\)$/, '').gsub('&nbsp;','') }
+  def issues_api_url
+    "https://issues.ecosyste.ms/api/v1/repositories/lookup?url=#{repository_url}"
   end
 
-  def readme_domains
-    readme_urls.map{|u| URI.parse(u).host rescue nil }.compact.uniq
-  end
+  def sync_issues
+    conn = Faraday.new(url: issues_api_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+    response = conn.get
+    return unless response.success?
+    issues_list_url = JSON.parse(response.body)['issues_url'] + '?per_page=1000'
+    # issues_list_url = issues_list_url + '&updated_after=' + last_synced_at.to_fs(:iso8601) if last_synced_at.present?
 
-  def funding_domains
-    ['opencollective.com', 'ko-fi.com', 'liberapay.com', 'patreon.com', 'otechie.com', 'issuehunt.io', 
-    'communitybridge.org', 'tidelift.com', 'buymeacoffee.com', 'paypal.com', 'paypal.me','givebutter.com']
-  end
-
-  def readme_funding_links
-    urls = readme_urls.select{|u| funding_domains.any?{|d| u.include?(d) } || u.include?('github.com/sponsors') }.reject{|u| ['.svg', '.png'].include? File.extname(URI.parse(u).path) }
-    # remove anchors
-    urls = urls.map{|u| u.gsub(/#.*$/, '') }.uniq
-    # remove sponsor/9/website from open collective urls
-    urls = urls.map{|u| u.gsub(/\/sponsor\/\d+\/website$/, '') }.uniq
-  end
-
-  def doi_domains
-    ['doi.org', 'dx.doi.org', 'www.doi.org']
-  end
-
-  def readme_doi_urls
-    readme_urls.select{|u| doi_domains.include?(URI.parse(u).host) }.uniq
-  end
-
-  def dois
-    readme_doi_urls.map{|u| URI.parse(u).path.gsub(/^\//, '') }.uniq
-  end
-
-  def readme_image_urls
-    return [] unless readme.present?
-    urls = readme.scan(/!\[.*?\]\((.*?)\)/).flatten.compact.uniq
-
-    # also scan for html images
-    urls += readme.scan(/<img.*?src="(.*?)"/).flatten.compact.uniq
-
-    # turn relative urls into absolute urls
-    # remove anything after a space
-    urls = urls.map{|u| u.split(' ').first }.compact.uniq
+    conn = Faraday.new(url: issues_list_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+    response = conn.get
+    return unless response.success?
     
-    urls = urls.map do |u|
-      if !u.starts_with?('http')
-        # if url starts with slash or alpha character, prepend repo url
-        if u.starts_with?('/') || u.match?(/^[[:alpha:]]/)
-          raw_url(u)
-        end
-      else
-        u
-      end
-    end.compact
+    issues_json = JSON.parse(response.body)
+
+    # TODO pagination
+    # TODO upsert (plus unique index)
+
+    issues_json.each do |issue|
+      i = issues.find_or_create_by(number: issue['number']) 
+      i.assign_attributes(issue)
+      i.save(touch: false)
+    end
   end
 end

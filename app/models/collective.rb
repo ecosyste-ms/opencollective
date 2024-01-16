@@ -93,8 +93,16 @@ class Collective < ApplicationRecord
     update(map_from_open_collective_graphql)
     load_projects
     sync_transactions
+    ping_owner
   rescue
     puts "Error syncing #{slug}"
+  end
+
+  def ping_owner
+    return unless project_url.present?
+    return unless project_org?
+    ping_owner_url = "https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/ping"
+    Faraday.get(ping_owner_url) rescue nil
   end
 
   def website

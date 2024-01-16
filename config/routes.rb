@@ -43,6 +43,7 @@ Rails.application.routes.draw do
     end
     collection do
       get :charts_data
+      get :problems
     end
   end
   

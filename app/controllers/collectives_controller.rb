@@ -148,4 +148,14 @@ class CollectivesController < ApplicationController
 
     render json: data
   end
+
+  def problems
+    # collectives with no projects
+    # collectives with no open source licenses
+
+    @collectives = Collective.where(projects_count: 0).where('balance > 0').order(balance: :desc)
+
+    # projects -> repository -> license
+    @no_license = Collective.where(projects_count: 1).select{|c| c.projects.first.repository && c.projects.first.repository['license'].blank?}
+  end
 end

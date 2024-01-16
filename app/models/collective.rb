@@ -90,7 +90,8 @@ class Collective < ApplicationRecord
   end
 
   def sync
-    update(map_from_open_collective_graphql)
+    updated_attrs = map_from_open_collective_graphql
+    update(updated_attrs) if updated_attrs.present?
     load_projects
     sync_transactions
     ping_owner
@@ -151,13 +152,22 @@ class Collective < ApplicationRecord
     end
   end
 
+  def project_host
+    return unless project_url.present?
+    host = URI.parse(project_url).host
+    host = 'GitHub' if host == 'github.com'
+    host
+  end
+
+  def project_owner
+    return unless project_url.present?
+    URI.parse(project_url).path.split('/').reject(&:blank?).first
+  end
+
   def load_projects
     return if project_url.nil?
     if project_org?
-      host = URI.parse(project_url).host
-      host = 'GitHub' if host == 'github.com'
-      org = URI.parse(project_url).path.split('/').reject(&:blank?).first
-      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{host}/owners/#{org}/repositories?per_page=100")
+      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/repositories?per_page=100")
       # TODO pagination
       if resp.status == 200
         data = JSON.parse(resp.body)

@@ -155,7 +155,6 @@ class CollectivesController < ApplicationController
 
     @collectives = Collective.where(projects_count: 0).where('balance > 0').order(balance: :desc)
 
-    # projects -> repository -> license
-    @no_license = Collective.where(projects_count: 1).select{|c| c.projects.first.repository && c.projects.first.repository['license'].blank?}
+    @no_license = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && c.projects.first.repository['license'].blank?}
   end
 end

@@ -17,7 +17,7 @@
     <div class="collective card my-2">
       <div class='card-body'>
         <h4><%= link_to collective.name, collective %></h4>
-        <p><%= link_to collective.projects.first.html_url, collective.projects.first.html_url, target: :_blank %></p>
+        <p><%= link_to collective.projects.first.repository_url, collective.projects.first.repository_url, target: :_blank %></p>
       </div>
     </div>
   <% end %>

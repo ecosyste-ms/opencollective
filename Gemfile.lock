@@ -80,7 +80,7 @@ GEM
     after_commit_action (1.1.0)
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
-    appsignal (3.5.3)
+    appsignal (3.5.4)
       rack
     autoprefixer-rails (10.4.16.0)
       execjs (~> 2)
@@ -193,7 +193,7 @@ GEM
       actionview
       octicons (= 19.8.0)
       railties
-    pagy (6.4.0)
+    pagy (6.4.1)
     pg (1.5.4)
     pg_query (5.1.0)
       google-protobuf (>= 3.22.3)

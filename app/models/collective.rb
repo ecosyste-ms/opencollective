@@ -54,6 +54,7 @@ class Collective < ApplicationRecord
           githubHandle
           twitterHandle
           currency
+          type
           socialLinks {
             type
             url
@@ -83,6 +84,7 @@ class Collective < ApplicationRecord
       tags: data['tags'],
       repository_url: data['repositoryUrl'],
       social_links: data['socialLinks'],
+      kind: data['type'],
       last_synced_at: Time.now
     }
   end

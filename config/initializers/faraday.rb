@@ -7,4 +7,4 @@ Faraday.default_connection = Faraday::Connection.new do |builder|
   builder.adapter Faraday.default_adapter
 end
 
-Faraday.default_connection_options = Faraday::ConnectionOptions.new({timeout: 5, open_timeout: 5})
+Faraday.default_connection_options = Faraday::ConnectionOptions.new({timeout: 10, open_timeout: 10})

@@ -117,7 +117,7 @@ class CollectivesController < ApplicationController
       data = scope.issue.group_by_period(period, :created_at).distinct.count(:user)
     when 'issue_average_time_to_close'
       data = scope.issue.closed.group_by_period(period, :closed_at).average(:time_to_close)
-      data.update(data){ |_,v| v.to_f.seconds.in_days.to_i }
+      data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
     when 'pull_requests_opened'
       data = scope.pull_request.group_by_period(period, :created_at).count
     when 'pull_requests_closed'
@@ -130,10 +130,10 @@ class CollectivesController < ApplicationController
       data = scope.pull_request.group_by_period(period, :created_at).distinct.count(:user)
     when 'pull_request_average_time_to_close'
       data = scope.pull_request.closed.group_by_period(period, :closed_at).average(:time_to_close)
-      data.update(data){ |_,v| v.to_f.seconds.in_days.to_i }
+      data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
     when 'pull_request_average_time_to_merge'
       data = scope.pull_request.merged.group_by_period(period, :merged_at).average(:time_to_close)
-      data.update(data){ |_,v| v.to_f.seconds.in_days.to_i }
+      data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
     end
     
     ## TODO no data for these yet
@@ -177,7 +177,7 @@ class CollectivesController < ApplicationController
       data = scope.issue.group_by_period(period, :created_at).distinct.count(:user)
     when 'issue_average_time_to_close'
       data = scope.issue.closed.group_by_period(period, :closed_at).average(:time_to_close)
-      data.update(data){ |_,v| v.to_f.seconds.in_days.to_i }
+      data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
     when 'pull_requests_opened'
       data = scope.pull_request.group_by_period(period, :created_at).count
     when 'pull_requests_closed'
@@ -190,10 +190,10 @@ class CollectivesController < ApplicationController
       data = scope.pull_request.group_by_period(period, :created_at).distinct.count(:user)
     when 'pull_request_average_time_to_close'
       data = scope.pull_request.closed.group_by_period(period, :closed_at).average(:time_to_close)
-      data.update(data){ |_,v| v.to_f.seconds.in_days.to_i }
+      data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
     when 'pull_request_average_time_to_merge'
       data = scope.pull_request.merged.group_by_period(period, :merged_at).average(:time_to_close)
-      data.update(data){ |_,v| v.to_f.seconds.in_days.to_i }
+      data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
     end
 
     render json: data

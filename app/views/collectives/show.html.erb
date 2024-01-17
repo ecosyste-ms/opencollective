@@ -11,17 +11,22 @@
     <%= link_to @collective.website, @collective.website, target: :_blank %>
   </p>
 
+  <%= form_with url: request.path, method: :get do |form| %>
+    <%= form.label :range, 'Select range:' %>
+    <%= form.select :range, options_for_select([30, 90, 180, 360], @range.to_i), {}, { onchange: 'this.form.submit()' } %>
+  <% end %><br/>
+
   <%= render 'stats' %>
 
   <h2>Transactions</h2>
 
   <% if @collective.transactions_count > 0 %>
 
-    <%= line_chart chart_data_collective_path(chart: 'all_transactions'), title: 'All Transactions' %>
-    <%= line_chart chart_data_collective_path(chart: 'expenses'), title: 'Expenses' %>
-    <%= line_chart chart_data_collective_path(chart: 'donations'), title: 'Donations' %>
-    <%= line_chart chart_data_collective_path(chart: 'unique_donors'), title: 'Donors' %>
-    <%= line_chart chart_data_collective_path(chart: 'unique_expenses'), title: 'Spenders' %>
+    <%= line_chart chart_data_collective_path(chart: 'all_transactions', period: @period, range: @range), title: 'All Transactions' %>
+    <%= line_chart chart_data_collective_path(chart: 'expenses', period: @period, range: @range), title: 'Expenses' %>
+    <%= line_chart chart_data_collective_path(chart: 'donations', period: @period, range: @range), title: 'Donations' %>
+    <%= line_chart chart_data_collective_path(chart: 'unique_donors', period: @period, range: @range), title: 'Donors' %>
+    <%= line_chart chart_data_collective_path(chart: 'unique_expenses', period: @period, range: @range), title: 'Spenders' %>
 
   <% else %>
     <p>

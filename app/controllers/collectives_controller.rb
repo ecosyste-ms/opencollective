@@ -13,20 +13,22 @@ class CollectivesController < ApplicationController
       scope = scope.order(balance: :desc)
     end
 
+    
+    @range = (params[:range].presence || 360).to_i
+
     @pagy, @collectives = pagy(scope)
   end
 
   def show
     @collective = Collective.find_by_slug!(params[:id])
-    @range = (params[:range].presence || 30).to_i
+    @range = range
+    @period = period
   end
 
   def chart_data
     @collective = Collective.find_by_slug!(params[:id])
     
-    period = (params[:period].presence || 'month').to_sym
-
-    start_date = params[:start_date].presence || @collective.transactions.order(:created_at).first.try(:created_at)
+    start_date = params[:start_date].presence || range.days.ago
     end_date = params[:end_date].presence || Date.today 
 
     scope = @collective.transactions
@@ -55,7 +57,7 @@ class CollectivesController < ApplicationController
 
     period = (params[:period].presence || 'month').to_sym
 
-    start_date = params[:start_date].presence || 2.years.ago
+    start_date = params[:start_date].presence || range.days.ago
     end_date = params[:end_date].presence || Date.today 
 
     scope = scope.created_after(start_date) if start_date.present?
@@ -90,9 +92,9 @@ class CollectivesController < ApplicationController
   def issue_chart_data
     @collective = Collective.find_by_slug!(params[:id])
     
-    period = (params[:period].presence || 'month').to_sym
+    
 
-    start_date = params[:start_date].presence || @collective.issues.order(:created_at).first.try(:created_at) || 1.year.ago
+    start_date = params[:start_date].presence || range.days.ago
     end_date = params[:end_date].presence || Date.today 
 
     scope = @collective.issues
@@ -154,7 +156,7 @@ class CollectivesController < ApplicationController
     
     period = (params[:period].presence || 'month').to_sym
 
-    start_date = params[:start_date].presence || 2.year.ago
+    start_date = params[:start_date].presence || range.days.ago
     end_date = params[:end_date].presence || Date.today 
 
     scope = scope.created_after(start_date) if start_date.present?
@@ -209,5 +211,24 @@ class CollectivesController < ApplicationController
     @archived = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && c.projects.first.repository['archived']}
 
     @no_license = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && !c.projects.first.repository['archived'] && c.projects.first.repository['license'].blank?}
+  end
+
+  private
+
+  def range
+    (params[:range].presence || 30).to_i
+  end
+
+  def period
+    case range
+    when 0..30
+      (params[:period].presence || 'day').to_sym
+    when 31..90
+      (params[:period].presence || 'week').to_sym
+    when 91..365
+      (params[:period].presence || 'month').to_sym
+    else
+      (params[:period].presence || 'year').to_sym
+    end
   end
 end

@@ -256,25 +256,29 @@ class Project < ApplicationRecord
     end
     response = conn.get
     return unless response.success?
-    issues_list_url = JSON.parse(response.body)['issues_url'] + '?per_page=1000'
-    # issues_list_url = issues_list_url + '&updated_after=' + last_synced_at.to_fs(:iso8601) if last_synced_at.present?
+    issues_list_url = JSON.parse(response.body)['issues_url'] + '?per_page=100'
 
-    conn = Faraday.new(url: issues_list_url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
-    response = conn.get
-    return unless response.success?
-    
-    issues_json = JSON.parse(response.body)
+    page = 1
+    loop do
+      paginated_issues_url = "#{issues_list_url}&page=#{page}"
+      conn = Faraday.new(url: paginated_issues_url) do |faraday|
+        faraday.response :follow_redirects
+        faraday.adapter Faraday.default_adapter
+      end
+      response = conn.get
+      return unless response.success?
 
-    # TODO pagination
-    # TODO upsert (plus unique index)
+      issues_json = JSON.parse(response.body)
+      break if issues_json.empty? # Stop if there are no more issues
 
-    issues_json.each do |issue|
-      i = issues.find_or_create_by(number: issue['number']) 
-      i.assign_attributes(issue)
-      i.save(touch: false)
+      # TODO: Use bulk insert
+      issues_json.each do |issue|
+        i = issues.find_or_create_by(number: issue['number']) 
+        i.assign_attributes(issue)
+        i.save(touch: false)
+      end
+
+      page += 1
     end
   end
 end

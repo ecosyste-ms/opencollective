@@ -167,10 +167,14 @@ class Collective < ApplicationRecord
   def load_projects
     return if project_url.nil?
     if project_org?
-      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/repositories?per_page=100")
-      # TODO pagination
-      if resp.status == 200
+      page = 1
+      loop do
+        resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/repositories?per_page=100&page=#{page}")
+        break unless resp.status == 200
+
         data = JSON.parse(resp.body)
+        break if data.empty? # Stop if there are no more repositories
+
         urls = data.map{|p| p['html_url'] }.uniq.reject(&:blank?)
         urls.each do |url|
           puts url
@@ -178,6 +182,8 @@ class Collective < ApplicationRecord
           project.sync_async unless project.last_synced_at.present?
           collective_project = collective_projects.find_or_create_by(project_id: project.id)
         end
+
+        page += 1
       end
     else
       project = Project.find_or_create_by(url: project_url)
@@ -186,7 +192,7 @@ class Collective < ApplicationRecord
     end
   rescue
     puts "Error loading projects for #{slug}"
-  end  
+  end
 
   def self.discover
     first_page = load_osc_projects

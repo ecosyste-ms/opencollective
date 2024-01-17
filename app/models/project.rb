@@ -249,6 +249,7 @@ class Project < ApplicationRecord
   end
 
   def sync_issues
+    return unless repository.present?
     conn = Faraday.new(url: issues_api_url) do |faraday|
       faraday.response :follow_redirects
       faraday.adapter Faraday.default_adapter

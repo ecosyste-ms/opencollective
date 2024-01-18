@@ -7,8 +7,15 @@
 
   <p>
     <%= @collective.description %> <br/>
-    <%= link_to @collective.html_url, @collective.html_url, target: :_blank %> - 
-    <%= link_to @collective.website, @collective.website, target: :_blank %>
+    <%= link_to @collective.html_url, @collective.html_url, target: :_blank %>
+    <% if @collective.website.present? && @collective.website != @collective.project_url %>
+    - 
+    Website: <%= link_to @collective.website, @collective.website, target: :_blank %>
+    <% end %>
+    <% if @collective.project_url.present? %>
+    - 
+    Code: <%= link_to @collective.project_url, @collective.project_url, target: :_blank %>
+    <% end %>
   </p>
 
   <%= form_with url: request.path, method: :get do |form| %>

@@ -1,0 +1,32 @@
+<div class="container-md">
+  <h2>Audit</h2>
+
+  <%= render 'nav' %>
+
+  <% @collectives.each do |collective| %>
+    <div class="collective card my-2">
+      <div class='card-body'>
+        <div class="d-flex">
+      
+          <div class="flex-grow-1 ms-3 text-break">
+            <h4><%= link_to collective.name, collective %></h4>
+            <p><%= collective.description %></p>
+            <p><%= number_with_delimiter collective.projects_count %> repository - <%= number_with_delimiter collective.transactions_count %> transactions - Balance: <%= collective.balance.round(2)%> <%= collective.currency %></p>
+            <p>Project url: <%= link_to collective.project_url, collective.project_url, target: :_blank %></p>
+          </div>
+          <div class="flex-shrink-0">
+            <img src="<%= collective.icon_url %>" class="rounded" height='40' width='40' onerror="this.style.display='none'">
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <p>
+    <i>
+      <small>
+        Displaying <%= pluralize @collectives.length, 'collective' %> with exactly 1 repository, that has been archived.
+      </small>
+    </i>
+  </p>
+</div>

@@ -1,14 +1,25 @@
 class AuditController < ApplicationController
   def index
-    @collectives = Collective.where(projects_count: 0).where('balance > 0').order(balance: :desc).select{|c| c.project_url.present?}
+    redirect_to action: :user_owners
+  end
 
-    @archived = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && c.projects.first.repository['archived']}
+  def user_owners
+    @collectives = Collective.with_user_owner.with_transactions.order(transactions_count: :desc)
+  end
 
-    @no_license = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && !c.projects.first.repository['archived'] && c.projects.first.repository['license'].blank?}
+  def no_projects
+    @collectives = Collective.where(projects_count: 0).with_transactions.order(transactions_count: :desc).select{|c| c.project_url.present?}
+  end
+
+  def no_license
+    @collectives = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && !c.projects.first.repository['archived'] && c.projects.first.repository['license'].blank?}
+  end
+
+  def archived
+    @collectives = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && c.projects.first.repository['archived']}
   end
 
   # collectives where owner is a user instead of an org
   # collectives with invalid urls
-  # collectives with no projects
   # collectives with inactive projects
 end

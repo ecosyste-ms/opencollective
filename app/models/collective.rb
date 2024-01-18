@@ -7,6 +7,8 @@ class Collective < ApplicationRecord
 
   has_many :transactions, dependent: :destroy
 
+  scope :with_transactions, -> { where.not(transactions_count: 0) }
+
   scope :with_repository, -> { where.not(repository: nil) }
   
   scope :with_owner, -> { where.not(owner: nil) }

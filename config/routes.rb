@@ -49,6 +49,10 @@ Rails.application.routes.draw do
   
   resources :exports, only: [:index], path: 'open-data'
 
+  get '/audit/user_owners', to: 'audit#user_owners'
+  get '/audit/no_projects', to: 'audit#no_projects'
+  get '/audit/no_license', to: 'audit#no_license'
+  get '/audit/archived', to: 'audit#archived'
   get '/audit', to: 'audit#index'
 
   get '/404', to: 'errors#not_found'

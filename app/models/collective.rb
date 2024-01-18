@@ -8,6 +8,11 @@ class Collective < ApplicationRecord
   has_many :transactions, dependent: :destroy
 
   scope :with_repository, -> { where.not(repository: nil) }
+  
+  scope :with_owner, -> { where.not(owner: nil) }
+  scope :with_org_owner, -> { with_owner.where("owner ->> 'kind' = 'organization'") }
+  scope :with_user_owner, -> { with_owner.where("owner ->> 'kind' = 'user'") }
+
 
   def self.sync_least_recently_synced
     Collective.where(last_synced_at: nil).or(Collective.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(500).each do |collective|
@@ -94,6 +99,7 @@ class Collective < ApplicationRecord
     update(updated_attrs) if updated_attrs.present?
     load_projects
     sync_transactions
+    sync_owner
     ping_owner
   rescue
     puts "Error syncing #{slug}"
@@ -104,6 +110,28 @@ class Collective < ApplicationRecord
     return unless project_org?
     ping_owner_url = "https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/ping"
     Faraday.get(ping_owner_url) rescue nil
+  end
+
+  def fetch_owner
+    return unless project_owner.present?
+    
+    conn = Faraday.new(url: "https://repos.ecosyste.ms") do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    resp = conn.get("/api/v1/hosts/#{project_host}/owners/#{project_owner}")
+    return unless resp.status == 200
+    JSON.parse(resp.body)
+  rescue => e
+    puts "Error fetching owner for #{slug}: #{e.message}"
+    nil
+  end
+
+  def sync_owner
+    owner = fetch_owner
+    return unless owner.present?
+    update(owner: owner) 
   end
 
   def website

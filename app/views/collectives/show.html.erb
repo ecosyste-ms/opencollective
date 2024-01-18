@@ -34,12 +34,24 @@
     </p>
   <% end %>
 
-  <h2>Issues</h2>
+  <% if @collective.issues.count > 0 %>
+    <h2>Issues</h2>
 
-  <%= render 'issue_charts' %>
+    <%= render 'issue_charts' %>
+  <% else %>
+    <p>
+      No issues or pull requests yet.
+    </p>
+  <% end %>
 
-  <h2>Repositories</h2>
+  <% if @collective.projects.any? %>
+    <h2>Repositories</h2>
 
-  <%= render @collective.projects %>
+    <%= render @collective.projects %>
+  <% else %>
+    <p>
+      No repositories found.
+    </p>
+  <% end %>
 
 </div>

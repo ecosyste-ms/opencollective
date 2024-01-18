@@ -44,11 +44,12 @@ Rails.application.routes.draw do
     collection do
       get :charts_data
       get :issue_charts_data
-      get :problems
     end
   end
   
   resources :exports, only: [:index], path: 'open-data'
+
+  get '/audit', to: 'audit#index'
 
   get '/404', to: 'errors#not_found'
   get '/422', to: 'errors#unprocessable'

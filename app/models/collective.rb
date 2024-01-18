@@ -304,6 +304,7 @@ class Collective < ApplicationRecord
           net_amount: node['netAmount']['value'],
           transaction_type: node['type'],
           transaction_kind: node['kind'],
+          transaction_expense_type: node['expense'] ? node['expense']['type'] : nil,
           currency: node['amount']['currency'],
           account: node['type'] == 'DEBIT' ? node['toAccount']['slug'] : node['fromAccount']['slug'],
           created_at: node['createdAt'],
@@ -346,6 +347,10 @@ class Collective < ApplicationRecord
             }            
             createdAt
             type
+            kind
+            expense {
+              type
+            }
             toAccount {
               slug
             }

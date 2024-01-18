@@ -101,6 +101,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_18_155013) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "transaction_kind"
+    t.string "transaction_expense_type"
     t.index ["collective_id"], name: "index_transactions_on_collective_id"
     t.index ["uuid"], name: "index_transactions_on_uuid", unique: true
   end

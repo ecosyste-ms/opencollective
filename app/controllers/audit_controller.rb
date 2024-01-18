@@ -19,6 +19,7 @@ class AuditController < ApplicationController
     @collectives = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && c.projects.first.repository['archived']}
   end
 
+  # collectives with no funding links
   # collectives where owner is a user instead of an org
   # collectives with invalid urls
   # collectives with inactive projects

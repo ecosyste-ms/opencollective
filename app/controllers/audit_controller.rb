@@ -4,7 +4,7 @@ class AuditController < ApplicationController
   end
 
   def user_owners
-    @collectives = Collective.with_user_owner.with_transactions.order(transactions_count: :desc)
+    @collectives = Collective.with_user_owner.order(transactions_count: :desc)
   end
 
   def no_projects

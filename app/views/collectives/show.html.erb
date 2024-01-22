@@ -51,10 +51,10 @@
     </p>
   <% end %>
 
-  <% if @collective.projects.any? %>
+  <% if @collective.projects_with_repository.any? %>
     <h2>Repositories</h2>
 
-    <%= render @collective.projects %>
+    <%= render @collective.projects_with_repository %>
   <% else %>
     <p>
       No repositories found.

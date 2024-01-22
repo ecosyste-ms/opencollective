@@ -1,3 +1,5 @@
+require 'csv'
+
 class AuditController < ApplicationController
   def index
     redirect_to action: :user_owners
@@ -24,6 +26,5 @@ class AuditController < ApplicationController
   end
 
   # collectives with no funding links
-  # collectives where owner is a user instead of an org
   # collectives with invalid urls
 end

@@ -9,7 +9,7 @@ class Collective < ApplicationRecord
 
   scope :with_transactions, -> { where.not(transactions_count: 0) }
 
-  scope :with_repository, -> { where.not(repository: nil) }
+  scope :with_projects, -> { where.not(projects_count: 0) }
   
   scope :with_owner, -> { where.not(owner: nil) }
   scope :with_org_owner, -> { with_owner.where("owner ->> 'kind' = 'organization'") }
@@ -53,6 +53,14 @@ class Collective < ApplicationRecord
   def inactive?
     return false if last_project_activity_at.nil?
     last_project_activity_at < 1.year.ago
+  end
+
+  def archived?
+    projects.all?{|p| p.archived? }
+  end
+
+  def no_license?
+    projects.all?{|p| p.no_license? }
   end
 
   def sync_async

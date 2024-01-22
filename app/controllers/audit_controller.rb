@@ -12,15 +12,15 @@ class AuditController < ApplicationController
   end
 
   def no_license
-    @collectives = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && !c.projects.first.repository['archived'] && c.projects.first.repository['license'].blank?}
+    @collectives = Collective.with_projects.order(transactions_count: :desc).select{|c| c.no_license? }
   end
 
   def archived
-    @collectives = Collective.where(projects_count: 1).select{|c| c.projects.first && c.projects.first.repository && c.projects.first.repository['archived']}
+    @collectives = Collective.with_projects.order(transactions_count: :desc).select{|c| c.archived? }
   end
 
   def inactive
-    @collectives = Collective.select{|c| c.inactive?}
+    @collectives = Collective.with_projects.order(transactions_count: :desc).select{|c| c.inactive? }
   end
 
   # collectives with no funding links

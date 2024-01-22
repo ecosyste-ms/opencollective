@@ -176,6 +176,14 @@ class Project < ApplicationRecord
     (packages_licenses + [repository_license]).compact.uniq.any?
   end
 
+  def no_license?
+    !open_source_license?
+  end
+
+  def packages_licenses
+    [] # TODO
+  end
+
   def archived?
     return false unless repository.present?
     repository['archived']

@@ -16,8 +16,10 @@ class Collective < ApplicationRecord
   scope :with_user_owner, -> { with_owner.where("owner ->> 'kind' = 'user'") }
 
   scope :inactive, -> { where("last_project_activity_at < ?", 1.year.ago) }
+  scope :archived, -> { where(archived: true) }
 
   before_save :set_last_project_activity_at
+  before_save :set_archived
 
   def self.sync_least_recently_synced
     Collective.where(last_synced_at: nil).or(Collective.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(500).each do |collective|
@@ -53,14 +55,17 @@ class Collective < ApplicationRecord
     self.last_project_activity_at = projects.with_repository.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
   end
 
+  def set_archived
+    if projects.with_repository.empty?
+      self.archived = false
+    else
+      self.archived = projects.with_repository.all?{|p| p.archived? }
+    end
+  end
+
   def inactive?
     return false if last_project_activity_at.nil?
     last_project_activity_at < 1.year.ago
-  end
-
-  def archived?
-    return false if projects.with_repository.empty?
-    projects.with_repository.all?{|p| p.archived? }
   end
 
   def no_license?

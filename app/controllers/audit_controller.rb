@@ -18,7 +18,7 @@ class AuditController < ApplicationController
   end
 
   def archived
-    @collectives = Collective.with_projects.order(transactions_count: :desc).select{|c| c.archived? }
+    @collectives = Collective.with_projects.archived.order(transactions_count: :desc)
   end
 
   def inactive

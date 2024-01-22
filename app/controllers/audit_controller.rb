@@ -25,6 +25,10 @@ class AuditController < ApplicationController
     @collectives = Collective.with_projects.inactive.order(transactions_count: :desc)
   end
 
+  def missing_s
+    @collectives = Collective.where(projects_count: 0).order(transactions_count: :desc).select{|c| c.missing_s? }
+  end
+
   # collectives with no funding links
   # collectives with invalid urls
 end

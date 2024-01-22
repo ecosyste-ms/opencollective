@@ -423,4 +423,10 @@ class Collective < ApplicationRecord
   def current_balance
     transactions.sum(:net_amount)
   end
+
+  def missing_s?
+    return false if project_owner.nil?
+    # TODO
+    project_owner.downcase != slug.downcase && project_owner.downcase.gsub('s', '') == slug.downcase.gsub('s', '')
+  end
 end

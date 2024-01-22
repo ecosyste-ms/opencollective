@@ -46,6 +46,15 @@ class Collective < ApplicationRecord
     projects.pluck(Arel.sql("repository -> 'topics'")).flatten.reject(&:blank?).group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end
 
+  def last_project_activity_at
+    projects.sort_by(&:last_activity_at).last.try(:last_activity_at)
+  end
+
+  def inactive?
+    return false if last_project_activity_at.nil?
+    last_project_activity_at < 1.year.ago
+  end
+
   def sync_async
     SyncCollectiveWorker.perform_async(id)
   end

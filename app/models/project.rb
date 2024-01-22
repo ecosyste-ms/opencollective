@@ -281,4 +281,11 @@ class Project < ApplicationRecord
       page += 1
     end
   end
+
+  def last_activity_at
+    return unless repository.present?
+    return unless repository['pushed_at'].present?
+    Time.parse(repository['pushed_at'])
+    # TODO: Use issues updated_at
+  end
 end

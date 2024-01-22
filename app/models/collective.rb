@@ -56,10 +56,12 @@ class Collective < ApplicationRecord
   end
 
   def archived?
+    return false if projects.with_repository.empty?
     projects.with_repository.all?{|p| p.archived? }
   end
 
   def no_license?
+    return false if projects.with_repository.empty?
     projects.with_repository.all?{|p| p.no_license? }
   end
 

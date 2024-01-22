@@ -15,6 +15,9 @@ class Collective < ApplicationRecord
   scope :with_org_owner, -> { with_owner.where("owner ->> 'kind' = 'organization'") }
   scope :with_user_owner, -> { with_owner.where("owner ->> 'kind' = 'user'") }
 
+  scope :inactive, -> { where("last_project_activity_at < ?", 1.year.ago) }
+
+  before_save :set_last_project_activity_at
 
   def self.sync_least_recently_synced
     Collective.where(last_synced_at: nil).or(Collective.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(500).each do |collective|
@@ -46,8 +49,8 @@ class Collective < ApplicationRecord
     projects.pluck(Arel.sql("repository -> 'topics'")).flatten.reject(&:blank?).group_by(&:itself).transform_values(&:count).sort_by{|k,v| v}.reverse
   end
 
-  def last_project_activity_at
-    projects.with_repository.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
+  def set_last_project_activity_at
+    self.last_project_activity_at = projects.with_repository.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
   end
 
   def inactive?

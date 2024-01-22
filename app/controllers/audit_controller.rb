@@ -22,7 +22,7 @@ class AuditController < ApplicationController
   end
 
   def inactive
-    @collectives = Collective.with_projects.order(transactions_count: :desc).select{|c| c.inactive? }
+    @collectives = Collective.with_projects.inactive.order(transactions_count: :desc)
   end
 
   # collectives with no funding links

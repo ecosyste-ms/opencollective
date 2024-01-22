@@ -47,7 +47,7 @@ class Collective < ApplicationRecord
   end
 
   def last_project_activity_at
-    projects.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
+    projects.with_repository.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
   end
 
   def inactive?
@@ -56,11 +56,11 @@ class Collective < ApplicationRecord
   end
 
   def archived?
-    projects.all?{|p| p.archived? }
+    projects.with_repository.all?{|p| p.archived? }
   end
 
   def no_license?
-    projects.all?{|p| p.no_license? }
+    projects.with_repository.all?{|p| p.no_license? }
   end
 
   def sync_async

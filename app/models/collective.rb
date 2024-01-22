@@ -47,7 +47,7 @@ class Collective < ApplicationRecord
   end
 
   def last_project_activity_at
-    projects.sort_by(&:last_activity_at).last.try(:last_activity_at)
+    projects.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
   end
 
   def inactive?

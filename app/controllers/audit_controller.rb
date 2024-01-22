@@ -26,5 +26,4 @@ class AuditController < ApplicationController
   # collectives with no funding links
   # collectives where owner is a user instead of an org
   # collectives with invalid urls
-  # collectives with inactive projects
 end

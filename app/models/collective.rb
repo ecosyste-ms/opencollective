@@ -164,6 +164,14 @@ class Collective < ApplicationRecord
     return "https://github.com/#{github}" if github.present?
     return repository_url if repository_url.present?
     social_link =(social_links || {}).select{|x| ['GITHUB', 'GITLAB', 'GIT'].include? x['type']}.first.try(:[], 'url')
+    
+    # validate social link (path should start with a letter)
+    # TODO sr.ht slugs start with ~
+    if social_link.present?
+      uri = URI.parse(social_link)
+      social_link = nil unless uri.path.match(/\/[a-zA-Z]/)
+    end
+
     return social_link if social_link.present?
 
     # check if website is a github repo

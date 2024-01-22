@@ -3,6 +3,8 @@ class Collective < ApplicationRecord
 
   has_many :collective_projects, dependent: :destroy
   has_many :projects, through: :collective_projects
+  has_many :projects_with_repository, -> { with_repository }, through: :collective_projects, source: :project
+
   has_many :issues, through: :projects
 
   has_many :transactions, dependent: :destroy
@@ -52,14 +54,14 @@ class Collective < ApplicationRecord
   end
 
   def set_last_project_activity_at
-    self.last_project_activity_at = projects.with_repository.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
+    self.last_project_activity_at = projects_with_repository.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
   end
 
   def set_archived
-    if projects.with_repository.empty?
+    if projects_with_repository.length == 0
       self.archived = false
     else
-      self.archived = projects.with_repository.all?{|p| p.archived? }
+      self.archived = projects_with_repository.all?{|p| p.archived? }
     end
   end
 
@@ -69,8 +71,8 @@ class Collective < ApplicationRecord
   end
 
   def no_license?
-    return false if projects.with_repository.empty?
-    projects.with_repository.all?{|p| p.no_license? }
+    return false if projects_with_repository.empty?
+    projects_with_repository.all?{|p| p.no_license? }
   end
 
   def sync_async

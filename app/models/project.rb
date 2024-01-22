@@ -61,6 +61,7 @@ class Project < ApplicationRecord
     return if last_synced_at.present? && last_synced_at > 1.day.ago
     check_url
     fetch_repository
+    fetch_packages
     sync_issues
     return if destroyed?
     update_column(:last_synced_at, Time.now) 
@@ -98,7 +99,7 @@ class Project < ApplicationRecord
   end
 
   def ping_urls
-    [repos_ping_url, issues_ping_url].compact
+    ([repos_ping_url] + [issues_ping_url] + [commits_ping_url] + packages_ping_urls).compact.uniq
   end
 
   def repos_ping_url
@@ -109,6 +110,22 @@ class Project < ApplicationRecord
   def issues_ping_url
     return unless repository.present?
     "https://issues.ecosyste.ms/api/v1/hosts/#{repository['host']['name']}/repositories/#{repository['full_name']}/ping"
+  end
+
+  def commits_ping_url
+    return unless repository.present?
+    "https://commits.ecosyste.ms/api/v1/hosts/#{repository['host']['name']}/repositories/#{repository['full_name']}/ping"
+  end
+
+  def packages_ping_urls
+    return [] unless packages.present?
+    packages.map do |package|
+      "https://packages.ecosyste.ms/api/v1/registries/#{package['registry']['name']}/packages/#{package['name']}/ping"
+    end
+  end
+
+  def packages_url
+    "https://packages.ecosyste.ms/api/v1/packages/lookup?repository_url=#{repository_url}"
   end
   
   def description
@@ -134,12 +151,18 @@ class Project < ApplicationRecord
     response = conn.get
     return unless response.success?
     self.repository = JSON.parse(response.body)
-    self.keywords = repository["topics"].uniq.reject(&:blank?) if repository.present? && repository["topics"].present?
+    self.keywords = combined_keywords
     self.save
   rescue
     puts "Error fetching repository for #{repository_url}"
   end
 
+  def combined_keywords
+    keywords = []
+    keywords += repository["topics"] if repository.present?
+    keywords += packages.map{|p| p["keywords"]}.flatten if packages.present?
+    keywords.uniq.reject(&:blank?)
+  end
   
   def timeline_url
     return unless repository.present?
@@ -180,10 +203,6 @@ class Project < ApplicationRecord
     !open_source_license?
   end
 
-  def packages_licenses
-    [] # TODO
-  end
-
   def archived?
     return false unless repository.present?
     repository['archived']
@@ -219,7 +238,12 @@ class Project < ApplicationRecord
   end 
 
   def funding_links
-    (repo_funding_links).uniq
+    (repo_funding_links + package_funding_links).uniq
+  end
+
+  def package_funding_links
+    return [] unless packages.present?
+    packages.map{|pkg| pkg['metadata']['funding'] }.compact.map{|f| f.is_a?(Hash) ? f['url'] : f }.flatten.compact
   end
 
   def repo_funding_links
@@ -295,5 +319,39 @@ class Project < ApplicationRecord
     return unless repository['pushed_at'].present?
     Time.parse(repository['pushed_at'])
     # TODO: Use issues updated_at
+  end
+
+  def fetch_packages
+    conn = Faraday.new(url: packages_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    response = conn.get
+    return unless response.success?
+    self.packages = JSON.parse(response.body)
+    self.save
+  rescue
+    puts "Error fetching packages for #{repository_url}"
+  end
+
+  def packages_count
+    return 0 unless packages.present?
+    packages.length
+  end
+
+  def monthly_downloads
+    return 0 unless packages.present?
+    packages.select{|p| p['downloads_period'] == 'last-month' }.map{|p| p["downloads"] || 0 }.sum
+  end
+
+  def downloads
+    return 0 unless packages.present?
+    packages.map{|p| p["downloads"] || 0 }.sum
+  end
+
+  def packages_licenses
+    return [] unless packages.present?
+    packages.map{|p| p['licenses'] }.compact
   end
 end

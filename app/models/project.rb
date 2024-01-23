@@ -237,6 +237,10 @@ class Project < ApplicationRecord
     "#{repository['html_url']}/raw/#{repository['default_branch']}/#{path}"
   end 
 
+  def no_funding?
+    funding_links.empty?
+  end
+
   def funding_links
     (repo_funding_links + package_funding_links).uniq
   end

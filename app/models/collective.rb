@@ -429,4 +429,9 @@ class Collective < ApplicationRecord
     # TODO
     project_owner.downcase != slug.downcase && project_owner.downcase.gsub('s', '') == slug.downcase.gsub('s', '')
   end
+
+  def no_funding?
+    return false if projects_with_repository.empty?
+    projects_with_repository.all?{|p| p.no_funding? }
+  end
 end

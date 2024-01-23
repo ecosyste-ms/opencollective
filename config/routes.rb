@@ -55,6 +55,7 @@ Rails.application.routes.draw do
   get '/audit/archived', to: 'audit#archived'
   get '/audit/inactive', to: 'audit#inactive'
   get '/audit/missing_s', to: 'audit#missing_s'
+  get '/audit/no_funding', to: 'audit#no_funding'
   get '/audit', to: 'audit#index'
 
   get '/404', to: 'errors#not_found'

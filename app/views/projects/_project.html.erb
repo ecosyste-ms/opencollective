@@ -23,7 +23,7 @@
 
         
         <p class="card-subtitle mb-2 text-muted"><i><small>
-          Stars: <%= project.stars %>
+          Stars: <%= number_with_delimiter project.stars %>
           <% if project.last_synced_at %>
             - Last synced: <%= project.last_synced_at.strftime("%d %b %Y") %>
           <% end %>

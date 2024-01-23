@@ -1,11 +1,28 @@
 <div class="container-md">
-  <h2>
-    <%= number_with_delimiter @pagy.count %>
-    <% if params[:topic] %>
-      "<%= params[:topic] %>"
-    <% end %>
-    Collective<%= 's' if @pagy.count > 1 %>
-  </h2>
+
+  <ul class="nav nav-tabs my-3">
+    <li class="nav-item">
+      <a class="nav-link active" href='/'>
+        Collectives
+        <span class="badge text-bg-secondary">
+          <%= number_with_delimiter @pagy.count %>
+        </span>
+      </a>
+    </li>    
+    <li class="nav-item">
+      <a class="nav-link" href='/projects'>
+        Projects
+        <span class="badge text-bg-secondary">
+          <%= number_with_delimiter Project.with_repository.active.count %>
+        </span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href='/audit'>
+        Audit
+      </a>
+    </li>
+  </ul>
 
   <%= form_with url: request.path, method: :get do |form| %>
     <%= form.label :range, 'Select range:' %>

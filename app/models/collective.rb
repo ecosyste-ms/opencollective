@@ -171,10 +171,18 @@ class Collective < ApplicationRecord
   end
 
   def project_url
-    return "https://github.com/#{github}" if github.present?
     return repository_url if repository_url.present?
     social_link =(social_links || {}).select{|x| ['GITHUB', 'GITLAB', 'GIT'].include? x['type']}.first.try(:[], 'url')
     
+    # check if website is a github repo
+    return website if website.match(/github.com\/(.*)/)
+
+    # check if website is a github pages site
+    return github_pages_to_repo_url(website) if website.match(/github.io/)
+    
+    # check if website is a gitlab repo
+    return website if website.match(/gitlab.com\/(.*)/)
+
     # validate social link (path should start with a letter)
     # TODO sr.ht slugs start with ~
     if social_link.present?
@@ -184,14 +192,7 @@ class Collective < ApplicationRecord
 
     return social_link if social_link.present?
 
-    # check if website is a github repo
-    return website if website.match(/github.com\/(.*)/)
-
-    # check if website is a github pages site
-    return github_pages_to_repo_url(website) if website.match(/github.io/)
-    
-    # check if website is a gitlab repo
-    return website if website.match(/gitlab.com\/(.*)/)
+    return "https://github.com/#{github}" if github.present?
 
     nil
   end

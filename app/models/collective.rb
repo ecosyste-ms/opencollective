@@ -235,31 +235,36 @@ class Collective < ApplicationRecord
   def load_projects
     return if project_url.nil?
     if project_org?
-      page = 1
-      loop do
-        resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/repositories?per_page=100&page=#{page}")
-        break unless resp.status == 200
-
-        data = JSON.parse(resp.body)
-        break if data.empty? # Stop if there are no more repositories
-
-        urls = data.map{|p| p['html_url'] }.uniq.reject(&:blank?)
-        urls.each do |url|
-          puts url
-          project = projects.find_or_create_by(url: url)
-          project.sync_async unless project.last_synced_at.present?
-          collective_project = collective_projects.find_or_create_by(project_id: project.id)
-        end
-
-        page += 1
-      end
+      load_org_projects
     else
       project = Project.find_or_create_by(url: project_url)
       project.sync_async if project.last_synced_at.nil?
       collective_project = collective_projects.find_or_create_by(project_id: project.id)
+      load_org_projects
     end
   rescue
     puts "Error loading projects for #{slug}"
+  end
+
+  def load_org_projects
+    page = 1
+    loop do
+      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/repositories?per_page=100&page=#{page}")
+      break unless resp.status == 200
+
+      data = JSON.parse(resp.body)
+      break if data.empty? # Stop if there are no more repositories
+
+      urls = data.map{|p| p['html_url'] }.uniq.reject(&:blank?)
+      urls.each do |url|
+        puts url
+        project = projects.find_or_create_by(url: url)
+        project.sync_async unless project.last_synced_at.present?
+        collective_project = collective_projects.find_or_create_by(project_id: project.id)
+      end
+
+      page += 1
+    end
   end
 
   def self.discover
@@ -440,5 +445,10 @@ class Collective < ApplicationRecord
     return false if owner_has_sponsors_listing?
     return false if projects_with_repository.empty?
     projects_with_repository.all?{|p| p.no_funding? }
+  end
+
+  def key_projects
+    return [projects.first] if !project_org? || projects_count == 1
+    projects_with_repository.order_by_stars.where(Arel.sql("(repository ->> 'stargazers_count')::int > 0")).first(5)
   end
 end

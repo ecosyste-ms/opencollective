@@ -32,4 +32,8 @@ class AuditController < ApplicationController
   def no_funding
     @collectives = Collective.with_projects.order(transactions_count: :desc).select{|c| c.no_funding? }
   end
+
+  def duplicates
+    @collectives = Collective.all.order(transactions_count: :desc).select{|c| c.project_url.present?}.group_by{|c| c.project_url}.select{|k,v| v.length > 1 }.values.flatten
+  end
 end

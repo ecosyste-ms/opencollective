@@ -79,3 +79,29 @@
     <%= render partial: 'time_stat', locals: {icon: 'clock', title: 'Time-to-Merge PRs', this_period: @avg_pr_time_to_merge, last_period: @avg_pr_time_to_merge_last_period} %>
   </div>
 </div>
+
+<div class='row'>
+  <div class='col-md-3'>
+    <!-- # donations -->
+    <% @donations = @collective.transactions.donations.this_period(@range).sum(:net_amount) %>
+    <% @donations_last_period = @collective.transactions.donations.last_period(@range).sum(:net_amount) %>
+    <%= render partial: 'money_stat', locals: {icon: 'gift', title: 'Donations', this_period: @donations, last_period: @donations_last_period} %>
+  </div>
+  <div class='col-md-3'>
+    <!-- # expenses -->
+    <% @expenses = @collective.transactions.expenses.this_period(@range).sum(:net_amount) %>
+    <% @expenses_last_period = @collective.transactions.expenses.last_period(@range).sum(:net_amount) %>
+    <%= render partial: 'money_stat', locals: {icon: 'credit-card', title: 'Expenses', this_period: @expenses, last_period: @expenses_last_period} %>
+  </div>
+  <div class='col-md-3'>
+    <!-- # donors -->
+    <% @donors = @collective.transactions.donations.this_period(@range).distinct.count(:account) %>
+    <% @donors_last_period = @collective.transactions.donations.last_period(@range).distinct.count(:account) %>
+    <%= render partial: 'stat', locals: {icon: 'person', title: 'Donors', this_period: @donors, last_period: @donors_last_period} %>
+  </div>
+  <div class='col-md-3'>
+    <!-- # spenders -->
+    <% @spenders = @collective.transactions.expenses.this_period(@range).distinct.count(:account) %>
+    <% @spenders_last_period = @collective.transactions.expenses.last_period(@range).distinct.count(:account) %>
+    <%= render partial: 'stat', locals: {icon: 'person', title: 'Spenders', this_period: @spenders, last_period: @spenders_last_period} %>
+</div>

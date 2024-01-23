@@ -10,4 +10,7 @@ class Transaction < ApplicationRecord
   scope :not_host_fees, -> { where.not(description: "Host Fee")}
   scope :created_after, ->(date) { where('created_at > ?', date) }
   scope :created_before, ->(date) { where('created_at < ?', date) }
+
+  scope :this_period, ->(period) { where('transactions.created_at > ?', period.days.ago) }
+  scope :last_period, ->(period) { where('transactions.created_at > ?', (period*2).days.ago).where('transactions.created_at < ?', period.days.ago) }
 end

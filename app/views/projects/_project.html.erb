@@ -21,11 +21,14 @@
           </p>
         <% end %>
 
-        <% if project.last_synced_at %>
+        
         <p class="card-subtitle mb-2 text-muted"><i><small>
-          Last synced: <%= project.last_synced_at.strftime("%d %b %Y") %>
+          Stars: <%= project.stars %>
+          <% if project.last_synced_at %>
+            - Last synced: <%= project.last_synced_at.strftime("%d %b %Y") %>
+          <% end %>
         </small></i></p>
-        <% end %>
+        
       </div>
       <div class="flex-shrink-0">
         <img src="<%= project.avatar_url %>" class="rounded" height='40' width='40' onerror="this.style.display='none'">

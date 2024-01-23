@@ -47,6 +47,11 @@ class Project < ApplicationRecord
     url
   end
 
+  def stars
+    return unless repository.present?
+    repository['stargazers_count']
+  end
+
   def github_pages_to_repo_url(github_pages_url)
     match = github_pages_url.chomp('/').match(/https?:\/\/(.+)\.github\.io\/(.+)/)
     return nil unless match

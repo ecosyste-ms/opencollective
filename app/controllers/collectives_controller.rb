@@ -23,6 +23,9 @@ class CollectivesController < ApplicationController
     @collective = Collective.find_by_slug!(params[:id])
     @range = range
     @period = period
+    start_date = params[:start_date].presence || range.days.ago
+    @pagy, @projects = pagy(@collective.projects_with_repository.active.source.order_by_stars)
+    @transactions = @collective.transactions.created_after(start_date).any?
   end
 
   def chart_data

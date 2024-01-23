@@ -27,7 +27,7 @@
 
   <h2>Transactions</h2>
 
-  <% if @collective.transactions_count && @collective.transactions_count > 0 %>
+  <% if @transactions %>
 
     <%= line_chart chart_data_collective_path(chart: 'all_transactions', period: @period, range: @range), title: 'All Transactions' %>
     <%= line_chart chart_data_collective_path(chart: 'expenses', period: @period, range: @range), title: 'Expenses' %>
@@ -37,7 +37,7 @@
 
   <% else %>
     <p>
-      No transactions yet.
+      No transactions in this period.
     </p>
   <% end %>
 
@@ -51,10 +51,11 @@
     </p>
   <% end %>
 
-  <% if @collective.projects_with_repository.any? %>
+  <% if @projects.any? %>
     <h2>Repositories</h2>
 
-    <%= render @collective.projects_with_repository %>
+    <%= render @projects %>
+    <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  
   <% else %>
     <p>
       No repositories found.

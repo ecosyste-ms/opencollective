@@ -436,8 +436,8 @@ class Collective < ApplicationRecord
   end
 
   def no_funding?
-    return false if projects_with_repository.empty?
     return false if owner_has_sponsors_listing?
+    return false if projects_with_repository.empty?
     projects_with_repository.all?{|p| p.no_funding? }
   end
 end

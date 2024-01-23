@@ -430,8 +430,14 @@ class Collective < ApplicationRecord
     project_owner.downcase != slug.downcase && project_owner.downcase.gsub('s', '') == slug.downcase.gsub('s', '')
   end
 
+  def owner_has_sponsors_listing?
+    return false if owner.nil?
+    owner['metadata'].present? && owner['metadata']['has_sponsors_listing']
+  end
+
   def no_funding?
     return false if projects_with_repository.empty?
+    return false if owner_has_sponsors_listing?
     projects_with_repository.all?{|p| p.no_funding? }
   end
 end

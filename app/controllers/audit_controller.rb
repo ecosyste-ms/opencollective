@@ -34,6 +34,6 @@ class AuditController < ApplicationController
   end
 
   def duplicates
-    @collectives = Collective.all.order(transactions_count: :desc).select{|c| c.project_url.present?}.group_by{|c| c.project_url}.select{|k,v| v.length > 1 }.values.flatten
+    @collectives = Collective.all.order(transactions_count: :desc).select{|c| c.project_url.present?}.group_by{|c| c.project_url.downcase }.select{|k,v| v.length > 1 }.values.flatten
   end
 end

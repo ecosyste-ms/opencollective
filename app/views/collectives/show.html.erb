@@ -1,6 +1,8 @@
 <% @meta_title = "#{@collective}" %>
 
 <div class="container-md">
+    <%= render 'nav' %>
+
   <h1>
     <%= @collective.to_s %><br/>
   </h1>
@@ -24,6 +26,8 @@
   <% end %><br/>
 
   <%= render 'stats' %>
+
+  <%= render 'audit' %>
 
   <h2>Transactions</h2>
 

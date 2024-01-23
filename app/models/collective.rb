@@ -75,6 +75,11 @@ class Collective < ApplicationRecord
     projects_with_repository.all?{|p| p.no_license? }
   end
 
+  def org_owner?
+    return false if owner.nil?
+    owner['kind'] == 'organization'
+  end
+
   def sync_async
     SyncCollectiveWorker.perform_async(id)
   end

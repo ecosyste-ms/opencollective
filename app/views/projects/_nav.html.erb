@@ -1,0 +1,34 @@
+  <ul class="nav nav-tabs my-3">
+    <li class="nav-item">
+      <a class="nav-link" href='/'>
+        Collectives
+        <span class="badge text-bg-secondary">
+          <%= number_with_delimiter Collective.all.count %>
+        </span>
+      </a>
+    </li>    
+    <li class="nav-item">
+      <a class="nav-link active" href='/projects'>
+        Projects
+        <span class="badge text-bg-secondary">
+          <%= number_with_delimiter Project.with_repository.active.count %>
+        </span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href='/audit'>
+        Audit
+      </a>
+    </li>
+    <li class="nav-item ms-auto">
+      <div class="dropdown">
+        <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Sort
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item <%= 'active' if params[:sort] == 'last_synced_at' %>" href="<%= url_for(sort: 'last_synced_at', order: 'desc') %>">Recently synced</a></li>
+          <li><a class="dropdown-item <%= 'active' if params[:stars] == 'stars' %>" href="<%= url_for(sort: 'stars', order: 'desc') %>">Stars</a></li>
+        </ul>
+      </div>
+    </li>
+  </ul>

@@ -24,10 +24,10 @@ class CollectivesController < ApplicationController
     @range = range
     @period = period
     start_date = params[:start_date].presence || range.days.ago
-    if @collective.projects_count > 1
+    if @collective.projects_with_repository.length > 1
       projects_scope = @collective.projects_with_repository.active.source
     else
-      projects_scope = @collective.projects_with_repository.active  
+      projects_scope = @collective.projects_with_repository  
     end
     @pagy, @projects = pagy(projects_scope.order_by_stars)
     @transactions = @collective.transactions.created_after(start_date).any?

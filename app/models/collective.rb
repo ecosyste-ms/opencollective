@@ -175,13 +175,13 @@ class Collective < ApplicationRecord
     social_link =(social_links || {}).select{|x| ['GITHUB', 'GITLAB', 'GIT'].include? x['type']}.first.try(:[], 'url')
     
     # check if website is a github repo
-    return website if website.match(/github.com\/(.*)/)
+    return website if website.match(/github.com\/(.*)/i)
 
     # check if website is a github pages site
-    return github_pages_to_repo_url(website) if website.match(/github.io/)
+    return github_pages_to_repo_url(website) if website.match(/github.io/i)
     
     # check if website is a gitlab repo
-    return website if website.match(/gitlab.com\/(.*)/)
+    return website if website.match(/gitlab.com\/(.*)/i)
 
     # validate social link (path should start with a letter)
     # TODO sr.ht slugs start with ~

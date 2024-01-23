@@ -4,7 +4,7 @@ class ProjectsController < ApplicationController
   end
 
   def index
-    @scope = Project.all
+    @scope = Project.with_repository.active
 
     if params[:keyword].present?
       @scope = @scope.keyword(params[:keyword])
@@ -21,7 +21,7 @@ class ProjectsController < ApplicationController
     if params[:sort]
       @scope = @scope.order("#{params[:sort]} #{params[:order]}")
     else
-      @scope = @scope.order('last_synced_at DESC nulls last')
+      @scope = @scope.order_by_stars
     end
 
     @pagy, @projects = pagy(@scope)

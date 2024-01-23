@@ -9,7 +9,7 @@
         </div>
         <div class="col-md-8 text-end">
 
-          <span class='info' title='<%= title %> in the past <%= @period %> days'><%= octicon 'info', height: 14 %></span>
+          <span class='info' title='<%= title %> in the past <%= @range %> days'><%= octicon 'info', height: 14 %></span>
           <h3>
             <% if this_period.zero? %>
               N/A
@@ -19,7 +19,7 @@
 
             <% diff = this_period - last_period %>
             <% unless diff.zero?  %>
-              <small class='<%= diff_class(diff*positive_diff_change) %>' title='<%= last_period %> <%= title %> in the previous <%= @period %> days'><%= '+' if diff > 0 %><%= diff.seconds.in_days.round(1) %></small>
+              <small class='<%= diff_class(diff*positive_diff_change) %>' title='<%= last_period %> <%= title %> in the previous <%= @range %> days'><%= '+' if diff > 0 %><%= diff.seconds.in_days.round(1) %></small>
             <% end %>
           </h3>
           <span><%= title %></span>

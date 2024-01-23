@@ -27,7 +27,7 @@
 
   <h2>Transactions</h2>
 
-  <% if @collective.transactions_count > 0 %>
+  <% if @collective.transactions_count && @collective.transactions_count > 0 %>
 
     <%= line_chart chart_data_collective_path(chart: 'all_transactions', period: @period, range: @range), title: 'All Transactions' %>
     <%= line_chart chart_data_collective_path(chart: 'expenses', period: @period, range: @range), title: 'Expenses' %>

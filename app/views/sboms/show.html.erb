@@ -23,13 +23,15 @@
     <ul>
       <% purls.each do |purl| %>
         <li>
-          <%= purl.name %>
-          <% if purl.version %>
-            <span class='text-muted small'><i><%= purl.version %></i></span>
-          <% end %>
           <% match = Project.find_by_purl purl %>
           <% if match %>
-            * <a href="<%= project_path(match) %>"><%= match.url %></a>
+            <%= link_to [purl.namespace, purl.name].compact.join('/'), project_path(match) %>
+          <% else %>
+            <%= [purl.namespace, purl.name].compact.join('/') %>
+          <% end %>
+
+          <% if purl.version %>
+            <span class='text-muted small'><i><%= purl.version %></i></span>
           <% end %>
         </li>
       <% end %>

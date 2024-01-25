@@ -77,7 +77,7 @@ class Project < ApplicationRecord
   end
 
   def all_package_urls
-    [project_purl] + packages.map{|p| p['purl'] }
+    ([project_purl] + packages.map{|p| p['purl'] }).compact
   end
 
   def sync

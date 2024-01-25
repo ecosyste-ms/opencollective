@@ -20,7 +20,8 @@
   <% @sbom.packageurls.group_by(&:type).each do |type, purls| %>
     <h4><%= type %></h4>
     <ul>
-      <% purls.each do |purl| %>
+      <% purls.group_by{|p| [p.namespace, p.name]}.each do |group, purls| %>
+        <% purl = purls.first %>
         <li>
           <% match = @sbom.find_project purl %>
           <% if match %>

@@ -37,6 +37,7 @@ gem 'appsignal'
 gem 'chartkick'
 gem "after_commit_action"
 gem 'octicons_helper'
+gem 'redis'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

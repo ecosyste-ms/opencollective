@@ -18,7 +18,11 @@ class Project < ApplicationRecord
   scope :with_repository, -> { where.not(repository: nil) }
   scope :with_packages, -> { where('length(packages::text) > 2') }
 
+  scope :package_url, ->(package_url) { where("package_urls @> ARRAY[?]::varchar[]", package_url.to_s) }
+
   scope :order_by_stars, -> { order(Arel.sql("(repository ->> 'stargazers_count')::int desc nulls last")) }
+
+  before_save :set_package_urls
 
   def self.sync_least_recently_synced
     Project.where(last_synced_at: nil).or(Project.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(500).each do |project|
@@ -66,6 +70,10 @@ class Project < ApplicationRecord
   def first_created
     return unless repository.present?
     Time.parse(repository['created_at'])
+  end
+
+  def set_package_urls
+    self.package_urls = packages.map{|p| p['purl'] }
   end
 
   def sync
@@ -375,16 +383,7 @@ class Project < ApplicationRecord
     @purls ||= packages.map{|p| PackageURL.parse(p["purl"]) }
   end
 
-  def find_purl(purl)
-    purls.select{|p| p.type == purl.type && p.name == purl.name }.first
-  end
-
-  def self.projects_with_packages
-    @projects_with_packages ||= Project.with_packages.select('id, packages').all.each{|p| p.purls; p }
-  end
-
   def self.find_by_purl(purl)
-    id = projects_with_packages.find{|p| p.find_purl(purl) }.try(:id)
-    find(id) if id.present?
+    package_url(purl.to_s).first
   end
 end

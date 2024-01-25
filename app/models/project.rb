@@ -73,7 +73,11 @@ class Project < ApplicationRecord
   end
 
   def set_package_urls
-    self.package_urls = packages.map{|p| p['purl'] }
+    self.package_urls = all_package_urls
+  end
+
+  def all_package_urls
+    [project_purl] + packages.map{|p| p['purl'] }
   end
 
   def sync
@@ -202,6 +206,11 @@ class Project < ApplicationRecord
   def owner_name
     return unless repository.present?
     repository['owner']
+  end
+
+  def name
+    return unless repository.present?
+    repository['full_name'].split('/').last
   end
 
   def avatar_url
@@ -376,6 +385,20 @@ class Project < ApplicationRecord
   def packages_licenses
     return [] unless packages.present?
     packages.map{|p| p['licenses'] }.compact
+  end
+
+  def purl_kind
+    return unless repository.present?
+    repository['host']['kind']
+  end
+
+  def project_purl
+    return unless repository.present?
+    PackageURL.new(
+      type: purl_kind,
+      namespace: owner_name,
+      name: name
+    ).to_s
   end
 
   def purls

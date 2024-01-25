@@ -19,6 +19,8 @@ RUN apk add --update \
     musl-dev \
  && rm -rf /var/cache/apk/* 
 
+ RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
 # Will invalidate cache as soon as the Gemfile changes
 COPY Gemfile Gemfile.lock $APP_ROOT/
 

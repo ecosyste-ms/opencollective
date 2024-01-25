@@ -152,8 +152,8 @@ class Project < ApplicationRecord
     end
   end
 
-  def packages_url
-    "https://packages.ecosyste.ms/api/v1/packages/lookup?repository_url=#{repository_url}"
+  def packages_url(page: 1)
+    "https://packages.ecosyste.ms/api/v1/packages/lookup?page=#{page}&repository_url=#{repository_url}"
   end
   
   def description
@@ -359,15 +359,24 @@ class Project < ApplicationRecord
   end
 
   def fetch_packages
-    conn = Faraday.new(url: packages_url) do |faraday|
-      faraday.response :follow_redirects
-      faraday.adapter Faraday.default_adapter
-    end
+    page = 1
+    loop do
+      conn = Faraday.new(url: packages_url(page: page)) do |faraday|
+        faraday.response :follow_redirects
+        faraday.adapter Faraday.default_adapter
+      end
 
-    response = conn.get
-    return unless response.success?
-    self.packages = JSON.parse(response.body)
-    self.save
+      response = conn.get
+      return unless response.success?
+
+      packages_json = JSON.parse(response.body)
+      break if packages_json.empty? # Stop if there are no more packages
+
+      self.packages += packages_json
+      self.save
+
+      page += 1
+    end
   rescue
     puts "Error fetching packages for #{repository_url}"
   end

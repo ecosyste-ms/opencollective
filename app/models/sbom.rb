@@ -32,7 +32,7 @@ class Sbom < ApplicationRecord
   end
 
   def find_projects
-    @projects ||= Project.package_urls(packageurls.map(&:to_s))
+    @projects ||= Project.includes(:collectives).package_urls(packageurls.map(&:to_s))
   end
 
   def find_project(purl)

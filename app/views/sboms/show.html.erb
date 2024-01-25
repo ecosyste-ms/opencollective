@@ -29,7 +29,7 @@
           <% end %>
           <% match = Project.find_by_purl purl %>
           <% if match %>
-            * <a href="<%= project_path(match) %>"><%= match.name %></a>
+            * <a href="<%= project_path(match) %>"><%= match.url %></a>
           <% end %>
         </li>
       <% end %>

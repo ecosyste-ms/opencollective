@@ -372,7 +372,7 @@ class Project < ApplicationRecord
 
   def purls
     return if packages.blank?
-    packages.map{|p| PackageURL.parse(p["purl"]) }
+    @purls ||= packages.map{|p| PackageURL.parse(p["purl"]) }
   end
 
   def find_purl(purl)
@@ -380,7 +380,7 @@ class Project < ApplicationRecord
   end
 
   def self.projects_with_packages
-    @projects_with_packages ||= Project.with_packages.select('id, packages').all
+    @projects_with_packages ||= Project.with_packages.select('id, packages').all.each{|p| p.purls; p }
   end
 
   def self.find_by_purl(purl)

@@ -380,10 +380,11 @@ class Project < ApplicationRecord
   end
 
   def self.projects_with_packages
-    @projects_with_packages ||= Project.with_packages
+    @projects_with_packages ||= Project.with_packages.select('id, packages').all
   end
 
   def self.find_by_purl(purl)
-    projects_with_packages.select{|p| p.find_purl(purl) }.first
+    id = projects_with_packages.find{|p| p.find_purl(purl) }.try(:id)
+    find(id) if id.present?
   end
 end

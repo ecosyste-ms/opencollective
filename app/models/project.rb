@@ -18,7 +18,7 @@ class Project < ApplicationRecord
   scope :with_repository, -> { where.not(repository: nil) }
   scope :with_packages, -> { where('length(packages::text) > 2') }
 
-  scope :package_url, ->(package_url) { where("package_urls @> ARRAY[?]::varchar[]", package_url.to_s) }
+  scope :package_url, ->(package_url) { where("package_urls @> ARRAY[?]::varchar[]", PackageURL.new(**PackageURL.parse(package_url).to_h.except(:version, :scheme)).to_s) }
 
   scope :order_by_stars, -> { order(Arel.sql("(repository ->> 'stargazers_count')::int desc nulls last")) }
 

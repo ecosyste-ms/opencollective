@@ -47,6 +47,8 @@ Rails.application.routes.draw do
     end
   end
   
+  resources :sboms
+
   resources :exports, only: [:index], path: 'open-data'
 
   get '/audit/user_owners', to: 'audit#user_owners'

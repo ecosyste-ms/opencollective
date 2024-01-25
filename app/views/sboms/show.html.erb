@@ -1,0 +1,39 @@
+<div class="container-md">
+
+  <%= render 'nav' %>
+
+  <h3 class='my-3'>SBOM: <%= @sbom.id %></h3>
+  
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Raw</h4>
+      <pre><%= simple_format @sbom.raw %></pre>
+    </div>
+    <div class="col-md-6">
+      <h4>Converted</h4>
+      <pre><%= simple_format JSON.pretty_generate(@sbom.converted) %></pre>
+    </div>
+  </div>
+
+  <h3>Artifacts</h3>
+
+  
+  <% @sbom.packageurls.group_by(&:type).each do |type, purls| %>
+    <h4><%= type %></h4>
+    <ul>
+      <% purls.each do |purl| %>
+        <li>
+          <%= purl.name %>
+          <% if purl.version %>
+            <span class='text-muted small'><i><%= purl.version %></i></span>
+          <% end %>
+          <% match = Project.find_by_purl purl %>
+          <% if match %>
+            * <a href="<%= project_path(match) %>"><%= match.name %></a>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+  
+</div>

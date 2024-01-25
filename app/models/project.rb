@@ -16,6 +16,7 @@ class Project < ApplicationRecord
   scope :owner, ->(owner) { where("(repository ->> 'owner') = ?", owner) }
   scope :keyword, ->(keyword) { where("keywords @> ARRAY[?]::varchar[]", keyword) }
   scope :with_repository, -> { where.not(repository: nil) }
+  scope :with_packages, -> { where('length(packages::text) > 2') }
 
   scope :order_by_stars, -> { order(Arel.sql("(repository ->> 'stargazers_count')::int desc nulls last")) }
 
@@ -367,5 +368,22 @@ class Project < ApplicationRecord
   def packages_licenses
     return [] unless packages.present?
     packages.map{|p| p['licenses'] }.compact
+  end
+
+  def purls
+    return if packages.blank?
+    packages.map{|p| PackageURL.parse(p["purl"]) }
+  end
+
+  def find_purl(purl)
+    purls.select{|p| p.type == purl.type && p.name == purl.name }.first
+  end
+
+  def self.projects_with_packages
+    @projects_with_packages ||= Project.with_packages
+  end
+
+  def self.find_by_purl(purl)
+    projects_with_packages.select{|p| p.find_purl(purl) }.first
   end
 end

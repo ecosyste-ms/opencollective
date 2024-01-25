@@ -17,13 +17,12 @@
 
   <h3>Artifacts</h3>
 
-  
   <% @sbom.packageurls.group_by(&:type).each do |type, purls| %>
     <h4><%= type %></h4>
     <ul>
       <% purls.each do |purl| %>
         <li>
-          <% match = Project.find_by_purl purl %>
+          <% match = @sbom.find_project purl %>
           <% if match %>
             <%= link_to [purl.namespace, purl.name].compact.join('/'), project_path(match) %>
           <% else %>

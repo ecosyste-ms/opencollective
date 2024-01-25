@@ -32,8 +32,10 @@ class Sbom < ApplicationRecord
   end
 
   def find_projects
-    packageurls.each do |purl|
-      # look up project by purl
-    end
+    @projects ||= Project.package_urls(packageurls.map(&:to_s))
+  end
+
+  def find_project(purl)
+    find_projects.select { |p| p.package_urls.include? Project.purl_without_version(purl) }.first
   end
 end

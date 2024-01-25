@@ -18,11 +18,16 @@ class Project < ApplicationRecord
   scope :with_repository, -> { where.not(repository: nil) }
   scope :with_packages, -> { where('length(packages::text) > 2') }
 
-  scope :package_url, ->(package_url) { where("package_urls @> ARRAY[?]::varchar[]", PackageURL.new(**PackageURL.parse(package_url).to_h.except(:version, :scheme)).to_s) }
+  scope :package_url, ->(package_url) { where("package_urls @> ARRAY[?]::varchar[]", Project.purl_without_version(package_url)) }
+  scope :package_urls, ->(package_urls) { where("package_urls && ARRAY[?]::varchar[]", package_urls.map{|p| Project.purl_without_version(p) }) }
 
   scope :order_by_stars, -> { order(Arel.sql("(repository ->> 'stargazers_count')::int desc nulls last")) }
 
   before_save :set_package_urls
+
+  def self.purl_without_version(purl)
+    PackageURL.new(**PackageURL.parse(purl.to_s).to_h.except(:version, :scheme)).to_s
+  end
 
   def self.sync_least_recently_synced
     Project.where(last_synced_at: nil).or(Project.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(500).each do |project|

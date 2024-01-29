@@ -14,7 +14,7 @@ class AuditController < ApplicationController
   end
 
   def no_license
-    @collectives = Collective.with_projects.order(transactions_count: :desc).select{|c| c.no_license? }
+    @collectives = Collective.with_projects.no_license.order(transactions_count: :desc)
   end
 
   def archived

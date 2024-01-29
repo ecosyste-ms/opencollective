@@ -20,8 +20,11 @@ class Collective < ApplicationRecord
   scope :inactive, -> { where("last_project_activity_at < ?", 1.year.ago) }
   scope :archived, -> { where(archived: true) }
 
+  scope :no_funding, -> { where(no_funding: true) }
+
   before_save :set_last_project_activity_at
   before_save :set_archived
+  before_save :set_no_funding
 
   def self.sync_least_recently_synced
     Collective.where(last_synced_at: nil).or(Collective.where("last_synced_at < ?", 1.day.ago)).order('last_synced_at asc nulls first').limit(500).each do |collective|
@@ -446,13 +449,12 @@ class Collective < ApplicationRecord
     owner['metadata'].present? && owner['metadata']['has_sponsors_listing']
   end
 
-  def no_funding?
-    return false if owner_has_sponsors_listing?
-    return false if project_owner.nil?
-    return false if projects_count.zero?
-    return false if dot_github_repository.present? && dot_github_repository.funding_links.present?
-    return false if projects_with_repository.empty?
-    projects_with_repository.all?{|p| p.no_funding? }
+  def set_no_funding
+    if owner_has_sponsors_listing? || projects_with_repository.empty?
+      self.no_funding = false
+    else
+      self.no_funding = projects_with_repository.all?{|p| p.no_funding? }
+    end
   end
 
   def key_projects

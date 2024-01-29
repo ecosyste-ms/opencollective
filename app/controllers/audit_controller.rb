@@ -30,7 +30,7 @@ class AuditController < ApplicationController
   end
 
   def no_funding
-    @collectives = Collective.with_projects.order(transactions_count: :desc).select{|c| c.no_funding? }
+    @collectives = Collective.with_projects.no_funding.order(transactions_count: :desc)
   end
 
   def duplicates

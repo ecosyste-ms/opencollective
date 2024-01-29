@@ -10,9 +10,8 @@ class CollectivesController < ApplicationController
         scope = scope.order(Arel.sql(sort).desc.nulls_last)
       end
     else
-      scope = scope.order(balance: :desc)
+      scope = scope.order('balance desc nulls last')
     end
-
     
     @range = (params[:range].presence || 360).to_i
 

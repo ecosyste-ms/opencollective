@@ -27,7 +27,9 @@
         </button>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item <%= 'active' if params[:sort] == 'last_synced_at' %>" href="<%= url_for(sort: 'last_synced_at', order: 'desc') %>">Recently synced</a></li>
-          <li><a class="dropdown-item <%= 'active' if params[:stars] == 'stars' %>" href="<%= url_for(sort: 'stars', order: 'desc') %>">Stars</a></li>
+          <li><a class="dropdown-item <%= 'active' if params[:sort] == 'created_at' %>" href="<%= url_for(sort: 'created_at', order: 'desc') %>">Recently created</a></li>
+          <li><a class="dropdown-item <%= 'active' if params[:sort] == 'updated_at' %>" href="<%= url_for(sort: 'updated_at', order: 'desc') %>">Recently updated</a></li>
+          <li><a class="dropdown-item <%= 'active' if params[:stars] == 'stars' %>" href="<%= url_for(sort: nil, order: nil) %>">Stars</a></li>
         </ul>
       </div>
     </li>

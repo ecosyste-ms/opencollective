@@ -213,6 +213,7 @@ class Collective < ApplicationRecord
   end
 
   def project_org?
+    return false if project_url.nil?
     case URI.parse(project_url).host
     when 'github.com'
       project_url.match(/github.com\/(.*)/)[1].split('/').count == 1

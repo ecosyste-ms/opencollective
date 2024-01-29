@@ -30,7 +30,7 @@ class Project < ApplicationRecord
   end
 
   def related_dot_github_repository
-    @related_dot_github_repository ||= collective.projects.find_by_url("https://github.com/#{owner_name}/.github")
+    @related_dot_github_repository ||= collective.dot_github_repository
   end
 
   def self.purl_without_version(purl)

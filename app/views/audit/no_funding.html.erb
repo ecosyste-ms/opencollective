@@ -11,7 +11,7 @@
           <div class="flex-grow-1 ms-3 text-break">
             <h4><%= link_to collective.name, collective %></h4>
             <p><%= collective.description %></p>
-            <p><%= number_with_delimiter collective.projects_count %> repository - <%= number_with_delimiter collective.transactions_count %> transactions - Balance: <%= collective.balance.round(2)%> <%= collective.currency %></p>
+            <p><%= number_with_delimiter collective.projects_count %> repositories - <%= number_with_delimiter collective.transactions_count %> transactions - Balance: <%= collective.balance.round(2)%> <%= collective.currency %></p>
             <p>Project url: <%= link_to collective.project_url, collective.project_url, target: :_blank %></p>
           </div>
           <div class="flex-shrink-0">

@@ -25,6 +25,14 @@ class Project < ApplicationRecord
 
   before_save :set_package_urls
 
+  def collective
+    @collective ||= collectives.first
+  end
+
+  def related_dot_github_repository
+    @related_dot_github_repository ||= collective.projects.find_by_url("https://github.com/#{owner_name}/.github")
+  end
+
   def self.purl_without_version(purl)
     PackageURL.new(**PackageURL.parse(purl.to_s).to_h.except(:version, :scheme)).to_s
   end
@@ -91,6 +99,7 @@ class Project < ApplicationRecord
     fetch_repository
     fetch_packages
     sync_issues
+    fetch_readme
     return if destroyed?
     update_column(:last_synced_at, Time.now) 
     ping
@@ -275,12 +284,19 @@ class Project < ApplicationRecord
   end
 
   def funding_links
-    (repo_funding_links + package_funding_links).uniq
+    (repo_funding_links + package_funding_links + owner_funding_links + readme_funding_links).uniq
   end
 
   def package_funding_links
     return [] unless packages.present?
     packages.map{|pkg| pkg['metadata']['funding'] }.compact.map{|f| f.is_a?(Hash) ? f['url'] : f }.flatten.compact
+  end
+
+  def owner_funding_links
+    return [] unless collective && collective.owner
+    return [] if collective.owner["metadata"].blank?
+    return [] unless collective.owner["metadata"]['has_sponsors_listing']
+    ["https://github.com/sponsors/#{collective.owner['login']}"]
   end
 
   def repo_funding_links
@@ -422,5 +438,72 @@ class Project < ApplicationRecord
 
   def self.find_by_purl(purl)
     package_url(purl.to_s).first
+  end
+
+  def readme_file_name
+    return unless repository.present?
+    return unless repository['metadata'].present?
+    return unless repository['metadata']['files'].present?
+    repository['metadata']['files']['readme']
+  end
+
+  def fetch_readme
+    if readme_file_name.blank? || download_url.blank?
+      fetch_readme_fallback
+    else
+      conn = Faraday.new(url: archive_url(readme_file_name)) do |faraday|
+        faraday.response :follow_redirects
+        faraday.adapter Faraday.default_adapter
+      end
+      response = conn.get
+      return unless response.success?
+      json = JSON.parse(response.body)
+
+      self.readme = json['contents']
+      self.save
+    end
+  rescue
+    puts "Error fetching readme for #{repository_url}"
+    fetch_readme_fallback
+  end
+
+  def fetch_readme_fallback
+    file_name = readme_file_name.presence || 'README.md'
+    conn = Faraday.new(url: raw_url(file_name)) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+
+    response = conn.get
+    return unless response.success?
+    self.readme = response.body
+    self.save
+  rescue
+    puts "Error fetching readme for #{repository_url}"
+  end
+
+  def readme_url
+    return unless repository.present?
+    "#{repository['html_url']}/blob/#{repository['default_branch']}/#{readme_file_name}"
+  end
+
+  def readme_urls
+    return [] unless readme.present?
+    urls = URI.extract(readme.gsub(/[\[\]]/, ' '), ['http', 'https']).uniq
+    # remove trailing garbage
+    urls.map{|u| u.gsub(/\:$/, '').gsub(/\*$/, '').gsub(/\.$/, '').gsub(/\,$/, '').gsub(/\*$/, '').gsub(/\)$/, '').gsub(/\)$/, '').gsub('&nbsp;','') }
+  end
+
+  def funding_domains
+    ['opencollective.com', 'ko-fi.com', 'liberapay.com', 'patreon.com', 'otechie.com', 'issuehunt.io', 
+    'communitybridge.org', 'tidelift.com', 'buymeacoffee.com', 'paypal.com', 'paypal.me','givebutter.com']
+  end
+
+  def readme_funding_links
+    urls = readme_urls.select{|u| funding_domains.any?{|d| u.include?(d) } || u.include?('github.com/sponsors') }.reject{|u| ['.svg', '.png'].include? File.extname(URI.parse(u).path) }
+    # remove anchors
+    urls = urls.map{|u| u.gsub(/#.*$/, '') }.uniq
+    # remove sponsor/9/website from open collective urls
+    urls = urls.map{|u| u.gsub(/\/sponsor\/\d+\/website$/, '') }.uniq
   end
 end

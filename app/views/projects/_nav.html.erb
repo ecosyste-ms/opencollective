@@ -2,17 +2,11 @@
     <li class="nav-item">
       <a class="nav-link" href='/'>
         Collectives
-        <span class="badge text-bg-secondary">
-          <%= number_with_delimiter Collective.all.count %>
-        </span>
       </a>
     </li>    
     <li class="nav-item">
       <a class="nav-link active" href='/projects'>
         Projects
-        <span class="badge text-bg-secondary">
-          <%= number_with_delimiter Project.with_repository.active.count %>
-        </span>
       </a>
     </li>
     <li class="nav-item">

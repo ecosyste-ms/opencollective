@@ -7,7 +7,9 @@
     <%= @funder %>
   </h1>
 
-  <%= link_to "https://opencollective.com/#{@funder}", "https://opencollective.com/#{@funder}", target: :_blank %>
+  <% unless @funder.match(/^guest-/) %>
+    <%= link_to "https://opencollective.com/#{@funder}", "https://opencollective.com/#{@funder}", target: :_blank %>
+  <% end %>
 
   <div class='row my-3'>
     <div class='col-6'>

@@ -32,6 +32,11 @@ class CollectivesController < ApplicationController
     @transactions = @collective.transactions.created_after(start_date).any?
   end
 
+  def funders
+    @collective = Collective.find_by_slug!(params[:id])
+    @funders = @collective.funders
+  end
+
   def chart_data
     @collective = Collective.find_by_slug!(params[:id])
     

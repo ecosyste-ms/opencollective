@@ -1,0 +1,52 @@
+<% @meta_title = "Funders: #{@funder}" %>
+
+<div class="container-md">
+    <%= render 'nav' %>
+
+  <h1>
+    <%= @funder %>
+  </h1>
+
+  <%= link_to "https://opencollective.com/#{@funder}", "https://opencollective.com/#{@funder}", target: :_blank %>
+
+  <div class='row my-3'>
+    <div class='col-6'>
+      <h4>Most funded collectives</h4>
+
+      <% @collectives.each do |collective| %>
+        <div class="card mb-3 collective d-flex">
+          <div class="card-body pb-1">
+            <div class="d-flex">
+              
+              <div class="flex-grow-1 ms-3 text-break">
+                <h5 class='card-title'>
+                  <%= link_to collective.collective, collective_path(collective.collective) %>
+                </h5>
+
+                <p class="card-subtitle mb-2 text-muted">
+                  <%= collective.collective.description %>
+                </p>
+              
+                <p class="card-subtitle mb-2 text-muted">
+                  <i><small>
+                    $<%= number_with_delimiter collective.total.try(:round, 2) %>
+                  </small></i>
+                </p>
+              </div>
+              <div class="flex-shrink-0">
+                <img src="<%= collective.collective.icon_url %>" class="rounded" height='40' width='40' onerror="this.style.display='none'">
+              </div>  
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <%== pagy_bootstrap_nav(@collective_pagy) if @collective_pagy.pages > 1 %>  
+    </div>
+    <div class='col-6'>
+      <h4>Recent Transactions</h4>
+
+      <%= render @transactions %>
+      <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  
+    </div>
+  </div>
+</div>

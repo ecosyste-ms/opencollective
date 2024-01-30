@@ -1,0 +1,13 @@
+<% @meta_title = "#{@collective} funders" %>
+
+<div class="container-md">
+    <%= render 'nav' %>
+
+  <h1>
+    <%= @collective.to_s %> Funders
+  </h1>
+
+  <% @funders.each do |funder| %>
+    <%= render 'funders/funder', funder: funder %>
+  <% end %>
+</div>

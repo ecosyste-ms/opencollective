@@ -36,8 +36,11 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :funders, only: [:index, :show]
+
   resources :collectives do
     member do
+      get :funders
       get :chart_data
       get :issue_chart_data
     end

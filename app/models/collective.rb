@@ -471,4 +471,11 @@ class Collective < ApplicationRecord
   def dot_github_repository
     @dot_github_repository ||= projects.find_by_url("https://github.com/#{project_owner}/.github")
   end
+
+  def funders
+    transactions.donations
+      .group(:account)
+      .select('account, SUM(net_amount) as total')
+      .order('total DESC')
+  end
 end

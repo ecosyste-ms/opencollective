@@ -475,7 +475,7 @@ class Collective < ApplicationRecord
   def funders
     transactions.donations
       .group(:account)
-      .select('account, SUM(net_amount) as total')
+      .select('account, SUM(amount) as total')
       .order('total DESC')
   end
 end

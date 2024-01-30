@@ -9,6 +9,7 @@ class FundersController < ApplicationController
 
   def show
     @funder = params[:id]
+    @collective = Collective.find_by_slug(@funder)
     @transactions = Transaction.donations.where(account: @funder).includes(:collective)
     raise ActiveRecord::RecordNotFound if @transactions.empty?
     @pagy, @transactions = pagy(@transactions.order(created_at: :desc))

@@ -23,6 +23,9 @@ class Collective < ApplicationRecord
   scope :no_funding, -> { where(no_funding: true) }
   scope :no_license, -> { where(no_license: true) }
 
+  scope :account_type, ->(account_type) { where(account_type: account_type) }
+  scope :collective, -> { account_type('COLLECTIVE') }
+
   before_save :set_last_project_activity_at
   before_save :set_archived
   before_save :set_no_funding
@@ -87,7 +90,7 @@ class Collective < ApplicationRecord
   def fetch_from_open_collective_graphql
     query = <<~GRAPHQL
       query {
-        collective(slug: "#{slug}") {
+        account(slug: "#{slug}") {
           name
           description
           slug
@@ -105,7 +108,7 @@ class Collective < ApplicationRecord
     GRAPHQL
 
     response = Faraday.post("https://opencollective.com/api/graphql/v2?personalToken=#{ENV['OPEN_COLLECTIVE_API_KEY']}", { query: query }.to_json, { 'Content-Type' => 'application/json' })
-    JSON.parse(response.body)['data']['collective']
+    JSON.parse(response.body)['data']['account']
   rescue
       nil
   end
@@ -125,7 +128,7 @@ class Collective < ApplicationRecord
       tags: data['tags'],
       repository_url: data['repositoryUrl'],
       social_links: data['socialLinks'],
-      kind: data['type'],
+      account_type: data['type'],
       last_synced_at: Time.now
     }
   end
@@ -133,10 +136,12 @@ class Collective < ApplicationRecord
   def sync
     updated_attrs = map_from_open_collective_graphql
     update(updated_attrs) if updated_attrs.present?
-    load_projects
     sync_transactions
-    sync_owner
-    ping_owner
+    if account_type == 'COLLECTIVE'
+      load_projects
+      sync_owner
+      ping_owner
+    end
   rescue
     puts "Error syncing #{slug}"
   end
@@ -477,5 +482,16 @@ class Collective < ApplicationRecord
       .group(:account)
       .select('account, SUM(amount) as total')
       .order('total DESC')
+  end
+
+  def self.funder_account_names
+    Transaction.donations.distinct.pluck(:account)
+  end
+
+  def self.sync_funders
+    funder_account_names.each do |account|
+      collective = Collective.find_or_create_by(slug: account)
+      collective.sync_async if collective.last_synced_at.nil?
+    end
   end
 end

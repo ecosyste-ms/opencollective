@@ -24,7 +24,7 @@ class Collective < ApplicationRecord
   scope :no_license, -> { where(no_license: true) }
 
   scope :account_type, ->(account_type) { where(account_type: account_type) }
-  scope :collective, -> { account_type('COLLECTIVE') }
+  scope :collectives, -> { account_type('COLLECTIVE') }
 
   before_save :set_last_project_activity_at
   before_save :set_archived

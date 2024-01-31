@@ -10,7 +10,7 @@
   <% if @collective %>
     <p>
       <%= @collective.description %> <br/>
-      Kind: <%= @collective.account_type.humanize %> -
+      Kind: <%= @collective.account_type.try(:humanize) %> -
       <%= link_to @collective.html_url, @collective.html_url, target: :_blank %>
       <% if @collective.website.present? && @collective.website != @collective.project_url %>
       - 

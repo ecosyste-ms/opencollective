@@ -37,6 +37,12 @@ class Collective < ApplicationRecord
     end
   end
 
+  def self.sync_least_recently_synced_osc
+    Collective.collectives.where("last_synced_at < ?", 1.day.ago).order('last_synced_at asc nulls first').limit(500).each do |collective|
+      collective.sync_async
+    end
+  end
+
   def to_s
     name
   end

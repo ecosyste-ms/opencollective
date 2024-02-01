@@ -5,12 +5,20 @@
       "schedule": "*/30 * * * *"
     },
     {
+      "command": "bundle exec rake collectives:sync_osc",
+      "schedule": "*/30 * * * *"
+    },
+    {
       "command": "bundle exec rake projects:sync",
       "schedule": "*/30 * * * *"
     },
     {
       "command": "bundle exec rake collectives:discover",
       "schedule": "0 0 * * *"
+    },
+    {
+      "command": "bundle exec rake collectives:sync_funders",
+      "schedule": "0 1 * * *"
     }
   ]
 }

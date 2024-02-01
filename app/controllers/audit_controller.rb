@@ -25,10 +25,6 @@ class AuditController < ApplicationController
     @collectives = Collective.with_projects.inactive.order(transactions_count: :desc)
   end
 
-  def missing_s
-    @collectives = Collective.order(transactions_count: :desc).select{|c| c.missing_s? }
-  end
-
   def no_funding
     @collectives = Collective.with_projects.no_funding.order(transactions_count: :desc)
   end

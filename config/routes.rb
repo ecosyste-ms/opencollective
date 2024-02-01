@@ -59,7 +59,6 @@ Rails.application.routes.draw do
   get '/audit/no_license', to: 'audit#no_license'
   get '/audit/archived', to: 'audit#archived'
   get '/audit/inactive', to: 'audit#inactive'
-  get '/audit/missing_s', to: 'audit#missing_s'
   get '/audit/no_funding', to: 'audit#no_funding'
   get '/audit/duplicates', to: 'audit#duplicates'
   get '/audit', to: 'audit#index'

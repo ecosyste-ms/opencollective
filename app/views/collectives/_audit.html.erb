@@ -29,12 +29,6 @@
         <strong>Funding links:</strong>
         <%= !@collective.no_funding? ? '✅' : '❌' %>
       </li>
-      <% if @collective.missing_s? %>
-      <li>
-        <strong>Missing s:</strong>
-        <%= !@collective.missing_s? ? '✅' : '❌' %>
-      </li>
-      <% end %>
     </ul>
   </div>
 </div>

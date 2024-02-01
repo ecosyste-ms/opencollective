@@ -47,7 +47,7 @@
               
                 <p class="card-subtitle mb-2 text-muted">
                   <i><small>
-                    $<%= number_with_delimiter collective.total.try(:round, 2) %>
+                    $<%= number_with_delimiter collective.total.try(:round, 2) %> - <%= collective.collective.account_type.try(:humanize) %>
                   </small></i>
                 </p>
               </div>

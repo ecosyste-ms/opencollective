@@ -173,7 +173,7 @@ class Collective < ApplicationRecord
 
     if data['type'] == 'COLLECTIVE'
       collective_data = fetch_collective_from_open_collective_graphql 
-      hash[:host] = collective_data['host']['slug']
+      hash[:host] = collective_data.dig('host', 'slug')
     end
     
     hash

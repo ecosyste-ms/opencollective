@@ -176,11 +176,15 @@ class Collective < ApplicationRecord
     hash
   end
 
-  def sync
+  def fetch_account_details
     updated_attrs = map_from_open_collective_graphql
     update(updated_attrs) if updated_attrs.present?
-    sync_transactions
+  end
+
+  def sync
+    fetch_account_details
     if account_type == 'COLLECTIVE'
+      sync_transactions
       load_projects
       sync_owner
       ping_owner

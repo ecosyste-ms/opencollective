@@ -1,6 +1,6 @@
 class CollectivesController < ApplicationController
   def index
-    scope = Collective.collectives
+    scope = Collective.collectives.with_projects
 
     if params[:sort].present? || params[:order].present?
       sort = params[:sort].presence || 'updated_at'

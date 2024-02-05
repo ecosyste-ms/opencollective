@@ -9,6 +9,9 @@
 
   <p>
     <%= @collective.description %> <br/>
+    <% if @collective.account_type %>
+    <%= @collective.account_type.humanize %> -
+    <% end %>
     <%= link_to @collective.html_url, @collective.html_url, target: :_blank %>
     <% if @collective.website.present? && @collective.website != @collective.project_url %>
     - 

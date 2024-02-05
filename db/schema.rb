@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_31_153608) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_05_150304) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -51,6 +51,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_31_153608) do
     t.boolean "archived"
     t.boolean "no_funding"
     t.boolean "no_license"
+    t.string "host"
     t.index ["slug"], name: "index_collectives_on_slug", unique: true
   end
 

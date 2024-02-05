@@ -26,6 +26,9 @@ class Collective < ApplicationRecord
   scope :account_type, ->(account_type) { where(account_type: account_type) }
   scope :collectives, -> { account_type('COLLECTIVE') }
 
+  scope :host, ->(host) { where(host: host) }
+  scope :opensource, -> { host('opensource') }
+
   before_save :set_last_project_activity_at
   before_save :set_archived
   before_save :set_no_funding

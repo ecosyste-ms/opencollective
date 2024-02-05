@@ -5,6 +5,7 @@ class Transaction < ApplicationRecord
   counter_culture :collective, execute_after_commit: true
 
   scope :collectives, -> { joins(:collective).where('collectives.account_type = ?', 'COLLECTIVE') }
+  scope :opensource, -> { joins(:collective).where('collectives.host = ?', 'opensource') }
 
   scope :donations, -> { where(transaction_type: 'CREDIT') }
   scope :expenses, -> { where(transaction_type: 'DEBIT') }

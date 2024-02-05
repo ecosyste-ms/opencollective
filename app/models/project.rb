@@ -412,6 +412,20 @@ class Project < ApplicationRecord
     packages.map{|p| p["downloads"] || 0 }.sum
   end
 
+  def dependent_packages
+    return 0 unless packages.present?
+    packages.select{|p| p['dependents'] }.map{|p| p["dependents"] || 0 }.sum
+  end
+
+  def dependent_repositories
+    return 0 unless packages.present?
+    packages.select{|p| p['dependent_repositories'] }.map{|p| p["dependent_repositories"] || 0 }.sum
+  end
+
+  def dependents
+    dependent_packages + dependent_repositories
+  end
+
   def packages_licenses
     return [] unless packages.present?
     packages.map{|p| p['licenses'] }.compact
@@ -505,5 +519,139 @@ class Project < ApplicationRecord
     urls = urls.map{|u| u.gsub(/#.*$/, '') }.uniq
     # remove sponsor/9/website from open collective urls
     urls = urls.map{|u| u.gsub(/\/sponsor\/\d+\/website$/, '') }.uniq
+  end
+
+  def badges
+    [
+      fork_badge,
+      archived_badge,
+      package_badge,
+      mature_age_badge,
+      veteran_age_badge,
+      new_age_badge,
+      star_popularity_badge,
+      download_popularity_badge,
+      dependents_popularity_badge,
+      high_contributors_badge,
+      low_contributors_badge,
+      active_badge,
+      inactive_badge
+  ].compact
+
+  end
+
+  def fork_badge
+    return unless fork?
+    {
+      label: 'Fork',
+      class: 'warning'
+    }
+  end
+
+  def archived_badge
+    return unless archived?
+    {
+      label: 'Archived',
+      class: 'danger'
+    }
+  end
+
+  def package_badge
+    return unless packages.present?
+    {
+      label: 'Package',
+      class: 'info'
+    }
+  end
+
+  def mature_age_badge
+    return unless first_created.present?
+    return unless first_created < 5.year.ago
+    return unless first_created > 10.year.ago
+    {
+      label: 'Mature',
+      class: 'success'
+    }
+  end
+
+  def veteran_age_badge
+    return unless first_created.present?
+    return unless first_created < 10.year.ago
+    {
+      label: 'Veteran',
+      class: 'primary'
+    }
+  end
+
+  def new_age_badge
+    return unless first_created.present?
+    return unless first_created > 6.month.ago
+    {
+      label: 'Emerging',
+      class: 'secondary'
+    }
+  end
+
+  def star_popularity_badge
+    if stars.present? && stars > 1000
+      {
+        label: 'Popular: Stars',
+        class: 'success'
+      }
+    end
+  end
+
+  def download_popularity_badge
+    if downloads > 10000
+      {
+        label: 'Popular: Downloads',
+        class: 'success'
+      }
+    end
+  end
+
+  def dependents_popularity_badge
+    if dependents > 100
+      {
+        label: 'Popular: Dependents',
+        class: 'success'
+      }
+    end
+  end
+
+  def high_contributors_badge
+    if issues.group(:user).count.count > 30
+      {
+        label: 'Many Contributors',
+        class: 'success'
+      }
+    end
+  end
+
+  def low_contributors_badge
+    if issues.group(:user).count.count < 3
+      {
+        label: 'Few contributors',
+        class: 'warning'
+      }
+    end
+  end
+
+  def active_badge
+    if (last_activity_at && last_activity_at > 1.month.ago) || issues.where('created_at > ?', 1.month.ago).count > 0 || issues.where('closed_at > ?', 1.month.ago).count > 0
+      {
+        label: 'Active',
+        class: 'info'
+      }
+    end
+  end
+
+  def inactive_badge
+    if (last_activity_at && last_activity_at  < 2.year.ago) || (issues.where('closed_at > ?',  1.year.ago).count == 0 && (last_activity_at && last_activity_at  < 1.year.ago)) 
+      {
+        label: 'Inactive',
+        class: 'danger'
+      }
+    end
   end
 end

@@ -470,7 +470,7 @@ class Collective < ApplicationRecord
 
   def key_projects
     return [projects.first] if !project_org? || projects_count == 1
-    projects_with_repository.order_by_stars.where(Arel.sql("(repository ->> 'stargazers_count')::int > 0")).first(5)
+    projects_with_repository.source.active.order_by_stars.where(Arel.sql("(repository ->> 'stargazers_count')::int > 0")).first(5)
   end
 
   def dot_github_repository

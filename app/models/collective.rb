@@ -44,7 +44,7 @@ class Collective < ApplicationRecord
   end
 
   def to_s
-    name
+    name.presence || slug
   end
 
   def to_param
@@ -119,11 +119,41 @@ class Collective < ApplicationRecord
       nil
   end
 
+  def fetch_collective_from_open_collective_graphql
+    query = <<~GRAPHQL
+      query {
+        collective(slug: "#{slug}") {
+          name
+          description
+          slug
+          website
+          githubHandle
+          twitterHandle
+          currency
+          type
+          socialLinks {
+            type
+            url
+          }
+          host {
+            slug
+          }
+        }
+      }
+    GRAPHQL
+
+    response = Faraday.post("https://opencollective.com/api/graphql/v2?personalToken=#{ENV['OPEN_COLLECTIVE_API_KEY']}", { query: query }.to_json, { 'Content-Type' => 'application/json' })
+    JSON.parse(response.body)['data']['collective']
+  rescue
+      nil
+  end
+
   def map_from_open_collective_graphql
     data = fetch_from_open_collective_graphql
     return if data.nil?
+    
 
-    {
+    hash = {
       uuid: data['id'],
       name: data['name'],
       description: data['description'],
@@ -137,6 +167,13 @@ class Collective < ApplicationRecord
       account_type: data['type'],
       last_synced_at: Time.now
     }
+
+    if data['type'] == 'COLLECTIVE'
+      collective_data = fetch_collective_from_open_collective_graphql 
+      hash[:host] = collective_data['host']['slug']
+    end
+    
+    hash
   end
 
   def sync

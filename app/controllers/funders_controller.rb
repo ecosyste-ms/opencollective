@@ -1,6 +1,6 @@
 class FundersController < ApplicationController
   def index
-    @funders_scope = Transaction.collectives.donations
+    @funders_scope = Transaction.opensource.donations
       .group(:account)
       .select('account, SUM(amount) as total')
       .order('total DESC').to_a

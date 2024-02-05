@@ -1,6 +1,6 @@
 class CollectivesController < ApplicationController
   def index
-    scope = Collective.collectives.with_projects
+    scope = Collective.opensource
 
     if params[:sort].present? || params[:order].present?
       sort = params[:sort].presence || 'updated_at'
@@ -65,7 +65,7 @@ class CollectivesController < ApplicationController
   end
 
   def charts_data
-    scope = Transaction.collectives
+    scope = Transaction.opensource
 
     period = (params[:period].presence || 'month').to_sym
 

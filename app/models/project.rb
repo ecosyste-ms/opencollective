@@ -522,22 +522,23 @@ class Project < ApplicationRecord
   end
 
   def badges
-    [
-      fork_badge,
-      archived_badge,
-      package_badge,
-      mature_age_badge,
-      veteran_age_badge,
-      new_age_badge,
-      star_popularity_badge,
-      download_popularity_badge,
-      dependents_popularity_badge,
-      high_contributors_badge,
-      low_contributors_badge,
-      active_badge,
-      inactive_badge
-  ].compact
-
+    Rails.cache.fetch("badges:#{id}", expires_in: 1.month) do
+      [
+        fork_badge,
+        archived_badge,
+        package_badge,
+        mature_age_badge,
+        veteran_age_badge,
+        new_age_badge,
+        star_popularity_badge,
+        download_popularity_badge,
+        dependents_popularity_badge,
+        high_contributors_badge,
+        low_contributors_badge,
+        active_badge,
+        inactive_badge
+      ].compact
+    end
   end
 
   def fork_badge

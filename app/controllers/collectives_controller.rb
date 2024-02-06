@@ -20,7 +20,7 @@ class CollectivesController < ApplicationController
 
   def batch
     @slugs = params[:slugs].try(:split, ',')
-    @collectives = Collective.where(slug: @slugs)
+    @collectives = Collective.opensource.where(slug: @slugs).limit(20)
 
     @range = range
     @period = period
@@ -35,7 +35,7 @@ class CollectivesController < ApplicationController
 
   def batch_chart_data
     @slugs = params[:slugs].try(:split, ',')
-    @collectives = Collective.where(slug: @slugs)
+    @collectives = Collective.opensource.where(slug: @slugs).limit(20)
     scope = Transaction.where(collective_id: @collectives.pluck(:id))
 
     period = (params[:period].presence || 'month').to_sym
@@ -77,8 +77,8 @@ class CollectivesController < ApplicationController
 
   def batch_issue_chart_data
     @slugs = params[:slugs].try(:split, ',')
-    @collectives = Collective.where(slug: @slugs)
-    project_ids = Project.where(collective_id: @collectives.pluck(:id)).pluck(:id)
+    @collectives = Collective.opensource.where(slug: @slugs).limit(20)
+    project_ids =Project.joins(:collectives).where('collectives.id in (?)', @collectives.pluck(:id)).pluck(:id)
     scope = Issue.where(project_id: project_ids)
     
     period = (params[:period].presence || 'month').to_sym

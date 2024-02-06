@@ -39,6 +39,12 @@ module ApplicationHelper
     end
   end
 
+  def render_batch_collective_issues_chart(name, max: @max, ytitle: nil)
+    content_tag :div, class: 'chart-container py-4 my-4' do
+      line_chart batch_issue_chart_data_collectives_path(slugs: params[:slugs], chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
+    end
+  end
+
   def diff_class(count)
     count > 0 ? 'text-success' : 'text-danger'
   end

@@ -1,13 +1,20 @@
 <% @meta_title = "#{@collectives.map(&:to_s).join(', ')}" %>
 
 <div class="container-md">
-    <%= render 'nav' %>
+  <%= render 'nav' %>
 
-  <h1>
-    <%= @collectives.map(&:to_s).join(', ') %>
-  </h1>
+  <h1>Viewing stats for the following collectives:</h1>
 
+  <% @collectives.each do |collective| %>
 
+    <span class='badge text-bg-light border p-1 m-1'>
+      <img src="<%= collective.icon_url(size: 20) %>" class="rounded" height='20' width='20' onerror="this.style.display='none'">
+      <%= link_to collective, collective_path(collective), class: 'text-decoration-none text-dark' %>
+      <%= link_to bootstrap_icon('x', height: 20), url_for(slugs: (@slugs - [collective.slug]).join(',')), class: 'text-decoration-none text-muted' %>
+    </span>
+  
+  <% end %>
+  <br/><br/>
   <%= form_with url: request.path, method: :get do |form| %>
     <%= form.label :range, 'Select range:' %>
     <%= form.select :range, options_for_select([30, 90, 180, 360], @range.to_i), {}, { onchange: 'this.form.submit()' } %>
@@ -24,3 +31,5 @@
   <% end %>
 
 </div>
+
+<i class="bi bi-x-circle-fill"></i>

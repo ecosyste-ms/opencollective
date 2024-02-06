@@ -59,6 +59,8 @@
         </div>
       <% end %>
       <%== pagy_bootstrap_nav(@collective_pagy) if @collective_pagy.pages > 1 %>  
+
+      <%= link_to 'View breakdown', batch_collectives_path(slugs: @collectives.map{|c| c.collective.slug }.join(',')) %>
     </div>
     <div class='col-6'>
       <h4>Recent Transactions</h4>

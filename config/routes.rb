@@ -45,6 +45,9 @@ Rails.application.routes.draw do
       get :issue_chart_data
     end
     collection do
+      get :batch
+      get :batch_chart_data
+      get :batch_issue_chart_data
       get :charts_data
       get :issue_charts_data
     end

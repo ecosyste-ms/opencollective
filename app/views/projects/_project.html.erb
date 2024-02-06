@@ -10,17 +10,6 @@
         <p class="card-subtitle mb-2 text-muted">
           <%= project.description %>
         </p>
-
-        <% if project.keywords.any? %>
-          <p>
-            <% project.keywords.each do |keyword| %>
-              <span class="badge bg-light text-dark">
-                <%= link_to keyword, url_for(keyword: keyword) %>
-              </span>
-            <% end %>
-          </p>
-        <% end %>
-
         
         <p class="card-subtitle mb-2 text-muted"><i><small>
           Stars: <%= number_with_delimiter project.stars %>

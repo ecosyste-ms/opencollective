@@ -283,6 +283,34 @@ class CollectivesController < ApplicationController
     render json: data
   end
 
+  def commit_chart_data
+    @collective = Collective.find_by_slug!(params[:id])
+    
+    start_date = params[:start_date].presence || range.days.ago
+    end_date = params[:end_date].presence || Date.today 
+
+    scope = @collective.commits
+
+    scope = scope.created_after(start_date) if start_date.present?
+    scope = scope.created_before(end_date) if end_date.present?
+
+    data = Rails.cache.fetch("commit_chart_data:#{params}", expires_in: 1.day) do
+      case params[:chart]
+      when 'commits'
+        data = scope.group_by_period(period, :timestamp).count
+      when 'merge_commits'
+        data = scope.merges.group_by_period(period, :timestamp).count
+      when 'commit_authors'
+        data = scope.group_by_period(period, :timestamp).distinct.count(:author)
+      when 'commit_committers'
+        data = scope.group_by_period(period, :timestamp).distinct.count(:committer)
+      end
+      data
+    end
+
+    render json: data
+  end
+
   def issue_charts_data
     scope = Issue.all
     

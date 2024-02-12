@@ -6,6 +6,7 @@ class Collective < ApplicationRecord
   has_many :projects_with_repository, -> { with_repository }, through: :collective_projects, source: :project
 
   has_many :issues, through: :projects
+  has_many :commits, through: :projects
 
   has_many :transactions, dependent: :destroy
 

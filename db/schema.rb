@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_05_150304) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_12_105027) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -53,6 +53,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_05_150304) do
     t.boolean "no_license"
     t.string "host"
     t.index ["slug"], name: "index_collectives_on_slug", unique: true
+  end
+
+  create_table "commits", force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.string "sha"
+    t.string "message"
+    t.datetime "timestamp"
+    t.boolean "merge"
+    t.string "author"
+    t.string "committer"
+    t.integer "stats"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_commits_on_project_id"
   end
 
   create_table "issues", force: :cascade do |t|

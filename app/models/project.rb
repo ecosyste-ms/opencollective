@@ -3,6 +3,7 @@ class Project < ApplicationRecord
   has_many :collective_projects, dependent: :destroy
   has_many :collectives, through: :collective_projects
   has_many :issues, dependent: :delete_all
+  has_many :commits, dependent: :delete_all
 
   validates :url, presence: true, uniqueness: { case_sensitive: false }
 
@@ -99,6 +100,7 @@ class Project < ApplicationRecord
     fetch_repository
     fetch_packages
     sync_issues
+    sync_commits
     fetch_readme
     return if destroyed?
     update_column(:last_synced_at, Time.now) 
@@ -361,6 +363,44 @@ class Project < ApplicationRecord
         i = issues.find_or_create_by(number: issue['number']) 
         i.assign_attributes(issue)
         i.save(touch: false)
+      end
+
+      page += 1
+    end
+  end
+
+  def commits_api_url
+    "https://commits.ecosyste.ms/api/v1/repositories/lookup?url=#{repository_url}"
+  end
+
+  def sync_commits
+    return unless repository.present?
+    conn = Faraday.new(url: commits_api_url) do |faraday|
+      faraday.response :follow_redirects
+      faraday.adapter Faraday.default_adapter
+    end
+    response = conn.get
+    return unless response.success?
+    commits_list_url = JSON.parse(response.body)['commits_url'] + '?per_page=100'
+
+    page = 1
+    loop do
+      paginated_commits_url = "#{commits_list_url}&page=#{page}"
+      conn = Faraday.new(url: paginated_commits_url) do |faraday|
+        faraday.response :follow_redirects
+        faraday.adapter Faraday.default_adapter
+      end
+      response = conn.get
+      return unless response.success?
+
+      commits_json = JSON.parse(response.body)
+      break if commits_json.empty? # Stop if there are no more issues
+
+      # TODO: Use bulk insert
+      commits_json.each do |commit|
+        c = commits.find_or_create_by(sha: commit['sha']) 
+        c.assign_attributes(commit)
+        c.save(touch: false)
       end
 
       page += 1

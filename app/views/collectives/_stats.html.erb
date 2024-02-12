@@ -80,6 +80,7 @@
   </div>
 </div>
 
+<% if @collective.transactions.any? %>
 <div class='row'>
   <div class='col-md-3'>
     <!-- # donations -->
@@ -104,4 +105,35 @@
     <% @spenders = @collective.transactions.expenses.this_period(@range).distinct.count(:account) %>
     <% @spenders_last_period = @collective.transactions.expenses.last_period(@range).distinct.count(:account) %>
     <%= render partial: 'stat', locals: {icon: 'person', title: 'Spenders', this_period: @spenders, last_period: @spenders_last_period} %>
+  </div>
 </div>
+<% end %>
+
+<% if @collective.commits.any? %>
+  <div class='row'>
+    <div class='col-md-3'>
+      <!-- # commits -->
+      <% @commits = @collective.commits.this_period(@range).count %>
+      <% @commits_last_period = @collective.commits.last_period(@range).count %>
+      <%= render partial: 'stat', locals: {icon: 'git-commit', title: 'Commits', this_period: @commits, last_period: @commits_last_period} %>
+    </div>
+    <div class='col-md-3'>
+      <!-- # merges -->
+      <% @merges = @collective.commits.merges.this_period(@range).count %>
+      <% @merges_last_period = @collective.commits.merges.last_period(@range).count %>
+      <%= render partial: 'stat', locals: {icon: 'git-merge', title: 'Merges', this_period: @merges, last_period: @merges_last_period} %>
+    </div>
+    <div class='col-md-3'>
+      <!-- # authors -->
+      <% @authors = @collective.commits.this_period(@range).distinct.count(:author) %>
+      <% @authors_last_period = @collective.commits.last_period(@range).distinct.count(:author) %>
+      <%= render partial: 'stat', locals: {icon: 'person', title: 'Authors', this_period: @authors, last_period: @authors_last_period} %>
+    </div>
+    <div class='col-md-3'>
+      <!-- # committers -->
+      <% @committers = @collective.commits.this_period(@range).distinct.count(:committer) %>
+      <% @committers_last_period = @collective.commits.last_period(@range).distinct.count(:committer) %>
+      <%= render partial: 'stat', locals: {icon: 'person', title: 'Committers', this_period: @committers, last_period: @committers_last_period} %>
+    </div>
+  </div>
+<% end %>

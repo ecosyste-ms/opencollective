@@ -136,4 +136,19 @@
       <%= render partial: 'stat', locals: {icon: 'person', title: 'Committers', this_period: @committers, last_period: @committers_last_period} %>
     </div>
   </div>
+
+  <div class='row'>
+    <div class='col-md-3'>
+      <!-- # additions -->
+      <% @additions = @collective.commits.this_period(@range).sum(:additions) %>
+      <% @additions_last_period = @collective.commits.last_period(@range).sum(:additions) %>
+      <%= render partial: 'stat', locals: {icon: 'plus', title: 'Additions', this_period: @additions, last_period: @additions_last_period} %>
+    </div>
+    <div class='col-md-3'>
+      <!-- # deletions -->
+      <% @deletions = @collective.commits.this_period(@range).sum(:deletions) %>
+      <% @deletions_last_period = @collective.commits.last_period(@range).sum(:deletions) %>
+      <%= render partial: 'stat', locals: {icon: 'dash', title: 'Deletions', this_period: @deletions, last_period: @deletions_last_period} %>
+    </div>
+  </div>
 <% end %>

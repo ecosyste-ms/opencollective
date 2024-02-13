@@ -399,7 +399,11 @@ class Project < ApplicationRecord
       # TODO: Use bulk insert
       commits_json.each do |commit|
         c = commits.find_or_create_by(sha: commit['sha']) 
-        c.assign_attributes(commit)
+        commit_attributes = commit.except('stats', 'html_url')
+        commit_attributes['additions'] = commit['stats']['additions']
+        commit_attributes['deletions'] = commit['stats']['deletions']
+        commit_attributes['files_changed'] = commit['stats']['files_changed']
+        c.assign_attributes(commit_attributes)
         c.save(touch: false)
       end
 

@@ -110,8 +110,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
-    dalli (3.2.7)
-      base64
+    dalli (3.2.8)
     date (3.3.4)
     debug (1.9.1)
       irb (~> 1.10)

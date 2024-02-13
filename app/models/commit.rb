@@ -13,4 +13,8 @@ class Commit < ApplicationRecord
 
   scope :this_period, ->(period) { where('commits.timestamp > ?', period.days.ago) }
   scope :last_period, ->(period) { where('commits.timestamp > ?', (period*2).days.ago).where('commits.timestamp < ?', period.days.ago) }
+
+  def html_url
+    "#{project.repository_url}/commit/#{sha}"
+  end
 end

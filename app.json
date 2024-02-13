@@ -2,15 +2,15 @@
   "cron": [
     {
       "command": "bundle exec rake collectives:sync",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 * * * *"
     },
     {
       "command": "bundle exec rake collectives:sync_osc",
-      "schedule": "*/30 * * * *"
+      "schedule": "15 * * * *"
     },
     {
       "command": "bundle exec rake projects:sync",
-      "schedule": "*/30 * * * *"
+      "schedule": "30 * * * *"
     },
     {
       "command": "bundle exec rake collectives:discover",

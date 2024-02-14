@@ -2,6 +2,8 @@ class Issue < ApplicationRecord
   belongs_to :project
   counter_culture :project, column_name: 'issues_count', execute_after_commit: true
 
+  MAINTAINER_ASSOCIATIONS = ["MEMBER", "OWNER", "COLLABORATOR"]
+
   scope :label, ->(labels) { where("labels && ARRAY[?]::varchar[]", labels) }
   scope :past_year, -> { where('issues.created_at > ?', 1.year.ago) }
   scope :bot, -> { where('issues.user ILIKE ?', '%[bot]') }
@@ -15,6 +17,7 @@ class Issue < ApplicationRecord
   scope :updated_after, ->(date) { where('updated_at > ?', date) }
   scope :pull_request, -> { where(pull_request: true) }
   scope :issue, -> { where(pull_request: false) }
+  scope :maintainers, -> { where(author_association: MAINTAINER_ASSOCIATIONS) }
 
   scope :this_period, ->(period) { where('issues.created_at > ?', period.days.ago) }
   scope :last_period, ->(period) { where('issues.created_at > ?', (period*2).days.ago).where('issues.created_at < ?', period.days.ago) }

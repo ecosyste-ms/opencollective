@@ -266,6 +266,8 @@ class CollectivesController < ApplicationController
       when 'pull_request_average_time_to_merge'
         data = scope.pull_request.merged.group_by_period(period, :merged_at).average(:time_to_close)
         data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
+      when 'maintainers'
+        data = scope.maintainers.group_by_period(period, :created_at).distinct.count(:user)
       end
       data
     end
@@ -357,6 +359,8 @@ class CollectivesController < ApplicationController
       when 'pull_request_average_time_to_merge'
         data = scope.pull_request.merged.group_by_period(period, :merged_at).average(:time_to_close)
         data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
+      when 'maintainers'
+        data = scope.maintainers.group_by_period(period, :created_at).distinct.count(:user)
       end
       data
     end

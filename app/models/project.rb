@@ -699,4 +699,8 @@ class Project < ApplicationRecord
       }
     end
   end
+
+  def maintainers(range: 30)
+    
+  end
 end

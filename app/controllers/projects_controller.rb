@@ -83,6 +83,8 @@ class ProjectsController < ApplicationController
     when 'pull_request_average_time_to_merge'
       data = scope.pull_request.merged.group_by_period(period, :merged_at).average(:time_to_close)
       data.update(data){ |_,v| v.to_f.seconds.in_days.to_i }
+    when 'maintainers'
+      data = scope.maintainers.group_by_period(period, :created_at).distinct.count(:user)
     end
     
     ## TODO no data for these yet

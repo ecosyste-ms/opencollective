@@ -78,6 +78,12 @@
     <% @avg_pr_time_to_merge_last_period = @collective.issues.pull_request.merged.last_period(@range).average(:time_to_close).to_i %>
     <%= render partial: 'time_stat', locals: {icon: 'clock', title: 'Time-to-Merge PRs', this_period: @avg_pr_time_to_merge, last_period: @avg_pr_time_to_merge_last_period} %>
   </div>
+  <div class='col-md-3'>
+    <!-- # maintainers -->
+    <% @maintainers = @collective.issues.maintainers.this_period(@range).group(:user).count.count %>
+    <% @maintainers_last_period = @collective.issues.maintainers.last_period(@range).group(:user).count.count %>
+    <%= render partial: 'stat', locals: {icon: 'passkey-fill', title: 'Maintainers', this_period: @maintainers, last_period: @maintainers_last_period} %>
+  </div>
 </div>
 
 <% if @collective.transactions.any? %>

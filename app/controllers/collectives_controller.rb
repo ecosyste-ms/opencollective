@@ -214,7 +214,11 @@ class CollectivesController < ApplicationController
           {name: 'Spenders', data: scope.expenses.group_by_period(period, :created_at).distinct.count(:account)}
           ]
       when 'new_collectives'
-        data = Collective.opensource.group_by_period(period, :collective_created_at).count
+        scope = Collective.opensource
+        scope = scope.where('collective_created_at >= ?', start_date) if start_date.present?
+        scope = scope.where('collective_created_at <= ?', end_date) if end_date.present?
+
+        data = scope.group_by_period(period, :collective_created_at).count
       end
       data
     end

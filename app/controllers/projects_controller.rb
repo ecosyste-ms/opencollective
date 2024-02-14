@@ -1,6 +1,8 @@
 class ProjectsController < ApplicationController
   def show
     @project = Project.find(params[:id])
+    @range = range
+    @period = period
   end
 
   def index
@@ -41,7 +43,7 @@ class ProjectsController < ApplicationController
     
     period = (params[:period].presence || 'month').to_sym
 
-    start_date = params[:start_date].presence || @project.issues.order(:created_at).first.try(:created_at) || @project.created_at
+    start_date = params[:start_date].presence || range.days.ago
     end_date = params[:end_date].presence || Date.today 
 
     scope = @project.issues

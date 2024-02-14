@@ -123,7 +123,7 @@
       <!-- # merges -->
       <% @merges = @collective.commits.merges.this_period(@range).count %>
       <% @merges_last_period = @collective.commits.merges.last_period(@range).count %>
-      <%= render partial: 'stat', locals: {icon: 'git-merge', title: 'Merges', this_period: @merges, last_period: @merges_last_period} %>
+      <%= render partial: 'stat', locals: {icon: 'git-merge', title: 'Merge Commits', this_period: @merges, last_period: @merges_last_period} %>
     </div>
     <div class='col-md-3'>
       <!-- # authors -->

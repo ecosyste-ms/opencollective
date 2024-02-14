@@ -213,6 +213,8 @@ class CollectivesController < ApplicationController
           {name: 'Donors', data: scope.donations.group_by_period(period, :created_at).distinct.count(:account)},
           {name: 'Spenders', data: scope.expenses.group_by_period(period, :created_at).distinct.count(:account)}
           ]
+      when 'new_collectives'
+        data = Collective.opensource.group_by_period(period, :collective_created_at).count
       end
       data
     end

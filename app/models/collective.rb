@@ -109,6 +109,8 @@ class Collective < ApplicationRecord
           twitterHandle
           currency
           type
+          createdAt
+          updatedAt
           socialLinks {
             type
             url
@@ -135,6 +137,8 @@ class Collective < ApplicationRecord
           twitterHandle
           currency
           type
+          createdAt
+          updatedAt
           socialLinks {
             type
             url
@@ -156,7 +160,6 @@ class Collective < ApplicationRecord
     data = fetch_from_open_collective_graphql
     return if data.nil?
     
-
     hash = {
       uuid: data['id'],
       name: data['name'],
@@ -169,6 +172,8 @@ class Collective < ApplicationRecord
       repository_url: data['repositoryUrl'],
       social_links: data['socialLinks'],
       account_type: data['type'],
+      collective_created_at: data['createdAt'],
+      collective_updated_at: data['updatedAt'],
       last_synced_at: Time.now
     }
 

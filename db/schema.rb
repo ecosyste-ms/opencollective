@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_12_174936) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_14_163327) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_12_174936) do
     t.boolean "no_funding"
     t.boolean "no_license"
     t.string "host"
+    t.datetime "collective_created_at"
+    t.datetime "collective_updated_at"
     t.index ["slug"], name: "index_collectives_on_slug", unique: true
   end
 

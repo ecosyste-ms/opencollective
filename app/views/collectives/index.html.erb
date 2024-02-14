@@ -7,6 +7,8 @@
     <%= form.select :range, options_for_select([30, 90, 180, 360, 720], @range.to_i), {}, { onchange: 'this.form.submit()' } %>
   <% end %><br/>
 
+  <%= line_chart charts_data_collectives_path(chart: 'new_collectives', range: @range, period: @period), title: 'New Collectives' %>
+
   <%= line_chart charts_data_collectives_path(chart: 'donations_and_expenses', range: @range, period: @period) %>
   <%= line_chart charts_data_collectives_path(chart: 'unique_donors_and_spenders', range: @range, period: @period) %>
 

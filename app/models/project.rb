@@ -4,6 +4,7 @@ class Project < ApplicationRecord
   has_many :collectives, through: :collective_projects
   has_many :issues, dependent: :delete_all
   has_many :commits, dependent: :delete_all
+  has_many :tags, dependent: :delete_all
 
   validates :url, presence: true, uniqueness: { case_sensitive: false }
 
@@ -101,6 +102,7 @@ class Project < ApplicationRecord
     fetch_packages
     sync_issues
     sync_commits
+    sync_tags
     fetch_readme
     return if destroyed?
     update_column(:last_synced_at, Time.now) 
@@ -405,6 +407,36 @@ class Project < ApplicationRecord
         commit_attributes['files_changed'] = commit['stats']['files_changed']
         c.assign_attributes(commit_attributes)
         c.save(touch: false)
+      end
+
+      page += 1
+    end
+  end
+
+  def tags_api_url(page: 1)
+    "https://repos.ecosyste.ms/api/v1/hosts/#{repository['host']['name']}/repositories/#{repository['full_name']}/tags?page=#{page}"
+  end
+
+  def sync_tags
+    return unless repository.present?
+
+    page = 1
+    loop do
+      conn = Faraday.new(url: tags_api_url(page: page)) do |faraday|
+        faraday.response :follow_redirects
+        faraday.adapter Faraday.default_adapter
+      end
+      response = conn.get
+      return unless response.success?
+
+      tags_json = JSON.parse(response.body)
+      break if tags_json.empty? # Stop if there are no more tags
+
+      tags_json.each do |tag|
+        t = tags.find_or_create_by(name: tag['name'])
+        tag_attributes = tag.slice('sha', 'kind', 'published_at')
+        t.assign_attributes(tag_attributes)
+        t.save(touch: false)
       end
 
       page += 1

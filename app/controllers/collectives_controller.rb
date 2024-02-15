@@ -341,6 +341,26 @@ class CollectivesController < ApplicationController
     render json: data
   end
 
+  def tag_charts_data
+    scope = Tag.all
+
+    start_date = params[:start_date].presence || range.days.ago
+    end_date = params[:end_date].presence || Date.today
+
+    scope = scope.created_after(start_date) if start_date.present?
+    scope = scope.created_before(end_date) if end_date.present?
+
+    data = Rails.cache.fetch("tags_charts_data:#{params}", expires_in: 1.day) do
+      case params[:chart]
+      when 'tags'
+        data = scope.group_by_period(period, :published_at).count
+      end
+      data
+    end
+
+    render json: data
+  end
+
   def issue_charts_data
     scope = Issue.all
     

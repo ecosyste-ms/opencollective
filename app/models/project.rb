@@ -99,12 +99,14 @@ class Project < ApplicationRecord
     return if last_synced_at.present? && last_synced_at > 1.day.ago
     check_url
     fetch_repository
-    unless repository && repository['fork']
-      fetch_packages
-      sync_issues
-      sync_commits
-      sync_tags
+    fetch_packages
+    if repository && repository['fork'] && packages.length == 0
+      # Don't sync forks without packages
+    else
       fetch_readme
+      sync_tags
+      sync_issues
+      sync_commits      
     end
     return if destroyed?
     update_column(:last_synced_at, Time.now) 

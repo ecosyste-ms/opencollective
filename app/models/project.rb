@@ -373,6 +373,8 @@ class Project < ApplicationRecord
 
       page += 1
     end
+  rescue
+    puts "Error fetching issues for #{repository_url}"
   end
 
   def commits_api_url
@@ -415,6 +417,9 @@ class Project < ApplicationRecord
 
       page += 1
     end
+
+  rescue
+    puts "Error fetching commits for #{repository_url}"
   end
 
   def tags_api_url(page: 1)
@@ -445,6 +450,8 @@ class Project < ApplicationRecord
 
       page += 1
     end
+  rescue
+    puts "Error fetching tags for #{repository_url}"
   end
 
   def last_activity_at

@@ -49,8 +49,18 @@
       No transactions in this period.
     </p>
   <% end %>
-
+  
   <% if @collective.host == 'opensource' %>
+    <% if @collective.tags.count > 0 %>
+      <h2>Releases</h2>
+
+      <%= line_chart tag_chart_data_collective_path(@collective, chart: 'tags', period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: 'Releases' %>
+    <% else %>
+      <p>
+        No issues or pull requests found within this period.
+      </p>
+    <% end %>
+
     <% if @collective.issues.count > 0 %>
       <h2>Issues</h2>
 

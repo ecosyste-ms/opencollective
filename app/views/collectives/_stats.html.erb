@@ -154,3 +154,14 @@
     </div>
   </div>
 <% end %>
+
+<% if @collective.tags.any? %>
+  <div class='row'>
+    <div class='col-md-3'>
+      <!-- # releases -->
+      <% @releases = @collective.tags.this_period(@range).count %>
+      <% @releases_last_period = @collective.tags.last_period(@range).count %>
+      <%= render partial: 'stat', locals: {icon: 'tag', title: 'Releases', this_period: @releases, last_period: @releases_last_period} %>
+    </div>
+  </div>
+<% end %>

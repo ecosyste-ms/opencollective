@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     end
     member do
       get :chart_data
+      get :tag_chart_data
       get :commit_chart_data
     end
   end

@@ -372,6 +372,7 @@ class Project < ApplicationRecord
       end
 
       page += 1
+      break if page > 50 # Stop if there are too many issues
     end
   rescue
     puts "Error fetching issues for #{repository_url}"
@@ -402,7 +403,7 @@ class Project < ApplicationRecord
       return unless response.success?
 
       commits_json = JSON.parse(response.body)
-      break if commits_json.empty? # Stop if there are no more issues
+      break if commits_json.empty? # Stop if there are no more commits
 
       # TODO: Use bulk insert
       commits_json.each do |commit|
@@ -416,6 +417,7 @@ class Project < ApplicationRecord
       end
 
       page += 1
+      break if page > 50 # Stop if there are too many commits
     end
 
   rescue
@@ -449,6 +451,7 @@ class Project < ApplicationRecord
       end
 
       page += 1
+      break if page > 50 # Stop if there are too many tags
     end
   rescue
     puts "Error fetching tags for #{repository_url}"

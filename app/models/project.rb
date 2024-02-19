@@ -28,6 +28,8 @@ class Project < ApplicationRecord
 
   before_save :set_package_urls
 
+  counter_culture :collective, column_name: 'projects_count', execute_after_commit: true
+
   def related_dot_github_repository
     @related_dot_github_repository ||= collective.dot_github_repository
   end

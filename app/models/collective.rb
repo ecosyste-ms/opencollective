@@ -193,7 +193,7 @@ class Collective < ApplicationRecord
 
   def sync
     fetch_account_details
-    if account_type == 'COLLECTIVE'
+    if account_type == 'COLLECTIVE' && !duplicate?
       sync_transactions
       load_projects
       sync_owner
@@ -201,6 +201,10 @@ class Collective < ApplicationRecord
     end
   rescue
     puts "Error syncing #{slug}"
+  end
+
+  def duplicate?
+    !!slug.match(/\w+-\d+\z/)
   end
 
   def ping_owner

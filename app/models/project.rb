@@ -3,6 +3,7 @@ class Project < ApplicationRecord
   has_many :issues, dependent: :delete_all
   has_many :commits, dependent: :delete_all
   has_many :tags, dependent: :delete_all
+  has_many :packages, dependent: :delete_all
 
   belongs_to :collective
 
@@ -490,8 +491,12 @@ class Project < ApplicationRecord
       packages_json = JSON.parse(response.body)
       break if packages_json.empty? # Stop if there are no more packages
 
-      self.packages += packages_json
-      self.save
+      packages_json.each do |pkg|
+        p = packages.find_or_create_by(ecosystem: pkg['ecosystem'], name: pkg['name'])
+        p.purl = pkg['purl']
+        p.metadata = pkg.except('repo_metadata')
+        p.save(touch: false)
+      end
 
       page += 1
     end
@@ -500,6 +505,7 @@ class Project < ApplicationRecord
   end
 
   def packages_count
+    # TODO use counter cache instead
     return 0 unless packages.present?
     packages.length
   end

@@ -201,7 +201,7 @@ GEM
       octicons (= 19.8.0)
       railties
     packageurl-ruby (0.1.0)
-    pagy (7.0.1)
+    pagy (7.0.2)
     pg (1.5.5)
     pg_query (5.1.0)
       google-protobuf (>= 3.22.3)

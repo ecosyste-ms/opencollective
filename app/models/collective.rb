@@ -1,9 +1,8 @@
 class Collective < ApplicationRecord
   validates :slug, presence: true
 
-  has_many :collective_projects, dependent: :destroy
-  has_many :projects, through: :collective_projects
-  has_many :projects_with_repository, -> { with_repository }, through: :collective_projects, source: :project
+  has_many :projects, dependent: :destroy
+  has_many :projects_with_repository, -> { with_repository }, class_name: 'Project'
 
   has_many :issues, through: :projects
   has_many :commits, through: :projects

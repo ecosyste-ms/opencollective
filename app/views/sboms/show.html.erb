@@ -29,7 +29,7 @@
             <li>
               <% match = @sbom.find_project purl %>
               <% if match %>
-                <% collectives.add match.collectives.first %>
+                <% collectives.add match.collective %>
                 <%= link_to [purl.namespace, purl.name].compact.join('/'), project_path(match) %>
               <% else %>
                 <%= [purl.namespace, purl.name].compact.join('/') %>

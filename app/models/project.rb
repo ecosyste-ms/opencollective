@@ -1,12 +1,10 @@
 class Project < ApplicationRecord
 
-  has_many :collective_projects, dependent: :destroy
-  has_many :collectives, through: :collective_projects
   has_many :issues, dependent: :delete_all
   has_many :commits, dependent: :delete_all
   has_many :tags, dependent: :delete_all
 
-  belongs_to :collective, optional: true # TODO remove optional: true
+  belongs_to :collective
 
   validates :url, presence: true, uniqueness: { case_sensitive: false }
 

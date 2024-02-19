@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_15_141134) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_19_144101) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -112,6 +112,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_15_141134) do
     t.json "packages", default: []
     t.string "package_urls", default: [], array: true
     t.text "readme"
+    t.integer "collective_id"
+    t.index ["collective_id"], name: "index_projects_on_collective_id"
     t.index ["url"], name: "index_projects_on_url", unique: true
   end
 

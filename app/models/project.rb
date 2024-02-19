@@ -6,6 +6,8 @@ class Project < ApplicationRecord
   has_many :commits, dependent: :delete_all
   has_many :tags, dependent: :delete_all
 
+  belongs_to :collective, optional: true # TODO remove optional: true
+
   validates :url, presence: true, uniqueness: { case_sensitive: false }
 
   scope :active, -> { where("(repository ->> 'archived') = ?", 'false') }
@@ -27,10 +29,6 @@ class Project < ApplicationRecord
   scope :order_by_stars, -> { order(Arel.sql("(repository ->> 'stargazers_count')::int desc nulls last")) }
 
   before_save :set_package_urls
-
-  def collective
-    @collective ||= collectives.first
-  end
 
   def related_dot_github_repository
     @related_dot_github_repository ||= collective.dot_github_repository

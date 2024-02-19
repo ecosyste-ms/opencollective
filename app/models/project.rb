@@ -101,8 +101,8 @@ class Project < ApplicationRecord
     check_url
     fetch_repository
     fetch_packages
-    if repository && repository['fork'] && packages.length == 0
-      # Don't sync forks without packages
+    if repository && uninteresting_fork?
+      # Don't sync tags, commits or issues for uninteresting forks
     else
       fetch_readme
       sync_tags
@@ -112,6 +112,15 @@ class Project < ApplicationRecord
     return if destroyed?
     update_column(:last_synced_at, Time.now) 
     ping
+  end
+
+  def uninteresting_fork?
+    return false unless repository.present?
+    return false unless repository['fork']
+    return false if packages.present?
+    return false if repository['archived']
+    return false if repository['stargazers_count'] > 10
+    true
   end
 
   def sync_async

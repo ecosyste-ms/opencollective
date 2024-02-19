@@ -204,7 +204,7 @@ class Collective < ApplicationRecord
   end
 
   def duplicate?
-    !!slug.match(/\w+-\d+\z/)
+    !!slug.match(/\w+-\d+\z/) && Collective.where(slug: slug.gsub(/-\d+\z/, '')).exists?
   end
 
   def ping_owner

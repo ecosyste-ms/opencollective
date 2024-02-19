@@ -10,22 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_19_144101) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_19_151840) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "collective_projects", force: :cascade do |t|
-    t.integer "collective_id"
-    t.integer "project_id"
-    t.string "name"
-    t.string "description"
-    t.string "category"
-    t.string "sub_category"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["collective_id"], name: "index_collective_projects_on_collective_id"
-    t.index ["project_id"], name: "index_collective_projects_on_project_id"
-  end
 
   create_table "collectives", force: :cascade do |t|
     t.string "uuid"

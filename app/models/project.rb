@@ -20,8 +20,8 @@ class Project < ApplicationRecord
   scope :keyword, ->(keyword) { where("keywords @> ARRAY[?]::varchar[]", keyword) }
   scope :with_repository, -> { where.not(repository: nil) }
 
-  scope :with_packages, -> { where('length(packages::text) > 2') } # TODO: use packages_count
-  scope :without_packages, -> { where('length(packages::text) <= 2') } # TODO use packages_count
+  scope :with_packages, -> { where('packages_count > 0') }
+  scope :without_packages, -> { where(packages_count: 0) }
 
   scope :package_url, ->(package_url) { where("package_urls @> ARRAY[?]::varchar[]", Project.purl_without_version(package_url)) }
   scope :package_urls, ->(package_urls) { where("package_urls && ARRAY[?]::varchar[]", package_urls.map{|p| Project.purl_without_version(p) }) }

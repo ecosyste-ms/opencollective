@@ -308,9 +308,8 @@ class Collective < ApplicationRecord
     if project_org?
       load_org_projects
     else
-      project = Project.find_or_create_by(url: project_url)
+      project = projects.find_or_create_by(url: project_url)
       project.sync_async if project.last_synced_at.nil?
-      collective_project = collective_projects.find_or_create_by(project_id: project.id)
       load_org_projects
     end
   rescue
@@ -331,7 +330,6 @@ class Collective < ApplicationRecord
         puts url
         project = projects.find_or_create_by(url: url)
         project.sync_async unless project.last_synced_at.present?
-        collective_project = collective_projects.find_or_create_by(project_id: project.id)
       end
 
       page += 1

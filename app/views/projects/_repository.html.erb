@@ -113,10 +113,8 @@
 
     <h3>Collective</h3>
     <ul>
-      <% @project.collective_projects.includes(:collective).each do |collective_project| %>
-        <li>
-          <%= link_to collective_project.collective, collective_path(collective_project.collective) %>
-        </li>
-      <% end %>
+      <li>
+        <%= link_to @project.collective, collective_path(@project.collective) %>
+      </li>
     </ul>
 <% end %>

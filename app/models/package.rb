@@ -1,6 +1,8 @@
 class Package < ApplicationRecord
   belongs_to :project
 
+  counter_culture :project, column_name: 'packages_count', execute_after_commit: true
+
   validates :name, presence: true
   validates :ecosystem, presence: true
 
@@ -21,15 +23,15 @@ class Package < ApplicationRecord
   end
 
   def downloads
-    metadata['downloads']
+    metadata['downloads'] || 0
   end
 
   def dependents
-    metadata['dependents']
+    metadata['dependents'] || 0
   end
 
   def dependent_repositories
-    metadata['dependent_repositories']
+    metadata['dependent_repositories'] || 0
   end
 
   def licenses

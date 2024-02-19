@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_19_154554) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_19_162003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -112,6 +112,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_154554) do
     t.string "package_urls", default: [], array: true
     t.text "readme"
     t.integer "collective_id"
+    t.integer "packages_count"
     t.index ["collective_id"], name: "index_projects_on_collective_id"
     t.index ["url"], name: "index_projects_on_url", unique: true
   end

@@ -19,8 +19,9 @@ class Project < ApplicationRecord
   scope :owner, ->(owner) { where("(repository ->> 'owner') = ?", owner) }
   scope :keyword, ->(keyword) { where("keywords @> ARRAY[?]::varchar[]", keyword) }
   scope :with_repository, -> { where.not(repository: nil) }
-  scope :with_packages, -> { where('length(packages::text) > 2') }
-  scope :without_packages, -> { where('length(packages::text) <= 2') }
+
+  scope :with_packages, -> { where('length(packages::text) > 2') } # TODO: use packages_count
+  scope :without_packages, -> { where('length(packages::text) <= 2') } # TODO use packages_count
 
   scope :package_url, ->(package_url) { where("package_urls @> ARRAY[?]::varchar[]", Project.purl_without_version(package_url)) }
   scope :package_urls, ->(package_urls) { where("package_urls && ARRAY[?]::varchar[]", package_urls.map{|p| Project.purl_without_version(p) }) }
@@ -92,7 +93,7 @@ class Project < ApplicationRecord
   end
 
   def all_package_urls
-    ([project_purl] + packages.map{|p| p['purl'] }).compact
+    ([project_purl] + packages.map(&:purl)).compact
   end
 
   def sync
@@ -116,7 +117,7 @@ class Project < ApplicationRecord
   def uninteresting_fork?
     return false unless repository.present?
     return false unless repository['fork']
-    return false if packages.present?
+    return false unless packages_count.zero?
     return false if repository['archived']
     return false if repository['stargazers_count'] > 10
     true
@@ -172,9 +173,9 @@ class Project < ApplicationRecord
   end
 
   def packages_ping_urls
-    return [] unless packages.present?
+    return [] if packages_count.zero?
     packages.map do |package|
-      "https://packages.ecosyste.ms/api/v1/registries/#{package['registry']['name']}/packages/#{package['name']}/ping"
+      "https://packages.ecosyste.ms/api/v1/registries/#{package.registry_name}/packages/#{package.name}/ping"
     end
   end
 
@@ -214,7 +215,7 @@ class Project < ApplicationRecord
   def combined_keywords
     keywords = []
     keywords += repository["topics"] if repository.present?
-    keywords += packages.map{|p| p["keywords"]}.flatten if packages.present?
+    keywords += packages.map(&:keywords).flatten unless packages_count.zero?
     keywords.uniq.reject(&:blank?)
   end
   
@@ -305,8 +306,8 @@ class Project < ApplicationRecord
   end
 
   def package_funding_links
-    return [] unless packages.present?
-    packages.map{|pkg| pkg['metadata']['funding'] }.compact.map{|f| f.is_a?(Hash) ? f['url'] : f }.flatten.compact
+    return [] if packages_count.zero?
+    packages.map(&:funding).compact.map{|f| f.is_a?(Hash) ? f['url'] : f }.flatten.compact
   end
 
   def owner_funding_links
@@ -506,28 +507,27 @@ class Project < ApplicationRecord
 
   def packages_count
     # TODO use counter cache instead
-    return 0 unless packages.present?
-    packages.length
+    packages.count
   end
 
   def monthly_downloads
-    return 0 unless packages.present?
-    packages.select{|p| p['downloads_period'] == 'last-month' }.map{|p| p["downloads"] || 0 }.sum
+    return 0 if packages_count.zero?
+    packages.select{|p| p.downloads_period == 'last-month' }.map{|p| p.downloads || 0 }.sum
   end
 
   def downloads
-    return 0 unless packages.present?
-    packages.map{|p| p["downloads"] || 0 }.sum
+    return 0 if packages_count.zero?
+    packages.map{|p| p.downloads || 0 }.sum
   end
 
   def dependent_packages
-    return 0 unless packages.present?
-    packages.select{|p| p['dependents'] }.map{|p| p["dependents"] || 0 }.sum
+    return 0 if packages_count.zero?
+    packages.select{|p| p.dependents }.map{|p| p.dependents || 0 }.sum
   end
 
   def dependent_repositories
-    return 0 unless packages.present?
-    packages.select{|p| p['dependent_repositories'] }.map{|p| p["dependent_repositories"] || 0 }.sum
+    return 0 if packages_count.zero?
+    packages.select{|p| p.dependent_repositories }.map{|p| p.dependent_repositories || 0 }.sum
   end
 
   def dependents
@@ -535,8 +535,8 @@ class Project < ApplicationRecord
   end
 
   def packages_licenses
-    return [] unless packages.present?
-    packages.map{|p| p['licenses'] }.compact
+    return [] if packages_count.zero?
+    packages.map{|p| p.licenses }.compact
   end
 
   def purl_kind
@@ -555,7 +555,7 @@ class Project < ApplicationRecord
 
   def purls
     return if packages.blank?
-    @purls ||= packages.map{|p| PackageURL.parse(p["purl"]) }
+    @purls ||= packages.map{|p| PackageURL.parse(p.purl) }
   end
 
   def self.find_by_purl(purl)
@@ -666,7 +666,7 @@ class Project < ApplicationRecord
   end
 
   def package_badge
-    return unless packages.present?
+    return if packages_count.zero?
     {
       label: 'Package',
       class: 'info'

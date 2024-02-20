@@ -6,6 +6,13 @@ class Package < ApplicationRecord
   validates :name, presence: true
   validates :ecosystem, presence: true
 
+  scope :package_url, ->(package_url) { where(purl: Package.purl_without_version(package_url)) }
+  scope :package_urls, ->(package_urls) { where(purl: package_urls.map{|p| Package.purl_without_version(p) }) }
+
+  def self.purl_without_version(purl)
+    PackageURL.new(**PackageURL.parse(purl.to_s).to_h.except(:version, :scheme)).to_s
+  end
+
   def registry_name
     metadata["registry"]["name"]
   end

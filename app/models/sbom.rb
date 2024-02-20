@@ -31,12 +31,15 @@ class Sbom < ApplicationRecord
     artifacts.map { |a| PackageURL.parse a["purl"] }
   end
 
+  def find_packages
+    @packages ||= Package.includes(project: :collective).package_urls(packageurls.map(&:to_s))
+  end
+
   def find_projects
-    @projects ||= Package.includes(project: :collective).package_urls(packageurls.map(&:to_s)).map(&:project)
+    @projects ||= @packages.map(&:project)
   end
 
   def find_project(purl)
-    # TODO refactor this to avoid using package_urls method on project
-    find_projects.select { |p| p.package_urls.include? Project.purl_without_version(purl) }.first
+    find_packages.select { |p| p.purl == Project.purl_without_version(purl) }.first&.project
   end
 end

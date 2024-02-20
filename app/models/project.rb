@@ -23,12 +23,7 @@ class Project < ApplicationRecord
   scope :with_packages, -> { where('packages_count > 0') }
   scope :without_packages, -> { where(packages_count: 0) }
 
-  scope :package_url, ->(package_url) { where("package_urls @> ARRAY[?]::varchar[]", Project.purl_without_version(package_url)) }
-  scope :package_urls, ->(package_urls) { where("package_urls && ARRAY[?]::varchar[]", package_urls.map{|p| Project.purl_without_version(p) }) }
-
   scope :order_by_stars, -> { order(Arel.sql("(repository ->> 'stargazers_count')::int desc nulls last")) }
-
-  before_save :set_package_urls
 
   counter_culture :collective, column_name: 'projects_count', execute_after_commit: true
 
@@ -86,14 +81,6 @@ class Project < ApplicationRecord
   def first_created
     return unless repository.present?
     Time.parse(repository['created_at'])
-  end
-
-  def set_package_urls
-    self.package_urls = all_package_urls
-  end
-
-  def all_package_urls
-    ([project_purl] + packages.map(&:purl)).compact
   end
 
   def sync

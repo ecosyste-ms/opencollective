@@ -43,14 +43,12 @@ Rails.application.routes.draw do
   resources :collectives do
     member do
       get :funders
-      get :chart_data
       get :issue_chart_data
       get :commit_chart_data
       get :tag_chart_data
     end
     collection do
       get :batch
-      get :batch_chart_data
       get :batch_issue_chart_data
       get :charts_data
       get :issue_charts_data
@@ -59,6 +57,8 @@ Rails.application.routes.draw do
     end
   end
   
+  get 'charts/transactions', to: 'charts#transactions', as: :transactions_chart
+
   resources :sboms
 
   resources :exports, only: [:index], path: 'open-data'

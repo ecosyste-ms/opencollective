@@ -38,11 +38,11 @@
 
   <% if @transactions %>
 
-    <%= line_chart chart_data_collective_path(chart: 'all_transactions', period: @period, range: @range), title: 'All Transactions' %>
-    <%= line_chart chart_data_collective_path(chart: 'expenses', period: @period, range: @range), title: 'Expenses' %>
-    <%= line_chart chart_data_collective_path(chart: 'donations', period: @period, range: @range), title: 'Donations' %>
-    <%= line_chart chart_data_collective_path(chart: 'unique_donors', period: @period, range: @range), title: 'Donors' %>
-    <%= line_chart chart_data_collective_path(chart: 'unique_expenses', period: @period, range: @range), title: 'Spenders' %>
+    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'all_transactions', period: @period, range: @range), title: 'All Transactions' %>
+    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'expenses', period: @period, range: @range), title: 'Expenses' %>
+    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'donations', period: @period, range: @range), title: 'Donations' %>
+    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'unique_donors', period: @period, range: @range), title: 'Donors' %>
+    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'unique_expenses', period: @period, range: @range), title: 'Spenders' %>
 
   <% else %>
     <p>

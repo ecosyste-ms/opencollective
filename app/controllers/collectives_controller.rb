@@ -33,16 +33,6 @@ class CollectivesController < ApplicationController
     @transactions = Transaction.where(collective_id: @collectives.pluck(:id)).created_after(@start_date).any?
   end
 
-  def batch_chart_data
-    @slugs = params[:slugs].try(:split, ',')
-    @collectives = Collective.opensource.where(slug: @slugs).limit(20)
-    scope = Transaction.where(collective_id: @collectives.pluck(:id))
-
-    data = Collective.transaction_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
-    
-    render json: data
-  end
-
   def batch_issue_chart_data
     @slugs = params[:slugs].try(:split, ',')
     @collectives = Collective.opensource.where(slug: @slugs).limit(20)
@@ -74,27 +64,6 @@ class CollectivesController < ApplicationController
   def funders
     @collective = Collective.find_by_slug!(params[:id])
     @funders = @collective.funders
-  end
-
-  def chart_data
-    @collective = Collective.find_by_slug!(params[:id])
-    
-    scope = @collective.transactions
-
-    data = Collective.transaction_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
-    
-    render json: data
-  end
-
-  def charts_data
-    scope = Transaction.opensource
-
-    start_date = params[:start_date].presence || range.days.ago
-    end_date = params[:end_date].presence || Date.today 
-
-    data = Collective.transaction_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
-    
-    render json: data
   end
 
   def issue_chart_data

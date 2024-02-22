@@ -10,7 +10,7 @@ module Charts
       scope = scope.created_after(start_date) if start_date.present?
       scope = scope.created_before(end_date) if end_date.present?
 
-      Rails.cache.fetch("transaction_chart_data:#{kind}:#{period}:#{range}:#{start_date}:#{end_date}", expires_in: 1.day) do
+      #Rails.cache.fetch("transaction_chart_data:#{kind}:#{period}:#{range}:#{start_date}:#{end_date}", expires_in: 1.day) do
         case kind
         when 'all_transactions'
           data = scope.group_by_period(period, :created_at).sum(:net_amount)
@@ -40,7 +40,7 @@ module Charts
           data = scope.group_by_period(period, :collective_created_at).count
         end
         data
-      end
+      #end
     end
 
     def issue_chart_data(scope, kind:, period:, range:, start_date:, end_date:)
@@ -50,7 +50,7 @@ module Charts
       scope = scope.created_after(start_date) if start_date.present?
       scope = scope.created_before(end_date) if end_date.present?
       
-      data = Rails.cache.fetch("issue_chart_data:#{kind}:#{period}:#{range}:#{start_date}:#{end_date}", expires_in: 1.day) do
+      #data = Rails.cache.fetch("issue_chart_data:#{kind}:#{period}:#{range}:#{start_date}:#{end_date}", expires_in: 1.day) do
         case kind
         when 'issues_opened'
           data = scope.issue.group_by_period(period, :created_at).count
@@ -91,7 +91,7 @@ module Charts
         # Number of new issue authors
         # Number of new pull request authors
         data
-      end
+      #end
     end
   end
 end

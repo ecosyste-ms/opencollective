@@ -25,4 +25,17 @@ class ChartsController < ApplicationController
 
     render json: Collective.issue_chart_data(@issues, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
   end
+
+  def commits
+    if params[:collective_slugs].present?
+      @collectives = Collective.where(slug: params[:collective_slugs].split(',')).limit(20)
+      @commits = Commit.where(project_id: Project.where(collective: @collectives).pluck(:id))
+    elsif params[:project_ids].present?
+      @commits = Commit.where(project_id: params[:project_ids].split(','))
+    else
+      @commits = Commit.all
+    end
+
+    render json: Collective.commit_chart_data(@commits, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
+  end
 end

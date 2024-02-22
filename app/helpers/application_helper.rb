@@ -29,13 +29,13 @@ module ApplicationHelper
 
   def render_issues_chart(name, max: @max, ytitle: nil)
     content_tag :div, class: 'chart-container py-4 my-4' do
-      line_chart issues_chart_path(project_ids: @project, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
+      line_chart issues_chart_path(project_ids: @project.id, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
     end
   end
 
   def render_commits_chart(name, max: @max, ytitle: nil)
     content_tag :div, class: 'chart-container py-4 my-4' do
-      line_chart commit_chart_data_project_path(@project, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
+      line_chart commits_chart_path(project_ids: @project, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
     end
   end
 
@@ -47,7 +47,7 @@ module ApplicationHelper
 
   def render_collective_commits_chart(name, max: @max, ytitle: nil)
     content_tag :div, class: 'chart-container py-4 my-4' do
-      line_chart commit_chart_data_collective_path(@collective, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
+      line_chart commits_chart_path(collective_slugs: @collective.slug, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
     end
   end
 

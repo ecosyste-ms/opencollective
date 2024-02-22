@@ -16,6 +16,9 @@
   <%= line_chart issues_chart_path(chart: 'issue_authors', range: @range, period: @period), title: 'Issue Authors' %>
   <%= line_chart issues_chart_path(chart: 'pull_request_average_time_to_merge', range: @range, period: @period), title: 'Average time to merge pull requests', ytitle: 'Days' %>
 
+  <%= line_chart commits_chart_path(chart: 'commits', range: @range, period: @period), title: 'Commits' %>
+  <%= line_chart commits_chart_path(chart: 'commit_authors', range: @range, period: @period), title: 'Commit Authors' %>
+
   <%= line_chart transactions_chart_path(chart: 'new_collectives', range: @range, period: @period), title: 'New Collectives' %>
 
   <div class="row my-5">

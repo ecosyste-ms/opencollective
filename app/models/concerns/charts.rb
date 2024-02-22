@@ -93,5 +93,27 @@ module Charts
         data
       #end
     end
+
+    def commit_chart_data(scope, kind:, period:, range:, start_date:, end_date:)
+      start_date = start_date.presence || range.days.ago
+      end_date = end_date.presence || Date.today 
+
+      scope = scope.created_after(start_date) if start_date.present?
+      scope = scope.created_before(end_date) if end_date.present?
+      
+      #data = Rails.cache.fetch("commit_chart_data:#{kind}:#{period}:#{range}:#{start_date}:#{end_date}", expires_in: 1.day) do
+        case kind
+        when 'commits'
+          data = scope.group_by_period(period, :timestamp).count
+        when 'merge_commits'
+          data = scope.merges.group_by_period(period, :timestamp).count
+        when 'commit_authors'
+          data = scope.group_by_period(period, :timestamp).distinct.count(:author)
+        when 'commit_committers'
+          data = scope.group_by_period(period, :timestamp).distinct.count(:committer)
+        end
+        data
+      #end
+    end
   end
 end

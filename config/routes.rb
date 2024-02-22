@@ -33,7 +33,6 @@ Rails.application.routes.draw do
     end
     member do
       get :tag_chart_data
-      get :commit_chart_data
     end
   end
 
@@ -42,19 +41,18 @@ Rails.application.routes.draw do
   resources :collectives do
     member do
       get :funders
-      get :commit_chart_data
       get :tag_chart_data
     end
     collection do
       get :batch
       get :charts_data
       get :tag_charts_data
-      # get :commit_charts_data
     end
   end
   
   get 'charts/transactions', to: 'charts#transactions', as: :transactions_chart
   get 'charts/issues', to: 'charts#issues', as: :issues_chart
+  get 'charts/commits', to: 'charts#commits', as: :commits_chart
 
   resources :sboms
 

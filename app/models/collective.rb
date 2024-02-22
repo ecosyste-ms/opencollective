@@ -1,4 +1,6 @@
 class Collective < ApplicationRecord
+  include Charts
+
   validates :slug, presence: true
 
   has_many :projects, dependent: :destroy

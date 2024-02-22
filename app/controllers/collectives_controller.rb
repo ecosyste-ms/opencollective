@@ -27,7 +27,7 @@ class CollectivesController < ApplicationController
     @start_date = params[:start_date].presence || range.days.ago
     @end_date = params[:end_date].presence || Date.today 
 
-    projects_scope = Project.joins(:collectives).where('collectives.id in (?)', @collectives.pluck(:id))
+    projects_scope = Project.joins(:collective).where('collectives.id in (?)', @collectives.pluck(:id))
 
     @pagy, @projects = pagy(projects_scope.order_by_stars)
     @transactions = Transaction.where(collective_id: @collectives.pluck(:id)).created_after(@start_date).any?
@@ -38,39 +38,7 @@ class CollectivesController < ApplicationController
     @collectives = Collective.opensource.where(slug: @slugs).limit(20)
     scope = Transaction.where(collective_id: @collectives.pluck(:id))
 
-    period = (params[:period].presence || 'month').to_sym
-
-    start_date = params[:start_date].presence || range.days.ago
-    end_date = params[:end_date].presence || Date.today 
-
-    scope = scope.created_after(start_date) if start_date.present?
-    scope = scope.created_before(end_date) if end_date.present?
-
-    data = Rails.cache.fetch("charts_data:#{params}", expires_in: 1.day) do
-      case params[:chart]
-      when 'all_transactions'
-        data = scope.group_by_period(period, :created_at).sum(:net_amount)
-      when 'expenses'
-        data = scope.expenses.group_by_period(period, :created_at).sum(:net_amount).map{|k,v| [k, -v]}.to_h
-      when 'donations'
-        data = scope.donations.group_by_period(period, :created_at).sum(:net_amount)
-      when 'unique_donors'
-        data = scope.donations.group_by_period(period, :created_at).distinct.count(:account)
-      when 'unique_expenses'
-        data = scope.expenses.group_by_period(period, :created_at).distinct.count(:account)
-      when 'donations_and_expenses'
-        data = [
-          {name: 'Donations', data: scope.donations.group_by_period(period, :created_at).sum(:net_amount)},
-          {name: 'Expenses', data: scope.expenses.group_by_period(period, :created_at).sum(:net_amount).map{|k,v| [k, -v]}},
-          ]
-      when 'unique_donors_and_spenders'
-        data = [
-          {name: 'Donors', data: scope.donations.group_by_period(period, :created_at).distinct.count(:account)},
-          {name: 'Spenders', data: scope.expenses.group_by_period(period, :created_at).distinct.count(:account)}
-          ]
-      end
-      data
-    end
+    data = Collective.transaction_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
     
     render json: data
   end
@@ -78,55 +46,13 @@ class CollectivesController < ApplicationController
   def batch_issue_chart_data
     @slugs = params[:slugs].try(:split, ',')
     @collectives = Collective.opensource.where(slug: @slugs).limit(20)
-    project_ids =Project.joins(:collectives).where('collectives.id in (?)', @collectives.pluck(:id)).pluck(:id)
+    project_ids = Project.joins(:collective).where('collectives.id in (?)', @collectives.pluck(:id)).pluck(:id)
     scope = Issue.where(project_id: project_ids)
-    
-    period = (params[:period].presence || 'month').to_sym
 
-    start_date = params[:start_date].presence || range.days.ago
-    end_date = params[:end_date].presence || Date.today 
+    scope = scope.human if params[:exclude_bots] == 'true'
+    scope = scope.bot if params[:only_bots] == 'true'
 
-    scope = scope.created_after(start_date) if start_date.present?
-    scope = scope.created_before(end_date) if end_date.present?
-
-    if params[:exclude_bots] == 'true'
-      scope = scope.human
-    end
-
-    if params[:only_bots] == 'true'
-      scope = scope.bot
-    end
-
-    data = Rails.cache.fetch("issue_charts_data:#{params}", expires_in: 1.day) do
-      case params[:chart]
-      when 'issues_opened'
-        data = scope.issue.group_by_period(period, :created_at).count
-      when 'issues_closed'
-        data = scope.issue.closed.group_by_period(period, :closed_at).count
-      when 'issue_authors'
-        data = scope.issue.group_by_period(period, :created_at).distinct.count(:user)
-      when 'issue_average_time_to_close'
-        data = scope.issue.closed.group_by_period(period, :closed_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      when 'pull_requests_opened'
-        data = scope.pull_request.group_by_period(period, :created_at).count
-      when 'pull_requests_closed'
-        data = scope.pull_request.group_by_period(period, :closed_at).count
-      when 'pull_requests_merged'
-        data = scope.pull_request.merged.group_by_period(period, :merged_at).count
-      when 'pull_requests_not_merged'
-        data = scope.pull_request.not_merged.group_by_period(period, :closed_at).count
-      when 'pull_request_authors'
-        data = scope.pull_request.group_by_period(period, :created_at).distinct.count(:user)
-      when 'pull_request_average_time_to_close'
-        data = scope.pull_request.closed.group_by_period(period, :closed_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      when 'pull_request_average_time_to_merge'
-        data = scope.pull_request.merged.group_by_period(period, :merged_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      end
-      data
-    end
+    data = Collective.issue_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
 
     render json: data
   end
@@ -153,29 +79,9 @@ class CollectivesController < ApplicationController
   def chart_data
     @collective = Collective.find_by_slug!(params[:id])
     
-    start_date = params[:start_date].presence || range.days.ago
-    end_date = params[:end_date].presence || Date.today 
-
     scope = @collective.transactions
 
-    scope = scope.created_after(start_date) if start_date.present?
-    scope = scope.created_before(end_date) if end_date.present?
-
-    data = Rails.cache.fetch("chart_data:#{params}", expires_in: 1.day) do
-      case params[:chart]
-      when 'all_transactions'
-        data = scope.group_by_period(period, :created_at).sum(:net_amount)
-      when 'expenses'
-        data = scope.expenses.group_by_period(period, :created_at).sum(:net_amount).map{|k,v| [k, -v]}.to_h
-      when 'donations'
-        data = scope.donations.group_by_period(period, :created_at).sum(:net_amount)
-      when 'unique_donors'
-        data = scope.donations.group_by_period(period, :created_at).distinct.count(:account)
-      when 'unique_expenses'
-        data = scope.expenses.group_by_period(period, :created_at).distinct.count(:account)
-      end
-      data
-    end
+    data = Collective.transaction_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
     
     render json: data
   end
@@ -183,45 +89,10 @@ class CollectivesController < ApplicationController
   def charts_data
     scope = Transaction.opensource
 
-    period = (params[:period].presence || 'month').to_sym
-
     start_date = params[:start_date].presence || range.days.ago
     end_date = params[:end_date].presence || Date.today 
 
-    scope = scope.created_after(start_date) if start_date.present?
-    scope = scope.created_before(end_date) if end_date.present?
-
-    data = Rails.cache.fetch("charts_data:#{params}", expires_in: 1.day) do
-      case params[:chart]
-      when 'all_transactions'
-        data = scope.group_by_period(period, :created_at).sum(:net_amount)
-      when 'expenses'
-        data = scope.expenses.group_by_period(period, :created_at).sum(:net_amount).map{|k,v| [k, -v]}.to_h
-      when 'donations'
-        data = scope.donations.group_by_period(period, :created_at).sum(:net_amount)
-      when 'unique_donors'
-        data = scope.donations.group_by_period(period, :created_at).distinct.count(:account)
-      when 'unique_expenses'
-        data = scope.expenses.group_by_period(period, :created_at).distinct.count(:account)
-      when 'donations_and_expenses'
-        data = [
-          {name: 'Donations', data: scope.donations.group_by_period(period, :created_at).sum(:net_amount)},
-          {name: 'Expenses', data: scope.expenses.group_by_period(period, :created_at).sum(:net_amount).map{|k,v| [k, -v]}},
-          ]
-      when 'unique_donors_and_spenders'
-        data = [
-          {name: 'Donors', data: scope.donations.group_by_period(period, :created_at).distinct.count(:account)},
-          {name: 'Spenders', data: scope.expenses.group_by_period(period, :created_at).distinct.count(:account)}
-          ]
-      when 'new_collectives'
-        scope = Collective.opensource
-        scope = scope.where('collective_created_at >= ?', start_date) if start_date.present?
-        scope = scope.where('collective_created_at <= ?', end_date) if end_date.present?
-
-        data = scope.group_by_period(period, :collective_created_at).count
-      end
-      data
-    end
+    data = Collective.transaction_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
     
     render json: data
   end
@@ -229,64 +100,12 @@ class CollectivesController < ApplicationController
   def issue_chart_data
     @collective = Collective.find_by_slug!(params[:id])
     
-    start_date = params[:start_date].presence || range.days.ago
-    end_date = params[:end_date].presence || Date.today 
-
     scope = @collective.issues
 
-    scope = scope.created_after(start_date) if start_date.present?
-    scope = scope.created_before(end_date) if end_date.present?
+    scope = scope.human if params[:exclude_bots] == 'true'
+    scope = scope.bot if params[:only_bots] == 'true'
 
-    if params[:exclude_bots] == 'true'
-      scope = scope.human
-    end
-
-    if params[:only_bots] == 'true'
-      scope = scope.bot
-    end
-
-    data = Rails.cache.fetch("issue_chart_data:#{params}", expires_in: 1.day) do
-      case params[:chart]
-      when 'issues_opened'
-        data = scope.issue.group_by_period(period, :created_at).count
-      when 'issues_closed'
-        data = scope.issue.closed.group_by_period(period, :closed_at).count
-      when 'issue_authors'
-        data = scope.issue.group_by_period(period, :created_at).distinct.count(:user)
-      when 'issue_average_time_to_close'
-        data = scope.issue.closed.group_by_period(period, :closed_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      when 'pull_requests_opened'
-        data = scope.pull_request.group_by_period(period, :created_at).count
-      when 'pull_requests_closed'
-        data = scope.pull_request.group_by_period(period, :closed_at).count
-      when 'pull_requests_merged'
-        data = scope.pull_request.merged.group_by_period(period, :merged_at).count
-      when 'pull_requests_not_merged'
-        data = scope.pull_request.not_merged.group_by_period(period, :closed_at).count
-      when 'pull_request_authors'
-        data = scope.pull_request.group_by_period(period, :created_at).distinct.count(:user)
-      when 'pull_request_average_time_to_close'
-        data = scope.pull_request.closed.group_by_period(period, :closed_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      when 'pull_request_average_time_to_merge'
-        data = scope.pull_request.merged.group_by_period(period, :merged_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      when 'maintainers'
-        data = scope.maintainers.group_by_period(period, :created_at).distinct.count(:user)
-      end
-      data
-    end
-    
-    ## TODO no data for these yet
-    # Number of issue comments
-    # Average number of comments per issue
-    # Number of pull request comments
-    # Average number of comments per pull request
-    # Average time to first issue response
-    # Average time to first pull request response
-    # Number of new issue authors
-    # Number of new pull request authors
+    data = Collective.issue_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
 
     render json: data
   end
@@ -363,55 +182,11 @@ class CollectivesController < ApplicationController
 
   def issue_charts_data
     scope = Issue.all
-    
-    period = (params[:period].presence || 'month').to_sym
 
-    start_date = params[:start_date].presence || range.days.ago
-    end_date = params[:end_date].presence || Date.today 
+    scope = scope.human if params[:exclude_bots] == 'true'
+    scope = scope.bot if params[:only_bots] == 'true'
 
-    scope = scope.created_after(start_date) if start_date.present?
-    scope = scope.created_before(end_date) if end_date.present?
-
-    if params[:exclude_bots] == 'true'
-      scope = scope.human
-    end
-
-    if params[:only_bots] == 'true'
-      scope = scope.bot
-    end
-
-    data = Rails.cache.fetch("issue_charts_data:#{params}", expires_in: 1.day) do
-      case params[:chart]
-      when 'issues_opened'
-        data = scope.issue.group_by_period(period, :created_at).count
-      when 'issues_closed'
-        data = scope.issue.closed.group_by_period(period, :closed_at).count
-      when 'issue_authors'
-        data = scope.issue.group_by_period(period, :created_at).distinct.count(:user)
-      when 'issue_average_time_to_close'
-        data = scope.issue.closed.group_by_period(period, :closed_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      when 'pull_requests_opened'
-        data = scope.pull_request.group_by_period(period, :created_at).count
-      when 'pull_requests_closed'
-        data = scope.pull_request.group_by_period(period, :closed_at).count
-      when 'pull_requests_merged'
-        data = scope.pull_request.merged.group_by_period(period, :merged_at).count
-      when 'pull_requests_not_merged'
-        data = scope.pull_request.not_merged.group_by_period(period, :closed_at).count
-      when 'pull_request_authors'
-        data = scope.pull_request.group_by_period(period, :created_at).distinct.count(:user)
-      when 'pull_request_average_time_to_close'
-        data = scope.pull_request.closed.group_by_period(period, :closed_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      when 'pull_request_average_time_to_merge'
-        data = scope.pull_request.merged.group_by_period(period, :merged_at).average(:time_to_close)
-        data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
-      when 'maintainers'
-        data = scope.maintainers.group_by_period(period, :created_at).distinct.count(:user)
-      end
-      data
-    end
+    data = Collective.issue_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
 
     render json: data
   end

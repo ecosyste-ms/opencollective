@@ -33,20 +33,6 @@ class CollectivesController < ApplicationController
     @transactions = Transaction.where(collective_id: @collectives.pluck(:id)).created_after(@start_date).any?
   end
 
-  def batch_issue_chart_data
-    @slugs = params[:slugs].try(:split, ',')
-    @collectives = Collective.opensource.where(slug: @slugs).limit(20)
-    project_ids = Project.joins(:collective).where('collectives.id in (?)', @collectives.pluck(:id)).pluck(:id)
-    scope = Issue.where(project_id: project_ids)
-
-    scope = scope.human if params[:exclude_bots] == 'true'
-    scope = scope.bot if params[:only_bots] == 'true'
-
-    data = Collective.issue_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
-
-    render json: data
-  end
-
   def show
     @collective = Collective.find_by_slug!(params[:id])
     @range = range
@@ -64,19 +50,6 @@ class CollectivesController < ApplicationController
   def funders
     @collective = Collective.find_by_slug!(params[:id])
     @funders = @collective.funders
-  end
-
-  def issue_chart_data
-    @collective = Collective.find_by_slug!(params[:id])
-    
-    scope = @collective.issues
-
-    scope = scope.human if params[:exclude_bots] == 'true'
-    scope = scope.bot if params[:only_bots] == 'true'
-
-    data = Collective.issue_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
-
-    render json: data
   end
 
   def commit_chart_data
@@ -145,17 +118,6 @@ class CollectivesController < ApplicationController
       end
       data
     end
-
-    render json: data
-  end
-
-  def issue_charts_data
-    scope = Issue.all
-
-    scope = scope.human if params[:exclude_bots] == 'true'
-    scope = scope.bot if params[:only_bots] == 'true'
-
-    data = Collective.issue_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
 
     render json: data
   end

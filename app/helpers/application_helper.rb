@@ -29,7 +29,7 @@ module ApplicationHelper
 
   def render_issues_chart(name, max: @max, ytitle: nil)
     content_tag :div, class: 'chart-container py-4 my-4' do
-      line_chart chart_data_project_path(@project, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
+      line_chart issues_chart_path(project_ids: @project, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
     end
   end
 
@@ -41,7 +41,7 @@ module ApplicationHelper
 
   def render_collective_issues_chart(name, max: @max, ytitle: nil)
     content_tag :div, class: 'chart-container py-4 my-4' do
-      line_chart issue_chart_data_collective_path(@collective, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
+      line_chart issues_chart_path(collective_slugs: @collective.slug, chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
     end
   end
 
@@ -53,7 +53,7 @@ module ApplicationHelper
 
   def render_batch_collective_issues_chart(name, max: @max, ytitle: nil)
     content_tag :div, class: 'chart-container py-4 my-4' do
-      line_chart batch_issue_chart_data_collectives_path(slugs: params[:slugs], chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
+      line_chart issues_chart_path(collective_slugs: params[:slugs], chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
     end
   end
 

@@ -11,10 +11,10 @@
   <%= line_chart transactions_chart_path(chart: 'unique_donors_and_spenders', range: @range, period: @period) %>
 
   <%= line_chart tag_charts_data_collectives_path(chart: 'tags', period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: 'Releases' %>
-  <%= line_chart issue_charts_data_collectives_path(chart: 'maintainers', range: @range, period: @period), title: 'Maintainers' %>
-  <%= line_chart issue_charts_data_collectives_path(chart: 'issues_opened', range: @range, period: @period), title: 'Issues Opened' %>
-  <%= line_chart issue_charts_data_collectives_path(chart: 'issue_authors', range: @range, period: @period), title: 'Issue Authors' %>
-  <%= line_chart issue_charts_data_collectives_path(chart: 'pull_request_average_time_to_merge', range: @range, period: @period), title: 'Average time to merge pull requests', ytitle: 'Days' %>
+  <%= line_chart issues_chart_path(chart: 'maintainers', range: @range, period: @period), title: 'Maintainers' %>
+  <%= line_chart issues_chart_path(chart: 'issues_opened', range: @range, period: @period), title: 'Issues Opened' %>
+  <%= line_chart issues_chart_path(chart: 'issue_authors', range: @range, period: @period), title: 'Issue Authors' %>
+  <%= line_chart issues_chart_path(chart: 'pull_request_average_time_to_merge', range: @range, period: @period), title: 'Average time to merge pull requests', ytitle: 'Days' %>
 
   <%= line_chart transactions_chart_path(chart: 'new_collectives', range: @range, period: @period), title: 'New Collectives' %>
 

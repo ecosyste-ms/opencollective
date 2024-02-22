@@ -9,4 +9,20 @@ class ChartsController < ApplicationController
 
     render json: Collective.transaction_chart_data(@transactions, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
   end
+
+  def issues
+    if params[:collective_slugs].present?
+      @collectives = Collective.where(slug: params[:collective_slugs].split(',')).limit(20)
+      @issues = Issue.where(project_id: Project.where(collective: @collectives).pluck(:id))
+    elsif params[:project_ids].present?
+      @issues = Issue.where(project_id: params[:project_ids].split(','))
+    else
+      @issues = Issue.all
+    end
+
+    @issues = @issues.human if params[:exclude_bots] == 'true'
+    @issues = @issues.bot if params[:only_bots] == 'true'
+
+    render json: Collective.issue_chart_data(@issues, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
+  end
 end

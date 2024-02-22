@@ -38,19 +38,6 @@ class ProjectsController < ApplicationController
     redirect_to @project
   end
 
-  def chart_data
-    @project = Project.find(params[:id])
-
-    scope = @project.issues
-
-    scope = scope.human if params[:exclude_bots] == 'true'
-    scope = scope.bot if params[:only_bots] == 'true'
-
-    data = Collective.issue_chart_data(scope, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
-
-    render json: data
-  end
-
   def commit_chart_data
     @project = Project.find(params[:id])
     
@@ -78,7 +65,6 @@ class ProjectsController < ApplicationController
 
     render json: data
   end
-
 
   def tag_chart_data
     @project = Project.find(params[:id])

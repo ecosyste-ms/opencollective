@@ -49,7 +49,6 @@ module Charts
 
       scope = scope.created_after(start_date) if start_date.present?
       scope = scope.created_before(end_date) if end_date.present?
-
       
       data = Rails.cache.fetch("issue_chart_data:#{kind}:#{period}:#{range}:#{start_date}:#{end_date}", expires_in: 1.day) do
         case kind

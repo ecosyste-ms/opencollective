@@ -38,6 +38,18 @@ module Charts
           scope = scope.where('collective_created_at <= ?', end_date) if end_date.present?
 
           data = scope.group_by_period(period, :collective_created_at).count
+        when 'donor_pie'
+          limit = 10
+          all = scope.donations.group(:account).sum(:net_amount).sort_by{|k,v| -v}.to_h
+          top = all.first(limit).to_h
+          others = all.except(*top.keys).values.sum
+          data = top.merge({'Others' => others})
+        when 'spenders_pie'
+          limit = 10
+          all = scope.expenses.group(:account).sum(:net_amount).sort_by{|k,v| v}.to_h
+          top = all.first(limit).to_h
+          others = all.except(*top.keys).values.sum
+          data = top.merge({'Others' => others})
         end
         data
       #end

@@ -60,7 +60,7 @@
   
   <% if @collective.host == 'opensource' %>
     <% if @collective.tags.count > 0 %>
-      <%= line_chart tag_chart_data_collective_path(@collective, chart: 'tags', period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: 'Releases' %>
+      <%= line_chart tags_chart_path(collective_slugs: @collective.slug, chart: 'tags', period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: 'Releases' %>
     <% end %>
 
     <% if @collective.issues.count > 0 %>

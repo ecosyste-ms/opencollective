@@ -38,4 +38,17 @@ class ChartsController < ApplicationController
 
     render json: Collective.commit_chart_data(@commits, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
   end
+
+  def tags
+    if params[:collective_slugs].present?
+      @collectives = Collective.where(slug: params[:collective_slugs].split(',')).limit(20)
+      @tags = Tag.where(project_id: Project.where(collective: @collectives).pluck(:id))
+    elsif params[:project_ids].present?
+      @tags = Tag.where(project_id: params[:project_ids].split(','))
+    else
+      @tags = Tag.all
+    end
+
+    render json: Collective.tag_chart_data(@tags, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
+  end
 end

@@ -1,15 +1,9 @@
 <div class='row'>
-  <div class='col-md-3'>
-    <!-- opened issues -->
-    <% @new_issues = @project.issues.issue.this_period(@range).count %>
-    <% @new_issues_last_period = @project.issues.issue.last_period(@range).count %>
-    <%= render partial: 'collectives/stat', locals: {icon: 'issue-opened', title: 'New Issues', this_period: @new_issues, last_period: @new_issues_last_period} %>
+  <div class='col-md-3'>    
+    <%= open_issues %>
   </div>
   <div class='col-md-3'>
-    <!-- opened prs -->
-    <% @new_prs = @project.issues.pull_request.this_period(@range).count %>
-    <% @new_prs_last_period = @project.issues.pull_request.last_period(@range).count %>
-    <%= render partial: 'collectives/stat', locals: {icon: 'git-pull-request', title: 'New Pull Requests', this_period: @new_prs, last_period: @new_prs_last_period} %>
+    <%= render_stats(:open_pull_requests, title: 'New Pull Requests', icon: 'git-pull-request') %>
   </div>
   <div class='col-md-3'>
     <!-- closed issues -->

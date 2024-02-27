@@ -1,5 +1,6 @@
 class Collective < ApplicationRecord
   include Charts
+  include Stats
 
   validates :slug, presence: true
 

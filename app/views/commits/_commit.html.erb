@@ -3,6 +3,9 @@
     <strong><%= commit.message.split("\n").first %></strong><br/>
     <%= simple_format truncate(commit.message.split("\n")[1..-1].join("\n"), length: 100) %>
     <small class='text-muted'>
+      <% if @project.nil? %>
+        <%= link_to commit.project, commit.project %> - 
+      <% end %>
       <%= link_to commit.sha, commit.html_url %> authored <%= time_ago_in_words commit.timestamp %> ago
       by <%= commit.author %>
     </small>

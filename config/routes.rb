@@ -44,6 +44,11 @@ Rails.application.routes.draw do
   resources :collectives do
     member do
       get :funders
+      get :projects
+      get :packages
+      get :issues
+      get :releases
+      get :commits
     end
     collection do
       get :batch

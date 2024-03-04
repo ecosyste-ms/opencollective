@@ -24,6 +24,8 @@
     <% end %>
   </p>
 
+  <%= render 'collective_nav' %>
+
   <%= form_with url: request.path, method: :get do |form| %>
     <%= form.label :range, 'Select range:' %>
     <%= form.select :range, options_for_select([30, 90, 180, 360], @range.to_i), {}, { onchange: 'this.form.submit()' } %>
@@ -83,21 +85,7 @@
       </p>
     <% end %>
 
-    <% if @projects.any? %>
-      <h2>Key Repositories</h2>
-      <%= render @collective.key_projects %>
-
-      <% if (@projects - @collective.key_projects).length > 0 %>
-        <h2>Other Repositories</h2>
-
-        <%= render @projects - @collective.key_projects %>
-        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>  
-      <% end %>
-    <% else %>
-      <p>
-        No repositories found.
-      </p>
-    <% end %>
+    
   <% end %>
 
 </div>

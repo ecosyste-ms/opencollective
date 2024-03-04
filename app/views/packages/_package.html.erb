@@ -31,6 +31,10 @@
     <% end %>
 
     <small class='text-muted'>
+      <% if @project.nil? %>
+        <%= link_to package.project, package.project %> - 
+      <% end %>
+
       <% if package.versions_count > 0 %>
         <%= pluralize number_with_delimiter(package.versions_count), 'version' %>
       <% end %>

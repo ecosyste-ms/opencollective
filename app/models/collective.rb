@@ -10,6 +10,7 @@ class Collective < ApplicationRecord
   has_many :issues, through: :projects
   has_many :commits, through: :projects
   has_many :tags, through: :projects
+  has_many :packages, through: :projects
 
   has_many :transactions, dependent: :destroy
 

@@ -49,6 +49,7 @@ Rails.application.routes.draw do
       get :issues
       get :releases
       get :commits
+      get :transactions
     end
     collection do
       get :batch

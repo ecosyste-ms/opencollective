@@ -46,4 +46,12 @@
       </span>
     </a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link  <%= 'active' if active == 'transactions' %>" href='<%= transactions_collective_path(@collective) %>'>
+      Transactions
+      <span class="badge bg-light text-dark">
+        <%= number_with_delimiter(@collective.transactions_count) %>
+      </span>
+    </a>
+  </li>
 </ul>

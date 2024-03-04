@@ -313,7 +313,7 @@ class Collective < ApplicationRecord
     else
       project = projects.find_or_create_by(url: project_url)
       project.sync_async if project.last_synced_at.nil?
-      load_org_projects
+      # load_org_projects
     end
   rescue
     puts "Error loading projects for #{slug}"

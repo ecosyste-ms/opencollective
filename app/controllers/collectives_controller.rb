@@ -13,7 +13,10 @@ class CollectivesController < ApplicationController
       scope = scope.order('balance desc nulls last')
     end
     
-    @range = (params[:range].presence || 360).to_i
+    @range = range
+
+    @end_date = end_date
+    @start_date = start_date
 
     @pagy, @collectives = pagy(scope)
   end
@@ -24,8 +27,8 @@ class CollectivesController < ApplicationController
 
     @range = range
     @period = period
-    @start_date = params[:start_date].presence || range.days.ago
-    @end_date = params[:end_date].presence || Date.today 
+    @start_date = start_date
+    @end_date = end_date
 
     projects_scope = Project.joins(:collective).where('collectives.id in (?)', @collectives.pluck(:id))
 
@@ -37,7 +40,7 @@ class CollectivesController < ApplicationController
     @collective = Collective.find_by_slug!(params[:id])
     @range = range
     @period = period
-    start_date = params[:start_date].presence || range.days.ago
+    
     if @collective.projects_with_repository.length > 1
       projects_scope = @collective.projects_with_repository.active.source
     else

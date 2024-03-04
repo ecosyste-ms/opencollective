@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   private
 
   def range
-    (params[:range].presence || 30).to_i
+    (params[:range].presence || 360).to_i
   end
 
   def period
@@ -23,5 +23,30 @@ class ApplicationController < ActionController::Base
     else
       (params[:period].presence || 'year').to_sym
     end
+  end
+
+  def start_date
+    params[:start_date].presence || default_start_date
+  end
+
+  def end_date
+    params[:end_date].presence || default_end_date
+  end
+
+  def default_end_date    
+    case period
+    when :day
+      1.day.ago.end_of_day
+    when :week
+      1.week.ago.end_of_week
+    when :month
+      1.month.ago.end_of_month
+    when :year
+      1.year.ago.end_of_year
+    end
+  end
+
+  def default_start_date
+    default_end_date - range.days
   end
 end

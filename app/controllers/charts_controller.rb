@@ -7,7 +7,7 @@ class ChartsController < ApplicationController
       @transactions = Transaction.opensource
     end
 
-    render json: Collective.transaction_chart_data(@transactions, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
+    render json: Collective.transaction_chart_data(@transactions, kind: params[:chart], period: period, range: range, start_date: start_date, end_date: end_date)
   end
 
   def issues
@@ -23,7 +23,7 @@ class ChartsController < ApplicationController
     @issues = @issues.human if params[:exclude_bots] == 'true'
     @issues = @issues.bot if params[:only_bots] == 'true'
 
-    render json: Collective.issue_chart_data(@issues, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
+    render json: Collective.issue_chart_data(@issues, kind: params[:chart], period: period, range: range, start_date: start_date, end_date: end_date)
   end
 
   def commits
@@ -36,7 +36,7 @@ class ChartsController < ApplicationController
       @commits = Commit.all
     end
 
-    render json: Collective.commit_chart_data(@commits, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
+    render json: Collective.commit_chart_data(@commits, kind: params[:chart], period: period, range: range, start_date: start_date, end_date: end_date)
   end
 
   def tags
@@ -49,6 +49,6 @@ class ChartsController < ApplicationController
       @tags = Tag.all
     end
 
-    render json: Collective.tag_chart_data(@tags, kind: params[:chart], period: period, range: range, start_date: params[:start_date], end_date: params[:end_date])
+    render json: Collective.tag_chart_data(@tags, kind: params[:chart], period: period, range: range, start_date: start_date, end_date: end_date)
   end
 end

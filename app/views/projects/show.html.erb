@@ -13,6 +13,8 @@
     <%= link_to @project.url, @project.url %>
   </p>
 
+  <%= render 'project_nav' %>
+
   <% if @project.last_synced_at %>
   
     <% if @project.keywords.any? %>

@@ -1,0 +1,9 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <strong><%= tag.name %></strong><br/>
+    
+    <small class='text-muted'>
+      <%= link_to tag.sha, tag.html_url %> created <%= time_ago_in_words tag.published_at %> ago
+    </small>
+  </div>
+</div>

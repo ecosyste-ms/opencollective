@@ -37,4 +37,24 @@ class ProjectsController < ApplicationController
     end
     redirect_to @project
   end
+
+  def packages
+    @project = Project.find(params[:id])
+    @pagy, @packages = pagy(@project.packages.active.order_by_rankings)
+  end
+
+  def commits
+    @project = Project.find(params[:id])
+    @pagy, @commits = pagy(@project.commits.order('timestamp DESC'))
+  end
+
+  def releases
+    @project = Project.find(params[:id])
+    @pagy, @releases = pagy(@project.tags.order('published_at DESC'))
+  end
+
+  def issues
+    @project = Project.find(params[:id])
+    @pagy, @issues = pagy(@project.issues.order('created_at DESC'))
+  end
 end

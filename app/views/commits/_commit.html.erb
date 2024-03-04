@@ -1,0 +1,10 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <strong><%= commit.message.split("\n").first %></strong><br/>
+    <%= simple_format truncate(commit.message.split("\n")[1..-1].join("\n"), length: 100) %>
+    <small class='text-muted'>
+      <%= link_to commit.sha, commit.html_url %> authored <%= time_ago_in_words commit.timestamp %> ago
+      by <%= commit.author %>
+    </small>
+  </div>
+</div>

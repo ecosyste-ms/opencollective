@@ -447,7 +447,7 @@ class Project < ApplicationRecord
 
       tags_json.each do |tag|
         t = tags.find_or_create_by(name: tag['name'])
-        tag_attributes = tag.slice('sha', 'kind', 'published_at')
+        tag_attributes = tag.slice('sha', 'kind', 'published_at', 'html_url')
         t.assign_attributes(tag_attributes)
         t.save(touch: false)
       end

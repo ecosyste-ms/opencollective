@@ -31,6 +31,12 @@ Rails.application.routes.draw do
     collection do
       post :lookup
     end
+    member do
+      get :packages
+      get :issues
+      get :releases
+      get :commits
+    end
   end
 
   resources :funders, only: [:index, :show]

@@ -60,4 +60,13 @@ module ApplicationHelper
   def diff_class(count)
     count > 0 ? 'text-success' : 'text-danger'
   end
+
+  def download_period(downloads_period)
+    case downloads_period
+    when "last-month"
+      "last month"
+    when "total"
+      "total"
+    end
+  end
 end

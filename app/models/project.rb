@@ -515,7 +515,7 @@ class Project < ApplicationRecord
 
   def dependent_repositories
     return 0 if packages_count.zero?
-    packages.select{|p| p.dependent_repositories }.map{|p| p.dependent_repositories || 0 }.sum
+    packages.select{|p| p.dependent_repos_count }.map{|p| p.dependent_repos_count || 0 }.sum
   end
 
   def dependents

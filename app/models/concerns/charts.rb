@@ -42,14 +42,42 @@ module Charts
           limit = 10
           all = scope.donations.group(:account).sum(:net_amount).sort_by{|k,v| -v}.to_h
           top = all.first(limit).to_h
-          others = all.except(*top.keys).values.sum
-          data = top.merge({'Others' => others})
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
         when 'spenders_pie'
           limit = 10
           all = scope.expenses.group(:account).sum(:net_amount).sort_by{|k,v| v}.to_h
           top = all.first(limit).to_h
-          others = all.except(*top.keys).values.sum
-          data = top.merge({'Others' => others})
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
+        when 'expenses_pie'
+          limit = 10
+          all = scope.expenses.group(:transaction_expense_type).sum(:net_amount).sort_by{|k,v| v}.to_h
+          top = all.first(limit).to_h
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
+        when 'transaction_kind_pie'
+          limit = 10
+          all = scope.group(:transaction_kind).sum(:net_amount).sort_by{|k,v| -v}.to_h
+          top = all.first(limit).to_h
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
         end
         data
       #end

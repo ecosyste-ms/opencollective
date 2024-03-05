@@ -40,6 +40,9 @@ class CollectivesController < ApplicationController
     @collective = Collective.find_by_slug!(params[:id])
     @range = range
     @period = period
+    @start_date = start_date
+    @end_date = end_date
+    @interval = interval
     
     if @collective.projects_with_repository.length > 1
       projects_scope = @collective.projects_with_repository.active.source

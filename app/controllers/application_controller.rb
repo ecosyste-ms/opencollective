@@ -18,19 +18,45 @@ class ApplicationController < ActionController::Base
       (params[:period].presence || 'day').to_sym
     when 31..90
       (params[:period].presence || 'week').to_sym
-    when 91..365
+    when 91..366
       (params[:period].presence || 'month').to_sym
     else
       (params[:period].presence || 'year').to_sym
     end
   end
 
+  def timescale
+    case period
+    when :day
+      30 # 1 month
+    when :week
+      7*12 # 12 weeks
+    when :month
+      366 # 12 months
+    when :year
+      365*3 # 3 years
+    end
+  end
+
+  def interval
+    case period
+    when :day
+      1.day
+    when :week
+      1.week
+    when :month
+      1.month
+    when :year
+      1.year
+    end
+  end
+
   def start_date
-    params[:start_date].presence || default_start_date
+    (params[:start_date].presence && params[:start_date].to_datetime) || default_start_date
   end
 
   def end_date
-    params[:end_date].presence || default_end_date
+    (params[:end_date].presence && params[:end_date].to_datetime) || default_end_date
   end
 
   def default_end_date    
@@ -47,6 +73,15 @@ class ApplicationController < ActionController::Base
   end
 
   def default_start_date
-    default_end_date - range.days
+    case period
+    when :day
+      1.day.ago.beginning_of_day
+    when :week
+      1.week.ago.beginning_of_week
+    when :month
+      1.month.ago.beginning_of_month
+    when :year
+      1.year.ago.beginning_of_year
+    end
   end
 end

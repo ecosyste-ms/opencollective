@@ -26,38 +26,60 @@
 
   <%= render 'collective_nav' %>
 
-  <%= form_with url: request.path, method: :get do |form| %>
-    <%= form.label :range, 'Select range:' %>
-    <%= form.select :range, options_for_select([30, 90, 180, 360], @range.to_i), {}, { onchange: 'this.form.submit()' } %>
-  <% end %><br/>
+  <div class='d-flex justify-content-between my-4'>
+  
+    <%= link_to collective_path(@collective.slug, range: @range, start_date: previous_period_start_date, end_date: previous_period_end_date), class: "btn btn-light #{'disabled' if previous_period_end_date < @collective.collective_created_at}" do %>
+      <%= octicon 'chevron-left' %> <%= previous_period_name %>
+    <% end %>
 
-  <% if @collective.host == 'opensource' %>
-    <%= render 'stats' %>
-    <%= render 'audit' %>
-  <% end %>
+    <span class='btn pe-none'><%= current_period_name %></span>
+
+    <%= link_to collective_path(@collective.slug, range: @range, start_date: next_period_start_date, end_date: next_period_end_date), class: "btn btn-light #{'disabled' unless next_period_valid?}" do %>
+      <%= next_period_name %> <%= octicon 'chevron-right' %>
+    <% end %>
+
+  </div>
 
   <h2>Transactions</h2>
 
   <% if @transactions %>
-    <div class='row'>
+    <div class='row my-3'>
       <div class='col-md-6'>
-        <%= pie_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'donor_pie', period: @period, range: @range), title: 'Top Donors', donut: true, legend: 'left', thousands: "," , zeros: true, prefix: "$" %>
+        <%= pie_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'donor_pie', start_date: @start_date, end_date: @end_date), title: 'Top Donors', donut: true, legend: 'left', thousands: "," , zeros: true, prefix: "$" %>
       </div>
       <div class='col-md-6'>
-        <%= pie_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'spenders_pie', period: @period, range: @range), title: 'Top Spenders', donut: true, legend: 'left', thousands: ",", zeros: true, prefix: "$" %>
+        <%= pie_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'spenders_pie', start_date: @start_date, end_date: @end_date), title: 'Top Spenders', donut: true, legend: 'left', thousands: ",", zeros: true, prefix: "$" %>
+      </div>
+    </div>
+
+    <div class='row my-3'>
+      <div class='col-md-6'>
+        <%= pie_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'expenses_pie', start_date: @start_date, end_date: @end_date), title: 'Expense Types', donut: true, legend: 'left', thousands: "," , zeros: true, prefix: "$" %>
+      </div>
+      <div class='col-md-6'>
+        <%= pie_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'transaction_kind_pie', start_date: @start_date, end_date: @end_date), title: 'Transaction Kinds', donut: true, legend: 'left', thousands: ",", zeros: true, prefix: "$" %>
       </div>
     </div>
     
-    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'all_transactions', period: @period, range: @range), title: 'All Transactions', thousands: ",", zeros: true, prefix: "$" %>
-    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'expenses', period: @period, range: @range), title: 'Expenses', thousands: ",", zeros: true, prefix: "$" %>
-    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'donations', period: @period, range: @range), title: 'Donations', thousands: ",", zeros: true, prefix: "$" %>
-    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'unique_donors', period: @period, range: @range), title: 'Donors', thousands: "," %>
-    <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'unique_expenses', period: @period, range: @range), title: 'Spenders', thousands: "," %>
+    <div class='row my-3'>
+
+      <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'all_transactions', period: 'day', start_date: @start_date, end_date: @end_date), title: 'All Transactions', thousands: ",", zeros: true, prefix: "$" %>
+      <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'expenses', period: 'day', start_date: @start_date, end_date: @end_date), title: 'Expenses', thousands: ",", zeros: true, prefix: "$" %>
+      <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'donations', period: 'day', start_date: @start_date, end_date: @end_date), title: 'Donations', thousands: ",", zeros: true, prefix: "$" %>
+      <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'unique_donors', period: 'day', start_date: @start_date, end_date: @end_date), title: 'Donors', thousands: "," %>
+      <%= line_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'unique_expenses', period: 'day', start_date: @start_date, end_date: @end_date), title: 'Spenders', thousands: "," %>
+    
+    </div>
 
   <% else %>
     <p>
       No transactions in this period.
     </p>
+  <% end %>
+
+  <% if @collective.host == 'opensource' %>
+    <%= render 'stats' %>
+    <%= render 'audit' %>
   <% end %>
   
   <% if @collective.host == 'opensource' %>
@@ -68,7 +90,7 @@
     <% if @collective.issues.count > 0 %>
       <h2>Issues</h2>
 
-      <%= render 'issue_charts' %>
+      <%#= render 'issue_charts' %>
     <% else %>
       <p>
         No issues or pull requests found within this period.
@@ -78,14 +100,13 @@
     <% if @collective.commits.count > 0 %>
       <h2>Commits</h2>
 
-      <%= render 'commit_charts' %>
+      <%#= render 'commit_charts' %>
     <% else %>
       <p>
         No commits found within this period.
       </p>
     <% end %>
 
-    
   <% end %>
 
 </div>

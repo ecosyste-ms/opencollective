@@ -69,4 +69,86 @@ module ApplicationHelper
       "total"
     end
   end
+
+  def period_name(start_date, end_date)
+    case @period
+    when :day
+      start_date.strftime("%A, %B %e, %Y")
+    when :week
+      start_date.strftime("%B %e, %Y") + " - " + end_date.strftime("%B %e, %Y")
+    when :month
+      start_date.strftime("%B %Y")
+    when :year
+      start_date.strftime("%Y")
+    end
+  end
+
+  def current_period_name
+    period_name(@start_date, @end_date)
+  end
+
+  def previous_period_name
+    period_name(previous_period_start_date, previous_period_end_date)
+  end
+
+  def next_period_name
+    period_name(next_period_start_date, next_period_end_date)
+  end
+
+  def previous_period_start_date
+    case @period
+    when :day
+      @start_date - 1.day
+    when :week
+      @start_date - 1.week
+    when :month
+      @start_date - 1.month
+    when :year
+      @start_date - 1.year
+    end
+  end
+
+  def previous_period_end_date
+    case @period
+    when :day
+      @end_date - 1.day
+    when :week
+      @end_date - 1.week
+    when :month
+      @end_date - 1.month
+    when :year
+      @end_date - 1.year
+    end
+  end
+
+  def next_period_start_date
+    case @period
+    when :day
+      @start_date + 1.day
+    when :week
+      @start_date + 1.week
+    when :month
+      @start_date + 1.month
+    when :year
+      @start_date + 1.year
+    end
+  end
+
+  def next_period_end_date
+    case @period
+    when :day
+      @end_date + 1.day
+    when :week
+      @end_date + 1.week
+    when :month
+      @end_date + 1.month
+    when :year
+      @end_date + 1.year
+    end
+  end
+
+  def next_period_valid?
+    next_period_start_date < Time.now && next_period_end_date < Time.now
+  end
+
 end

@@ -196,8 +196,8 @@ class Collective < ApplicationRecord
 
   def sync
     fetch_account_details
+    sync_transactions
     if account_type == 'COLLECTIVE' && !duplicate?
-      sync_transactions
       load_projects
       sync_owner
       ping_owner

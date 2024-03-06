@@ -16,7 +16,7 @@ class CollectivesController < ApplicationController
     @period = period
     @range = range
     @interval = interval
-    @end_date = end_date
+    @end_date = 1.month.ago.end_of_month
     @start_date = 1.year.ago
 
     @pagy, @collectives = pagy(scope)

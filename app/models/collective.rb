@@ -195,6 +195,7 @@ class Collective < ApplicationRecord
   end
 
   def sync
+    puts "Syncing #{slug}"
     fetch_account_details
     sync_transactions
     if account_type == 'COLLECTIVE' && !duplicate?

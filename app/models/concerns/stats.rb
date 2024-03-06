@@ -27,6 +27,56 @@ module Stats
         issues = Issue.all
       end
     end
+
+    def transactions_scope(collective_slugs: nil, project_ids: nil)
+      if collective_slugs.present?
+        collectives = Collective.where(slug: collective_slugs.split(',')).limit(20)
+        transactions = Transaction.where(collective_id: collectives.pluck(:id)).not_host_fees
+      elsif project_ids.present?
+        []
+      end
+    end
+
+    def transactions_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      transactions = transactions_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [transactions.between(start_date, end_date).count, 0]
+    end
+
+    def transactions_total_amount(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      transactions = transactions_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [transactions.between(start_date, end_date).sum(:amount), 0]
+    end
+
+    def expenses_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      transactions = transactions_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [transactions.expenses.between(start_date, end_date).count, 0]
+    end
+
+    def expenses_total_amount(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      transactions = transactions_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [transactions.expenses.between(start_date, end_date).sum(:amount), 0]
+    end
+
+    def donations_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      transactions = transactions_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [transactions.donations.between(start_date, end_date).count, 0]
+    end
+
+    def donations_total_amount(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      transactions = transactions_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [transactions.donations.between(start_date, end_date).sum(:amount), 0]
+    end
+
+    def unique_donors_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      transactions = transactions_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [transactions.donations.between(start_date, end_date).distinct.count(:account), 0]
+    end
+
+    def unique_spenders_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      transactions = transactions_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [transactions.expenses.between(start_date, end_date).distinct.count(:account), 0]
+    end
+
   end
 
   def open_issues(range:)

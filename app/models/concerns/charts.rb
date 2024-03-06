@@ -10,6 +10,8 @@ module Charts
       scope = scope.created_after(start_date) if start_date.present?
       scope = scope.created_before(end_date) if end_date.present?
 
+      scope = scope.not_host_fees #if kind != 'all_transactions'
+
       #Rails.cache.fetch("transaction_chart_data:#{kind}:#{period}:#{range}:#{start_date}:#{end_date}", expires_in: 1.day) do
         case kind
         when 'all_transactions'

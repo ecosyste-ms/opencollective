@@ -41,13 +41,13 @@ class ApplicationController < ActionController::Base
   def interval
     case period
     when :day
-      1.day
+      1.hour
     when :week
-      1.week
+      1.day
     when :month
-      1.month
+      1.day
     when :year
-      1.year
+      1.month
     end
   end
 

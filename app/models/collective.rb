@@ -105,6 +105,7 @@ class Collective < ApplicationRecord
     query = <<~GRAPHQL
       query {
         account(slug: "#{slug}") {
+          id
           name
           description
           slug
@@ -133,6 +134,7 @@ class Collective < ApplicationRecord
     query = <<~GRAPHQL
       query {
         collective(slug: "#{slug}") {
+          id
           name
           description
           slug
@@ -172,7 +174,7 @@ class Collective < ApplicationRecord
       github: data['githubHandle'],
       twitter: data['twitterHandle'],
       currency: data['currency'],
-      tags: data['tags'],
+      # tags: data['tags'],
       repository_url: data['repositoryUrl'],
       social_links: data['socialLinks'],
       account_type: data['type'],
@@ -203,8 +205,10 @@ class Collective < ApplicationRecord
       sync_owner
       ping_owner
     end
-  rescue
+  rescue => e
     puts "Error syncing #{slug}"
+    puts e.message
+    puts e.backtrace
   end
 
   def duplicate?

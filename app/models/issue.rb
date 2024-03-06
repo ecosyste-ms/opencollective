@@ -21,15 +21,19 @@ class Issue < ApplicationRecord
 
   scope :this_period, ->(period) { where('issues.created_at > ?', period.days.ago) }
   scope :last_period, ->(period) { where('issues.created_at > ?', (period*2).days.ago).where('issues.created_at < ?', period.days.ago) }
+  scope :between, ->(start_date, end_date) { where('issues.created_at > ?', start_date).where('issues.created_at < ?', end_date) }
 
   scope :closed_this_period, ->(period) { where('issues.closed_at > ?', period.days.ago) }
   scope :closed_last_period, ->(period) { where('issues.closed_at > ?', (period*2).days.ago).where('issues.closed_at < ?', period.days.ago) }
+  scope :closed_between, ->(start_date, end_date) { where('issues.closed_at > ?', start_date).where('issues.closed_at < ?', end_date) }
 
   scope :merged_this_period, ->(period) { where('issues.merged_at > ?', period.days.ago) }
   scope :merged_last_period, ->(period) { where('issues.merged_at > ?', (period*2).days.ago).where('issues.merged_at < ?', period.days.ago) }
+  scope :merged_between, ->(start_date, end_date) { where('issues.merged_at > ?', start_date).where('issues.merged_at < ?', end_date) }
 
   scope :not_merged_this_period, ->(period) { where('issues.closed_at > ?', period.days.ago).where(merged_at: nil) }
   scope :not_merged_last_period, ->(period) { where('issues.closed_at > ?', (period*2).days.ago).where('issues.closed_at < ?', period.days.ago).where(merged_at: nil) }
+  scope :not_merged_between, ->(start_date, end_date) { where('issues.closed_at > ?', start_date).where('issues.closed_at < ?', end_date).where(merged_at: nil) }
 
   def to_param
     number.to_s

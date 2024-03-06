@@ -121,6 +121,27 @@ module Charts
           data.update(data){ |_,v| v.to_f.seconds.in_days.round(1) }
         when 'maintainers'
           data = scope.maintainers.group_by_period(period, :created_at).distinct.count(:user)
+
+        when 'issues_and_pull_requests_pie_by_project'
+          limit = 10
+          all = scope.joins(:project).group('projects.url').count
+          top = all.first(limit).sort_by{|k,v| -v}.to_h
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
+        when 'issues_and_pull_requests_pie_by_contributor'
+          limit = 10
+          all = scope.group(:user).count
+          top = all.first(limit).sort_by{|k,v| -v}.to_h
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
         end
       
         ## TODO no data for these yet

@@ -2,6 +2,26 @@ module Stats
   extend ActiveSupport::Concern
 
   class_methods do
+    def new_issues_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      issues = issues_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [issues.issue.between(start_date, end_date).count, 0]
+    end
+
+    def new_pull_requests_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      issues = issues_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [issues.pull_request.between(start_date, end_date).count, 0]
+    end
+
+    def closed_issues_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      issues = issues_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [issues.issue.closed_between(start_date, end_date).count, 0]
+    end
+
+    def merged_pull_requests_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      issues = issues_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [issues.pull_request.merged_between(start_date, end_date).count, 0]
+    end
+
     def open_issues(collective_slugs: nil, project_ids: nil, range:)
       issues = issues_scope(collective_slugs: collective_slugs, project_ids: project_ids)
       [issues.issue.this_period(range).count, issues.issue.last_period(range).count]

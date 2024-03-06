@@ -40,9 +40,9 @@
 
   </div>
 
-  <h2>Transactions</h2>
+  <div class='row'>
+    <h2>Financials</h2>
 
-  <% if @transactions %>
     <div class='row my-3'>
       <div class='col-md-6'>
         <%= pie_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'donor_pie', start_date: @start_date, end_date: @end_date), title: 'Top Donors', donut: true, legend: 'left', thousands: "," , zeros: true, prefix: "$" %>
@@ -63,19 +63,57 @@
         <%= pie_chart transactions_chart_path(collective_slugs: @collective.slug, chart: 'transaction_kind_pie', start_date: @start_date, end_date: @end_date), title: 'Transaction Kinds', donut: true, legend: 'left', thousands: ",", zeros: true, prefix: "$" %>
       </div>
     </div>
-    
-  <% else %>
-    <p>
-      No transactions in this period.
-    </p>
-  <% end %>
+  </div>
+
+  <hr/>
 
   <% if @collective.host == 'opensource' %>
-    <%= render 'stats' %>
-    <%= render 'audit' %>
-  <% end %>
+    <div class='row'>
+      <h2>Project activity</h2>
+      <div class='col-md-6'>
+        <%= pie_chart issues_chart_path(collective_slugs: @collective.slug, chart: 'issues_and_pull_requests_pie_by_project', start_date: @start_date, end_date: @end_date), title: 'Active Projects', donut: true, legend: 'left', thousands: "," %>
+      </div>
+      
+      <div class='col-md-6'>
+        <%= pie_chart issues_chart_path(collective_slugs: @collective.slug, chart: 'issues_and_pull_requests_pie_by_contributor', start_date: @start_date, end_date: @end_date), title: 'Active Contributors', donut: true, legend: 'left', thousands: "," %>
+      </div>
+    </div>
   
-  <% if @collective.host == 'opensource' %>
+    <div class='row'>
+      New Issues: <%= number_with_delimiter(stat_this_period(:new_issues_count)) %><br/>
+      New Pull Requests: <%= number_with_delimiter(stat_this_period(:new_pull_requests_count)) %><br/>
+      Closed Issues: <%= number_with_delimiter(stat_this_period(:closed_issues_count)) %><br/>
+      Merged Pull Requests: <%= number_with_delimiter(stat_this_period(:merged_pull_requests_count)) %><br/>
+    </div>
+      <!-- 
+      # active projects in this month
+      # new projects in this month
+      # releases in this month
+      # new issues in this month
+      # new pull requests in this month
+      # closed issues in this month
+      # merged pull requests in this month
+      # closed pull requests in this month
+      # time to close issues
+      # time to close pull requests
+      # time to merge pull requests
+      # maintainers
+      # contributors
+      # commit authors pie chart
+      # commit committers pie chart
+      # commits in this month
+      # additions in this month
+      # deletions in this month
+
+      
+      
+      # break down commit activity by project
+      # break down commit activity by project
+      -->
+
+
+    <%= render 'stats' %>
+  
     <% if @collective.tags.count > 0 %>
       <%= line_chart tags_chart_path(collective_slugs: @collective.slug, chart: 'tags', period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: 'Releases' %>
     <% end %>
@@ -83,7 +121,7 @@
     <% if @collective.issues.count > 0 %>
       <h2>Issues</h2>
 
-      <%= render 'issue_charts' %>
+      <%#= render 'issue_charts' %>
     <% else %>
       <p>
         No issues or pull requests found within this period.
@@ -93,7 +131,7 @@
     <% if @collective.commits.count > 0 %>
       <h2>Commits</h2>
 
-      <%= render 'commit_charts' %>
+      <%#= render 'commit_charts' %>
     <% else %>
       <p>
         No commits found within this period.

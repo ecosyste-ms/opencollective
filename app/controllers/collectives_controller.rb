@@ -44,14 +44,6 @@ class CollectivesController < ApplicationController
     @start_date = start_date
     @end_date = end_date
     @interval = interval
-    
-    if @collective.projects_with_repository.length > 1
-      projects_scope = @collective.projects_with_repository.active.source
-    else
-      projects_scope = @collective.projects_with_repository  
-    end
-    @pagy, @projects = pagy(projects_scope.order_by_stars)
-    @transactions = @collective.transactions.created_after(start_date).any?
   end
 
   def funders

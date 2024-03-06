@@ -1,22 +1,3 @@
-<div class='row'>
-  <div class='col-md-3'>
-    <%= open_issues %>
-  </div>
-  <div class='col-md-3'>
-    <%= render_stats(:open_pull_requests, title: 'New Pull Requests', icon: 'git-pull-request') %>
-  </div>
-  <div class='col-md-3'>
-    <!-- closed issues -->
-    <%= render_stats(:closed_issues, title: 'Closed Issues', icon: 'issue-closed') %>
-  </div>
-  <div class='col-md-3'>
-    <!-- prs merged -->
-    <% @merged_prs = @collective.issues.pull_request.merged_this_period(@range).count %>
-    <% @merged_prs_last_period = @collective.issues.pull_request.merged_last_period(@range).count %>
-    <%= render partial: 'stat', locals: {icon: 'git-merge', title: 'Merged Pull Requests', this_period: @merged_prs, last_period: @merged_prs_last_period} %>
-  </div>
-</div>
-
 
 <div class='row'>
   <div class='col-md-3'>

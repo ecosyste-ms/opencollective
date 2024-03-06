@@ -13,10 +13,11 @@ class CollectivesController < ApplicationController
       scope = scope.order('balance desc nulls last')
     end
     
+    @period = period
     @range = range
-
+    @interval = interval
     @end_date = end_date
-    @start_date = start_date
+    @start_date = 1.year.ago
 
     @pagy, @collectives = pagy(scope)
   end

@@ -17,4 +17,15 @@ class Commit < ApplicationRecord
   def html_url
     "#{project.repository_url}/commit/#{sha}"
   end
+
+  def first_line
+    return '' if message.nil?
+    message.split("\n").first
+  end
+
+  def the_rest_of_the_message
+    return '' if message.nil?
+    return "" if message.split("\n").length == 1
+    message.split("\n")[1..-1].join("\n")
+  end
 end

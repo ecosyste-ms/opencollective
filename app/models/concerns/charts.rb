@@ -182,6 +182,30 @@ module Charts
           data = scope.group_by_period(period, :timestamp).distinct.count(:author)
         when 'commit_committers'
           data = scope.group_by_period(period, :timestamp).distinct.count(:committer)
+        when 'project_commits_pie'
+          limit = 10
+          all = scope.joins(:project).group('projects.url').count
+          top = all.first(limit).sort_by{|k,v| -v}.to_h
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
+        when 'commit_authors_pie'
+          limit = 10
+          all = scope.group(:author).count
+          top = all.first(limit).sort_by{|k,v| -v}.to_h
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
+        when 'changes_pie'
+          additions = scope.sum(:additions)
+          deletions = scope.sum(:deletions)
+          data = { 'Additions' => additions, 'Deletions' => deletions }
         end
         data
       #end

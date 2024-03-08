@@ -26,6 +26,8 @@ class Project < ApplicationRecord
 
   scope :order_by_stars, -> { order(Arel.sql("(repository ->> 'stargazers_count')::int desc nulls last")) }
 
+  scope :between, ->(start_date, end_date) { where('projects.created_at > ?', start_date).where('projects.created_at < ?', end_date) }
+
   counter_culture :collective, column_name: 'projects_count', execute_after_commit: true
 
   def related_dot_github_repository

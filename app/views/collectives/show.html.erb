@@ -81,6 +81,12 @@
     
     <div class='row'>
       <div class='col-md-6'>
+
+        <p>
+          New Projects: <%= number_with_delimiter(stat_this_period(:new_projects_count)) %><br/>
+          New Releases: <%= number_with_delimiter(stat_this_period(:new_releases_count)) %><br/>
+        </p>
+
         <p>
         New Issues: <%= number_with_delimiter(stat_this_period(:new_issues_count)) %><br/>
         New Pull Requests: <%= number_with_delimiter(stat_this_period(:new_pull_requests_count)) %><br/>
@@ -124,41 +130,37 @@
       </div>
       
     </div>
+    <hr>
+    <h2>Commit Stats</h2>
+    <div class='row'>
+      <div class='col-md-6'>
+        <%= pie_chart commits_chart_path(collective_slugs: @collective.slug, chart: 'project_commits_pie', start_date: @start_date, end_date: @end_date), title: 'Commits by Project', donut: true, legend: 'left', thousands: "," %>
+      </div>
+      <div class='col-md-6'>
+        <%= pie_chart commits_chart_path(collective_slugs: @collective.slug, chart: 'commit_authors_pie', start_date: @start_date, end_date: @end_date), title: 'Commit Authors', donut: true, legend: 'left', thousands: "," %>  
+      </div>
+    </div>
+
+    <div class='row'>
+      <div class='col-md-6'>
+        <p>
+        Commits: <%= number_with_delimiter(stat_this_period(:commits_count)) %><br/>
+        Commit Authors: <%= number_with_delimiter(stat_this_period(:commit_authors_count)) %><br/>
+        Commit Committers: <%= number_with_delimiter(stat_this_period(:commit_committers_count)) %><br/>
+        Additions: <%= number_with_delimiter(stat_this_period(:additions_count)) %><br/>
+        Deletions: <%= number_with_delimiter(stat_this_period(:deletions_count)) %><br/>
+        </p>
+      </div>
+      <div class='col-md-6'>
+        <%= pie_chart commits_chart_path(collective_slugs: @collective.slug, chart: 'changes_pie', start_date: @start_date, end_date: @end_date), title: 'Commit Activity', donut: true, legend: 'left', thousands: "," %>
+      </div>
+    </div>
       <!-- 
-      # active projects in this month
+      
       # new projects in this month
       # releases in this month
       
-      
-      # commit authors pie chart
-      # commit committers pie chart
-      # commits in this month
-      # additions in this month
-      # deletions in this month
-
-      
-      
-      # break down commit activity by project
-      # break down commit activity by project
       -->
-
-
-    <%= render 'stats' %>
-  
-    <% if @collective.tags.count > 0 %>
-      <%= line_chart tags_chart_path(collective_slugs: @collective.slug, chart: 'tags', period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: 'Releases' %>
-    <% end %>
-
-    <% if @collective.commits.count > 0 %>
-      <h2>Commits</h2>
-
-      <%#= render 'commit_charts' %>
-    <% else %>
-      <p>
-        No commits found within this period.
-      </p>
-    <% end %>
-
   <% end %>
 
 </div>

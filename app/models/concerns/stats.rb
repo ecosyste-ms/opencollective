@@ -132,6 +132,65 @@ module Stats
       [transactions.expenses.between(start_date, end_date).distinct.count(:account), 0]
     end
 
+    def commits_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      commits = commits_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [commits.between(start_date, end_date).count, 0]
+    end
+
+    def commit_authors_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      commits = commits_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [commits.between(start_date, end_date).distinct.count(:author), 0]
+    end
+
+    def commit_committers_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      commits = commits_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [commits.between(start_date, end_date).distinct.count(:committer), 0]
+    end
+
+    def additions_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      commits = commits_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [commits.between(start_date, end_date).sum(:additions), 0]
+    end
+
+    def deletions_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      commits = commits_scope(collective_slugs: collective_slugs, project_ids: project_ids)
+      [commits.between(start_date, end_date).sum(:deletions), 0]
+    end
+
+    def commits_scope(collective_slugs: nil, project_ids: nil)
+      if collective_slugs.present?
+        collectives = Collective.where(slug: collective_slugs.split(',')).limit(20)
+        commits = Commit.where(project_id: Project.where(collective: collectives).pluck(:id))
+      elsif project_ids.present?
+        commits = Commit.where(project_id: project_ids.to_s.split(','))
+      else
+        commits = Commit.all
+      end
+    end
+
+    def new_projects_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      if collective_slugs.present?
+        collectives = Collective.where(slug: collective_slugs.split(',')).limit(20)
+        projects = Project.where(collective: collectives)
+      elsif project_ids.present?
+        projects = Project.where(id: project_ids.to_s.split(','))
+      else
+        projects = Project.all
+      end
+      [projects.between(start_date, end_date).count, 0]
+    end
+
+    def new_releases_count(collective_slugs: nil, project_ids: nil, start_date: , end_date:)
+      if collective_slugs.present?
+        collectives = Collective.where(slug: collective_slugs.split(',')).limit(20)
+        tags = Tag.where(project_id: Project.where(collective: collectives).pluck(:id))
+      elsif project_ids.present?
+        tags = Tag.where(project_id: project_ids.to_s.split(','))
+      else
+        tags = Tag.all
+      end
+      [tags.between(start_date, end_date).count, 0]
+    end
   end
 
   def open_issues(range:)

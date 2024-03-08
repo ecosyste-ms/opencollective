@@ -130,8 +130,6 @@
       # releases in this month
       
       
-      # maintainers
-      # contributors
       # commit authors pie chart
       # commit committers pie chart
       # commits in this month
@@ -149,16 +147,6 @@
   
     <% if @collective.tags.count > 0 %>
       <%= line_chart tags_chart_path(collective_slugs: @collective.slug, chart: 'tags', period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: 'Releases' %>
-    <% end %>
-
-    <% if @collective.issues.count > 0 %>
-      <h2>Issues</h2>
-
-      <%#= render 'issue_charts' %>
-    <% else %>
-      <p>
-        No issues or pull requests found within this period.
-      </p>
     <% end %>
 
     <% if @collective.commits.count > 0 %>

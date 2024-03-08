@@ -142,6 +142,16 @@ module Charts
           else
             data = top
           end
+        when 'contributor_roles_pie'
+          limit = 10
+          all = scope.group(:author_association).count
+          top = all.first(limit).sort_by{|k,v| -v}.to_h
+          if all.length > limit
+            others = all.except(*top.keys).values.sum
+            data = top.merge({'Others' => others})
+          else
+            data = top
+          end
         end
       
         ## TODO no data for these yet
@@ -151,8 +161,6 @@ module Charts
         # Average number of comments per pull request
         # Average time to first issue response
         # Average time to first pull request response
-        # Number of new issue authors
-        # Number of new pull request authors
         data
       #end
     end

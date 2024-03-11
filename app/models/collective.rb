@@ -309,6 +309,7 @@ class Collective < ApplicationRecord
 
   def project_owner
     return unless project_url.present?
+    return projects.first.owner_name if projects.any? && projects.first.owner_name.present?
     URI.parse(project_url).path.split('/').reject(&:blank?).first
   end
 

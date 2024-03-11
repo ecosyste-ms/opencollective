@@ -23,7 +23,7 @@ class CollectivesController < ApplicationController
   end
 
   def batch
-    @slugs = params[:slugs].try(:split, ',')
+    @slugs = params[:collective_slugs].try(:split, ',')
     @collectives = Collective.opensource.where(slug: @slugs).limit(20)
 
     @range = range

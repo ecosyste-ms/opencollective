@@ -53,7 +53,7 @@ module ApplicationHelper
 
   def render_batch_collective_issues_chart(name, max: @max, ytitle: nil)
     content_tag :div, class: 'chart-container py-4 my-4' do
-      line_chart issues_chart_path(collective_slugs: params[:slugs], chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
+      line_chart issues_chart_path(collective_slugs: params[:collective_slugs], chart: name, period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: name.humanize, max: max, ytitle: ytitle
     end
   end
 

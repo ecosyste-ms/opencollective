@@ -37,6 +37,14 @@ module StatsHelper
     pie_chart commits_chart_path(collective_slugs: collective_slugs, project_ids: project_ids, chart: chart, start_date: @start_date, end_date: @end_date), title: title, donut: true, legend: 'left', thousands: ","
   end
 
+  def transaction_pie_chart(chart, title, collective_slugs: nil, project_ids: nil, start_date: nil, end_date: nil)
+    start_date ||= @start_date.presence || params[:start_date].presence || default_start_date
+    end_date ||= @end_date.presence || params[:end_date].presence || default_end_date
+    collective_slugs = params[:collective_slugs].presence || @collective.try(:slug)
+
+    pie_chart transactions_chart_path(collective_slugs: collective_slugs, chart: chart, start_date: @start_date, end_date: @end_date), title: title, donut: true, legend: 'left', thousands: ",", zeros: true, prefix: "$"
+  end
+
   def open_issues
     render_stats(:open_issues, title: 'New Issues', icon: 'issue-opened')
   end

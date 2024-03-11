@@ -19,13 +19,13 @@
 
   <div class='d-flex justify-content-between my-4'>
   
-    <%= link_to batch_collectives_path(collective_slugs: @slugs, range: @range, start_date: previous_period_start_date, end_date: previous_period_end_date), class: "btn btn-light" do %>
+    <%= link_to batch_collectives_path(collective_slugs: @slugs.join(','), range: @range, start_date: previous_period_start_date, end_date: previous_period_end_date), class: "btn btn-light" do %>
       <%= octicon 'chevron-left' %> <%= previous_period_name %>
     <% end %>
 
     <span class='btn pe-none'><%= current_period_name %></span>
 
-    <%= link_to batch_collectives_path(collective_slugs: @slugs, range: @range, start_date: next_period_start_date, end_date: next_period_end_date), class: "btn btn-light #{'disabled' unless next_period_valid?}" do %>
+    <%= link_to batch_collectives_path(collective_slugs: @slugs.join(','), range: @range, start_date: next_period_start_date, end_date: next_period_end_date), class: "btn btn-light #{'disabled' unless next_period_valid?}" do %>
       <%= next_period_name %> <%= octicon 'chevron-right' %>
     <% end %>
 

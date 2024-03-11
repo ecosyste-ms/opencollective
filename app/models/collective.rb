@@ -215,10 +215,13 @@ class Collective < ApplicationRecord
     !!slug.match(/\w+-\d+\z/) && Collective.where(slug: slug.gsub(/-\d+\z/, '')).exists?
   end
 
-  def ping_owner
+  def ping_owner_url
     return unless project_url.present?
     return unless project_org?
-    ping_owner_url = "https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/ping"
+    "https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/ping"
+  end
+
+  def ping_owner
     Faraday.get(ping_owner_url) rescue nil
   end
 

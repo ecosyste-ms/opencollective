@@ -59,6 +59,7 @@ class ApplicationController < ActionController::Base
     (params[:end_date].presence && params[:end_date].to_datetime) || default_end_date
   end
 
+  helper_method :default_end_date
   def default_end_date    
     case period
     when :day
@@ -72,6 +73,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  helper_method :default_start_date
   def default_start_date
     case period
     when :day

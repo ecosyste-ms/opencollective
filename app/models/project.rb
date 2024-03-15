@@ -5,6 +5,7 @@ class Project < ApplicationRecord
   has_many :commits, dependent: :delete_all
   has_many :tags, dependent: :delete_all
   has_many :packages, dependent: :delete_all
+  has_many :advisories, dependent: :delete_all
 
   belongs_to :collective
 
@@ -90,6 +91,7 @@ class Project < ApplicationRecord
     else
       fetch_readme
       sync_tags
+      sync_advisories
       sync_issues
       sync_commits      
     end
@@ -453,6 +455,39 @@ class Project < ApplicationRecord
     end
   rescue
     puts "Error fetching tags for #{repository_url}"
+  end
+
+  def sync_advisories
+    return unless repository.present?
+
+    page = 1
+    loop do
+      conn = Faraday.new(url: advisories_api_url(page: page)) do |faraday|
+        faraday.response :follow_redirects
+        faraday.adapter Faraday.default_adapter
+      end
+      response = conn.get
+      return unless response.success?
+
+      advisories_json = JSON.parse(response.body)
+      break if advisories_json.empty? # Stop if there are no more advisories
+
+      advisories_json.each do |advisory|
+        a = advisories.find_or_create_by(uuid: advisory['uuid'])
+        advisory_attributes = advisory
+        a.assign_attributes(advisory_attributes)
+        a.save(touch: false)
+      end
+
+      page += 1
+      break if page > 50 # Stop if there are too many advisories
+    end
+  rescue
+    puts "Error fetching advisories for #{repository_url}"
+  end
+
+  def advisories_api_url(page: 1)
+    "https://advisories.ecosyste.ms/api/v1/advisories?page=#{page}&repository_url=#{repository_url}"
   end
 
   def last_activity_at

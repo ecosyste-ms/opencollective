@@ -10,10 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_04_124558) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_15_165542) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
+
+  create_table "advisories", force: :cascade do |t|
+    t.integer "project_id"
+    t.string "uuid"
+    t.string "url"
+    t.string "title"
+    t.text "description"
+    t.string "origin"
+    t.string "severity"
+    t.datetime "published_at"
+    t.datetime "withdrawn_at"
+    t.string "classification"
+    t.float "cvss_score"
+    t.string "cvss_vector"
+    t.string "references", default: [], array: true
+    t.string "source_kind"
+    t.string "identifiers", default: [], array: true
+    t.jsonb "packages", default: []
+    t.string "repository_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "collectives", force: :cascade do |t|
     t.string "uuid"

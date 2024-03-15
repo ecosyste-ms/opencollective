@@ -529,6 +529,10 @@ class Project < ApplicationRecord
     packages.count
   end
 
+  def advisories_count
+    advisories.count
+  end
+
   def monthly_downloads
     return 0 if packages_count.zero?
     packages.select{|p| p.downloads_period == 'last-month' }.map{|p| p.downloads || 0 }.sum

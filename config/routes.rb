@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       get :issues
       get :releases
       get :commits
+      get :advisories
     end
   end
 

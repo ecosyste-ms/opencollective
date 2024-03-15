@@ -57,4 +57,9 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
     @pagy, @issues = pagy(@project.issues.order('created_at DESC'))
   end
+
+  def advisories
+    @project = Project.find(params[:id])
+    @pagy, @advisories = pagy(@project.advisories.order('published_at DESC'))
+  end
 end

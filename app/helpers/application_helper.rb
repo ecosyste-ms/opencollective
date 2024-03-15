@@ -151,4 +151,18 @@ module ApplicationHelper
     next_period_start_date < Time.now && next_period_end_date < Time.now
   end
 
+  def severity_class(severity)
+    case severity.downcase
+    when 'low'
+      'success'
+    when 'moderate'
+      'warning'
+    when 'high'
+      'danger'
+    when 'critical'
+      'dark'
+    else
+      'info'
+    end
+  end
 end

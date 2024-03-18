@@ -52,13 +52,17 @@ class Project < ApplicationRecord
   end
 
   def to_s
-    url
+    display_name
   end
 
   def repository_url
     repo_url = github_pages_to_repo_url(url)
     return repo_url if repo_url.present?
     url
+  end
+
+  def display_name
+    url.gsub(/https?:\/\//, '').gsub(/www\./, '').gsub(/\/$/, '')
   end
 
   def stars

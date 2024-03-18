@@ -27,7 +27,7 @@ class Commit < ApplicationRecord
 
   def the_rest_of_the_message
     return '' if message.nil?
-    return "" if message.split("\n").length == 1
+    return "" if message.split("\n").length < 2
     message.split("\n")[1..-1].join("\n")
   end
 end

@@ -47,6 +47,14 @@
     </a>
   </li>
   <li class="nav-item">
+    <a class="nav-link  <%= 'active' if active == 'advisories' %>" href='<%= advisories_collective_path(@collective) %>'>
+      Advisories
+      <span class="badge bg-light text-dark">
+        <%= number_with_delimiter(@collective.advisories.count) %>
+      </span>
+    </a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link  <%= 'active' if active == 'transactions' %>" href='<%= transactions_collective_path(@collective) %>'>
       Transactions
       <span class="badge bg-light text-dark">

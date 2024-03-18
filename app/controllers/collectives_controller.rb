@@ -76,6 +76,11 @@ class CollectivesController < ApplicationController
     @pagy, @commits = pagy(@collective.commits.includes(:project).order('timestamp DESC'))
   end
 
+  def advisories
+    @collective = Collective.find_by_slug!(params[:id])
+    @pagy, @advisories = pagy(@collective.advisories.includes(:project).order('published_at DESC'))
+  end
+
   def transactions
     @collective = Collective.find_by_slug!(params[:id])
     @pagy, @transactions = pagy(@collective.transactions.order('created_at DESC'))

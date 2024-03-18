@@ -7,6 +7,7 @@ Sidekiq::Web.use Rack::Auth::Basic do |username, password|
 end if Rails.env.production?
 
 Rails.application.routes.draw do
+  
   mount Rswag::Ui::Engine => '/docs'
   mount Rswag::Api::Engine => '/docs'
   
@@ -26,6 +27,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  resources :advisories, only: [:index]
 
   resources :projects, constraints: { id: /.*/ } do
     collection do

@@ -6,6 +6,9 @@
       </small>
     <% end %>
     <h5 class="card-title">
+      <% if @project.nil? %>
+        <%= link_to advisory.project.name, project_path(advisory.project_id) %>:
+      <% end %>
       <%= link_to advisory, advisory.url, target: :_blank %>
     </h5>
 

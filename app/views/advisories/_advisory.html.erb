@@ -9,7 +9,11 @@
       <% if @project.nil? %>
         <%= link_to advisory.project.name, project_path(advisory.project_id) %>:
       <% end %>
-      <%= link_to advisory, advisory.url, target: :_blank %>
+      <% if advisory.url.present? %>
+        <%= link_to advisory, advisory.url, target: :_blank %>
+      <% else %>
+        <%= advisory %>
+      <% end %>
     </h5>
 
     <%= advisory.title %><br>

@@ -24,6 +24,7 @@ class CollectivesController < ApplicationController
 
   def batch
     @slugs = params[:collective_slugs].try(:split, ',') || params[:slugs].try(:split, ',')
+    raise ActiveRecord::RecordNotFound if @slugs.nil?
     @collectives = Collective.opensource.where(slug: @slugs).limit(20)
 
     @range = range

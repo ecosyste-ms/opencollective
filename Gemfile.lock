@@ -98,7 +98,7 @@ GEM
       bootstrap-icons (~> 1)
       rails (>= 7.0)
     builder (3.2.4)
-    chartkick (5.0.6)
+    chartkick (5.0.7)
     chronic_duration (0.10.6)
       numerizer (~> 0.1.1)
     concurrent-ruby (1.2.3)

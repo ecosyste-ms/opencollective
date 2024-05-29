@@ -41,6 +41,7 @@ gem 'octicons_helper'
 gem 'redis'
 gem 'packageurl-ruby', require: 'package_url'
 gem 'dalli'
+gem 'csv'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

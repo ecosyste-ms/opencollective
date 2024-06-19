@@ -181,7 +181,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     mini_mime (1.1.5)
-    minitest (5.23.1)
+    minitest (5.24.0)
     mocha (2.4.0)
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
@@ -207,10 +207,10 @@ GEM
     nokogiri (1.16.6-x86_64-linux)
       racc (~> 1.4)
     numerizer (0.1.1)
-    octicons (19.9.0)
-    octicons_helper (19.9.0)
+    octicons (19.10.0)
+    octicons_helper (19.10.0)
       actionview
-      octicons (= 19.9.0)
+      octicons (= 19.10.0)
       railties
     packageurl-ruby (0.1.0)
     pagy (8.4.4)

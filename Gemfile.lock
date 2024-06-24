@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/ruby/net-pop.git
+  revision: e8d0afe2773b9eb6a23c39e9e437f6fc0fc7c733
+  specs:
+    net-pop (0.1.2)
+      net-protocol
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -191,8 +198,6 @@ GEM
     net-imap (0.4.14)
       date
       net-protocol
-    net-pop (0.1.2)
-      net-protocol
     net-protocol (0.2.2)
       timeout
     net-smtp (0.5.0)
@@ -355,6 +360,7 @@ PLATFORMS
   aarch64-linux-musl
   arm-linux
   arm64-darwin-21
+  arm64-darwin-23
   x86_64-linux
   x86_64-linux-musl
 
@@ -379,6 +385,7 @@ DEPENDENCIES
   jbuilder
   jquery-rails
   mocha
+  net-pop!
   octicons_helper
   packageurl-ruby
   pagy
@@ -408,7 +415,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 3.3.1p0
+   ruby 3.3.3p0
 
 BUNDLED WITH
    2.5.14

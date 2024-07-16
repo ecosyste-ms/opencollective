@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.3.3"
+ruby "3.3.4"
 
 gem "rails", "~> 7.1.3"
 gem "sprockets-rails"
@@ -42,7 +42,6 @@ gem 'redis'
 gem 'packageurl-ruby', require: 'package_url'
 gem 'dalli'
 gem 'csv'
-gem "net-pop", github: "ruby/net-pop" # temporary fix for net-pop until ruby 3.3.4
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

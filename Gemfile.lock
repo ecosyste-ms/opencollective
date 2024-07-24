@@ -80,7 +80,7 @@ GEM
     after_commit_action (1.1.0)
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
-    appsignal (3.11.0)
+    appsignal (3.12.0)
       rack
     autoprefixer-rails (10.4.16.0)
       execjs (~> 2)
@@ -130,7 +130,7 @@ GEM
       logger
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
-    faraday-net_http (3.1.0)
+    faraday-net_http (3.1.1)
       net-http
     faraday-retry (2.2.1)
       faraday (~> 2.0)
@@ -184,7 +184,7 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     minitest (5.24.1)
-    mocha (2.4.3)
+    mocha (2.4.5)
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
     mutex_m (0.2.0)
@@ -224,7 +224,7 @@ GEM
     popper_js (2.11.8)
     psych (5.1.2)
       stringio
-    public_suffix (6.0.0)
+    public_suffix (6.0.1)
     puma (6.4.2)
       nio4r (~> 2.0)
     racc (1.8.0)
@@ -415,4 +415,4 @@ RUBY VERSION
    ruby 3.3.4p0
 
 BUNDLED WITH
-   2.5.15
+   2.5.16

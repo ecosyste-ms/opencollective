@@ -80,7 +80,7 @@ GEM
     after_commit_action (1.1.0)
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
-    appsignal (3.12.2)
+    appsignal (3.12.3)
       rack
     autoprefixer-rails (10.4.16.0)
       execjs (~> 2)
@@ -215,7 +215,7 @@ GEM
       octicons (= 19.11.0)
       railties
     packageurl-ruby (0.1.0)
-    pagy (9.0.3)
+    pagy (9.0.4)
     pg (1.5.7)
     pg_query (5.1.0)
       google-protobuf (>= 3.22.3)
@@ -227,7 +227,7 @@ GEM
     public_suffix (6.0.1)
     puma (6.4.2)
       nio4r (~> 2.0)
-    racc (1.8.0)
+    racc (1.8.1)
     rack (3.1.7)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
@@ -352,7 +352,7 @@ GEM
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.6.16)
+    zeitwerk (2.6.17)
 
 PLATFORMS
   aarch64-linux-musl

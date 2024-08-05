@@ -80,7 +80,7 @@ GEM
     after_commit_action (1.1.0)
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
-    appsignal (3.12.5)
+    appsignal (3.12.6)
       rack
     autoprefixer-rails (10.4.19.0)
       execjs (~> 2)
@@ -158,7 +158,7 @@ GEM
       rake (>= 13)
     groupdate (6.4.0)
       activesupport (>= 6.1)
-    hashdiff (1.1.0)
+    hashdiff (1.1.1)
     i18n (1.14.5)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
@@ -215,7 +215,7 @@ GEM
       octicons (= 19.11.0)
       railties
     packageurl-ruby (0.1.0)
-    pagy (9.0.4)
+    pagy (9.0.5)
     pg (1.5.7)
     pg_query (5.1.0)
       google-protobuf (>= 3.22.3)
@@ -415,4 +415,4 @@ RUBY VERSION
    ruby 3.3.4p0
 
 BUNDLED WITH
-   2.5.16
+   2.5.17

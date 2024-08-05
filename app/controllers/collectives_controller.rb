@@ -20,6 +20,7 @@ class CollectivesController < ApplicationController
     @start_date = 1.year.ago
 
     @pagy, @collectives = pagy(scope)
+    fresh_when(@collectives, public: true)
   end
 
   def batch
@@ -45,6 +46,9 @@ class CollectivesController < ApplicationController
     @start_date = start_date
     @end_date = end_date
     @interval = interval
+    
+    etag_data = [@collective, @range, @period, @start_date, @end_date, @interval]
+    fresh_when(etag: etag_data, public: true)
   end
 
   def funders

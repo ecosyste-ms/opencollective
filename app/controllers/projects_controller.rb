@@ -3,6 +3,8 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
     @range = range
     @period = period
+    etag_data = [@project, @range, @period]
+    fresh_when(etag: etag_data, public: true)
   end
 
   def index
@@ -27,6 +29,7 @@ class ProjectsController < ApplicationController
     end
 
     @pagy, @projects = pagy(@scope)
+    fresh_when(@projects, public: true)
   end
 
   def lookup
@@ -46,20 +49,24 @@ class ProjectsController < ApplicationController
   def commits
     @project = Project.find(params[:id])
     @pagy, @commits = pagy(@project.commits.order('timestamp DESC'))
+    fresh_when(@commits, public: true)
   end
 
   def releases
     @project = Project.find(params[:id])
     @pagy, @releases = pagy(@project.tags.order('published_at DESC'))
+    fresh_when(@releases, public: true)
   end
 
   def issues
     @project = Project.find(params[:id])
     @pagy, @issues = pagy(@project.issues.order('created_at DESC'))
+    fresh_when(@issues, public: true)
   end
 
   def advisories
     @project = Project.find(params[:id])
     @pagy, @advisories = pagy(@project.advisories.order('published_at DESC'))
+    fresh_when(@advisories, public: true)
   end
 end

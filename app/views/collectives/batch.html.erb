@@ -1,4 +1,5 @@
 <% @meta_title = "#{@collectives.map(&:to_s).join(', ')}" %>
+<% @meta_description = "Open collective stats for #{@collectives.map(&:to_s).join(', ')} combined" %>
 
 <div class="container-md">
   <%= render 'nav' %>

@@ -73,7 +73,7 @@ class CollectivesController < ApplicationController
 
   def releases
     @collective = Collective.find_by_slug!(params[:id])
-    @pagy, @releases = pagy(@collective.tags.includes(:project).order('published_at DESC'))
+    @pagy, @releases = pagy(@collective.tags.displayable.includes(:project).order('published_at DESC'))
   end
 
   def commits

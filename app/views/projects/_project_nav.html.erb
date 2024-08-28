@@ -18,7 +18,7 @@
     <a class="nav-link  <%= 'active' if active == 'releases' %>" href='<%= releases_project_path(@project) %>'>
       Releases
       <span class="badge bg-light text-dark">
-        <%= number_with_delimiter(@project.tags.count) %>
+        <%= number_with_delimiter(@project.tags.displayable.count) %>
       </span>
     </a>
   </li>

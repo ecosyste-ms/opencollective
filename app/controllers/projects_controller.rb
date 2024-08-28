@@ -54,7 +54,7 @@ class ProjectsController < ApplicationController
 
   def releases
     @project = Project.find(params[:id])
-    @pagy, @releases = pagy(@project.tags.order('published_at DESC'))
+    @pagy, @releases = pagy(@project.tags.displayable.order('published_at DESC'))
     fresh_when(@releases, public: true)
   end
 

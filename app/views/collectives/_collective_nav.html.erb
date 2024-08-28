@@ -26,7 +26,7 @@
     <a class="nav-link  <%= 'active' if active == 'releases' %>" href='<%= releases_collective_path(@collective) %>'>
       Releases
       <span class="badge bg-light text-dark">
-        <%= number_with_delimiter(@collective.tags.count) %>
+        <%= number_with_delimiter(@collective.tags.displayable.count) %>
       </span>
     </a>
   </li>

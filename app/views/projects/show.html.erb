@@ -45,7 +45,7 @@
 
     <%= render 'stats' %>
 
-    <% if @project.tags.count > 0 %>
+    <% if @project.tags.displayable.count > 0 %>
       <%= line_chart tags_chart_path(project_ids: @project.id, chart: 'tags', period: @period, exclude_bots: @exclude_bots, range: @range, start_date: @start_date, end_date: @end_date), thousands: ",", title: 'Releases' %>
     <% end %>
 

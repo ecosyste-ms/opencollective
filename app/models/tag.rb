@@ -1,6 +1,8 @@
 class Tag < ApplicationRecord
   belongs_to :project
 
+  scope :displayable, -> { where.not(published_at: nil) }
+
   scope :since, ->(date) { where('tags.published_at > ?', date) }
   scope :until, ->(date) { where('tags.published_at < ?', date) }
 

@@ -120,12 +120,12 @@
   </div>
 <% end %>
 
-<% if @project.tags.any? %>
+<% if @project.tags.displayable.any? %>
   <div class='row'>
     <div class='col-md-3'>
       <!-- # releases -->
-      <% @releases = @project.tags.this_period(@range).count %>
-      <% @releases_last_period = @project.tags.last_period(@range).count %>
+      <% @releases = @project.tags.displayable.this_period(@range).count %>
+      <% @releases_last_period = @project.tags.displayable.last_period(@range).count %>
       <%= render partial: 'collectives/stat', locals: {icon: 'tag', title: 'Releases', this_period: @releases, last_period: @releases_last_period} %>
     </div>
   </div>

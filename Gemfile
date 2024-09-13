@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.3.4"
+ruby "3.3.5"
 
 gem "rails", "~> 7.2.1"
 gem "sprockets-rails"
@@ -42,6 +42,7 @@ gem 'redis'
 gem 'packageurl-ruby', require: 'package_url'
 gem 'dalli'
 gem 'csv'
+gem 'ostruct'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

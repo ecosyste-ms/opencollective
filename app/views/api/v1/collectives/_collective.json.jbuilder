@@ -1,3 +1,3 @@
-json.extract! collective, :id, :uuid, :slug, :name, :description, :website, :github, :twitter, :repository_url, :social_links, :currency, :projects_count, :last_synced_at, :created_at, :updated_at, :transactions_count, :balance, :account_type, :owner, :last_project_activity_at, :archived, :no_funding, :no_license, :host, :collective_created_at, :collective_updated_at
-json.url api_v1_collective_url(collective, format: :json)
-json.html_url collective_url(collective)
+json.extract! collective, :id, :uuid, :slug, :name, :description, :website, :github, :twitter, :repository_url, :social_links, :currency, :projects_count, :last_synced_at, :created_at, :updated_at, :transactions_count, :balance, :account_type, :owner, :last_project_activity_at, :archived, :no_funding, :no_license, :host, :collective_created_at, :collective_updated_at, :html_url, :icon_url
+json.api_url api_v1_collective_url(collective, format: :json)
+json.url collective_url(collective)

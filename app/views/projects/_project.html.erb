@@ -18,13 +18,7 @@
           <% end %>
         </small></i></p>
         
-        <% if project.last_synced_at %>
-          <% project.badges.each do |badge| %>
-             <span class="badge text-bg-<%= badge[:class] %>">
-                <%= badge[:label] %>
-              </span>
-          <% end %>
-        <% end %>
+        
 
       </div>
       <div class="flex-shrink-0">

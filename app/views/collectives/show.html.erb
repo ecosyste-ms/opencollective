@@ -29,7 +29,7 @@
 
   <div class='d-flex justify-content-between my-4'>
   
-    <%= link_to collective_path(@collective.slug, range: @range, start_date: previous_period_start_date, end_date: previous_period_end_date), class: "btn btn-light #{'disabled' if previous_period_end_date < @collective.collective_created_at}" do %>
+    <%= link_to collective_path(@collective.slug, range: @range, start_date: previous_period_start_date, end_date: previous_period_end_date), class: "btn btn-light #{'disabled' if @collective.collective_created_at && previous_period_end_date < @collective.collective_created_at}" do %>
       <%= octicon 'chevron-left' %> <%= previous_period_name %>
     <% end %>
 

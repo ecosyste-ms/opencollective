@@ -207,10 +207,10 @@ GEM
     nokogiri (1.16.7-x86_64-linux)
       racc (~> 1.4)
     numerizer (0.1.1)
-    octicons (19.11.0)
-    octicons_helper (19.11.0)
+    octicons (19.12.0)
+    octicons_helper (19.12.0)
       actionview
-      octicons (= 19.11.0)
+      octicons (= 19.12.0)
       railties
     ostruct (0.6.0)
     packageurl-ruby (0.1.0)

@@ -22,10 +22,15 @@ class ProjectsController < ApplicationController
       @scope = @scope.language(params[:language])
     end
 
-    if params[:sort]
-      @scope = @scope.order("#{params[:sort]} #{params[:order]}")
+    if params[:sort].present? || params[:order].present?
+      sort = params[:sort].presence || 'updated_at'
+      if params[:order] == 'asc'
+        scope = scope.order(Arel.sql(sort).asc.nulls_last)
+      else
+        scope = scope.order(Arel.sql(sort).desc.nulls_last)
+      end
     else
-      @scope = @scope.order_by_stars
+      scope = scope.order_by_stars
     end
 
     @pagy, @projects = pagy(@scope)

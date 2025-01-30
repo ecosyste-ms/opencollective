@@ -71,6 +71,8 @@ Rails.application.routes.draw do
 
   resources :exports, only: [:index], path: 'open-data'
 
+  get '/charts', to: 'collectives#charts'
+
   get '/audit/user_owners', to: 'audit#user_owners'
   get '/audit/no_projects', to: 'audit#no_projects'
   get '/audit/no_license', to: 'audit#no_license'

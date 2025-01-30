@@ -90,4 +90,10 @@ class CollectivesController < ApplicationController
     @collective = Collective.find_by_slug!(params[:id])
     @pagy, @transactions = pagy(@collective.transactions.order('created_at DESC'))
   end
+
+  def charts
+    @collectives_by_total_donations = Collective.opensource.where('total_donations > 0').order('total_donations DESC').pluck(:slug, :total_donations)
+
+    @top_50_collectives_by_total_donations = @collectives_by_total_donations.first(50)
+  end
 end

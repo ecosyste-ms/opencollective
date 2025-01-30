@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_05_29_145147) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_29_171141) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "advisories", force: :cascade do |t|
     t.integer "project_id"
@@ -64,6 +65,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_05_29_145147) do
     t.string "host"
     t.datetime "collective_created_at"
     t.datetime "collective_updated_at"
+    t.float "total_donations"
     t.index ["slug"], name: "index_collectives_on_slug", unique: true
   end
 

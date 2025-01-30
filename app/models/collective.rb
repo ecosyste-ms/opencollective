@@ -498,11 +498,13 @@ class Collective < ApplicationRecord
       req.body = { query: query, variables: { account: { slug: slug }, limit: 1000, offset: offset } }.to_json
     end
 
-    json = JSON.parse(resp.body)
+    JSON.parse(resp.body)
   end
 
-  def total_donations
-    transactions.donations.sum(:net_amount) + transactions.host_fees.sum(:net_amount)
+  before_save :set_total_donations
+
+  def set_total_donations
+    self.total_donations = transactions.donations.sum(:net_amount) + transactions.host_fees.sum(:net_amount)
   end
 
   def total_expenses

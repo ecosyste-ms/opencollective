@@ -95,5 +95,41 @@ class CollectivesController < ApplicationController
     @collectives_by_total_donations = Collective.opensource.where('total_donations > 0').order('total_donations DESC').pluck(:slug, :total_donations)
 
     @top_50_collectives_by_total_donations = @collectives_by_total_donations.first(50)
+
+
+    # load critical packages with funding links
+    
+    @critical_packages = load_critical_packages
+  
+    ecosystem_counts = @critical_packages.each_with_object(Hash.new(0)) { |pkg, counts| counts[pkg['ecosystem']] += 1 }
+
+    # Sort ecosystems by frequency (most frequent first)
+    @ecosystems = ecosystem_counts.sort_by { |_, count| -count }.map(&:first)
+  
+
+    
+
+  end
+
+  private
+
+  def load_critical_packages
+    Rails.cache.fetch('critical_packages', expires_in: 1.hour) do
+      critical_packages = []
+      page = 1
+
+      loop do
+        url = "https://packages.ecosyste.ms/api/v1/packages/critical?funding=true&per_page=1000&page=#{page}"
+        response = Faraday.get url
+        data = JSON.parse(response.body)
+        break if data.empty?
+        data.each do |package|
+          critical_packages << package if package['funding_links'].any?{|link| link.include?('opencollective.com') } && !%w[docker puppet].include?(package['ecosystem'])
+        end
+        page += 1
+      end
+
+      critical_packages
+    end
   end
 end

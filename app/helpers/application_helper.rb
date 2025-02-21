@@ -2,11 +2,19 @@ module ApplicationHelper
   include Pagy::Frontend
 
   def meta_title
-    [@meta_title, 'Ecosyste.ms: OpenCollective'].compact.join(' | ')
+    [@meta_title, 'Ecosyste.ms: Open Collective'].compact.join(' | ')
   end
 
   def meta_description
     @meta_description || 'An open API service for software projects hosted on Open Collective.'
+  end
+
+  def app_name
+    "Open Collective"
+  end
+
+  def app_description
+    'An open API service for software projects hosted on Open Collective.'
   end
 
   def obfusticate_email(email)

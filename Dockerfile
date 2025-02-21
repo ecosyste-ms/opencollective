@@ -17,6 +17,8 @@ RUN apk add --update \
     curl-dev \
     libc6-compat \
     musl-dev \
+    yaml-dev \
+    libffi-dev \
  && rm -rf /var/cache/apk/* 
 
  RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin

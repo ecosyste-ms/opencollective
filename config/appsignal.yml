@@ -15,3 +15,5 @@ production:
     - ActiveRecord::StatementInvalid
     - SignalException
     - Date::Error
+    - ActionDispatch::RemoteIp::IpSpoofAttackError 
+    - ActionDispatch::Http::MimeNegotiation::InvalidType

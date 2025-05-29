@@ -99,6 +99,76 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Project'
+  /collectives:
+    get:
+      description: get collectives
+      operationId: getCollectives
+      tags:
+        - collectives
+      parameters:
+        - name: page
+          in: query
+          description: pagination page number
+          required: false
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: number of records to return
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Collective'
+  /collectives/{id}:
+    get:
+      description: get a collective by id
+      operationId: getCollective
+      tags:
+        - collectives
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: id of the collective
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collective'
+  /collectives/{slug}/projects:
+    get:
+      description: get projects for a collective by slug
+      operationId: getCollectiveProjects
+      tags:
+        - collectives
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: slug of the collective
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
 components:
   schemas:
     Project:
@@ -155,4 +225,22 @@ components:
             type: string
         works:
           type: object
-    
+    Collective:
+      type: object
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        avatar_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time

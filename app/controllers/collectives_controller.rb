@@ -120,7 +120,7 @@ class CollectivesController < ApplicationController
 
       loop do
         url = "https://packages.ecosyste.ms/api/v1/packages/critical?funding=true&per_page=1000&page=#{page}"
-        response = Faraday.get url
+        response = Faraday.get url, nil, {'User-Agent' => 'opencollective.ecosyste.ms'}
         data = JSON.parse(response.body)
         break if data.empty?
         data.each do |package|

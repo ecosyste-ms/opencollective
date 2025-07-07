@@ -223,7 +223,7 @@ class Collective < ApplicationRecord
   end
 
   def ping_owner
-    Faraday.get(ping_owner_url) rescue nil
+    Faraday.get(ping_owner_url, nil, {'User-Agent' => 'opencollective.ecosyste.ms'}) rescue nil
   end
 
   def fetch_owner
@@ -231,6 +231,7 @@ class Collective < ApplicationRecord
     
     conn = Faraday.new(url: "https://repos.ecosyste.ms") do |faraday|
       faraday.response :follow_redirects
+      faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
       faraday.adapter Faraday.default_adapter
     end
 
@@ -333,7 +334,7 @@ class Collective < ApplicationRecord
   def load_org_projects
     page = 1
     loop do
-      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/repositories?per_page=100&page=#{page}")
+      resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/repositories?per_page=100&page=#{page}", nil, {'User-Agent' => 'opencollective.ecosyste.ms'})
       break unless resp.status == 200
 
       data = JSON.parse(resp.body)

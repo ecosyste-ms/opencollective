@@ -121,6 +121,7 @@ class Project < ApplicationRecord
     url.chomp!('/')
     conn = Faraday.new(url: url) do |faraday|
       faraday.response :follow_redirects
+      faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
       faraday.adapter Faraday.default_adapter
     end
 
@@ -139,7 +140,7 @@ class Project < ApplicationRecord
 
   def ping
     ping_urls.each do |url|
-      Faraday.get(url) rescue nil
+      Faraday.get(url, nil, {'User-Agent' => 'opencollective.ecosyste.ms'}) rescue nil
     end
   end
 
@@ -190,6 +191,7 @@ class Project < ApplicationRecord
   def fetch_repository
     conn = Faraday.new(url: repos_api_url) do |faraday|
       faraday.response :follow_redirects
+      faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
       faraday.adapter Faraday.default_adapter
     end
 
@@ -353,6 +355,7 @@ class Project < ApplicationRecord
     return unless repository.present?
     conn = Faraday.new(url: issues_api_url) do |faraday|
       faraday.response :follow_redirects
+      faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
       faraday.adapter Faraday.default_adapter
     end
     response = conn.get
@@ -364,6 +367,7 @@ class Project < ApplicationRecord
       paginated_issues_url = "#{issues_list_url}&page=#{page}"
       conn = Faraday.new(url: paginated_issues_url) do |faraday|
         faraday.response :follow_redirects
+        faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
         faraday.adapter Faraday.default_adapter
       end
       response = conn.get
@@ -394,6 +398,7 @@ class Project < ApplicationRecord
     return unless repository.present?
     conn = Faraday.new(url: commits_api_url) do |faraday|
       faraday.response :follow_redirects
+      faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
       faraday.adapter Faraday.default_adapter
     end
     response = conn.get
@@ -405,6 +410,7 @@ class Project < ApplicationRecord
       paginated_commits_url = "#{commits_list_url}&page=#{page}"
       conn = Faraday.new(url: paginated_commits_url) do |faraday|
         faraday.response :follow_redirects
+        faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
         faraday.adapter Faraday.default_adapter
       end
       response = conn.get
@@ -443,6 +449,7 @@ class Project < ApplicationRecord
     loop do
       conn = Faraday.new(url: tags_api_url(page: page)) do |faraday|
         faraday.response :follow_redirects
+        faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
         faraday.adapter Faraday.default_adapter
       end
       response = conn.get
@@ -472,6 +479,7 @@ class Project < ApplicationRecord
     loop do
       conn = Faraday.new(url: advisories_api_url(page: page)) do |faraday|
         faraday.response :follow_redirects
+        faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
         faraday.adapter Faraday.default_adapter
       end
       response = conn.get
@@ -510,6 +518,7 @@ class Project < ApplicationRecord
     loop do
       conn = Faraday.new(url: packages_url(page: page)) do |faraday|
         faraday.response :follow_redirects
+        faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
         faraday.adapter Faraday.default_adapter
       end
 
@@ -606,6 +615,7 @@ class Project < ApplicationRecord
     else
       conn = Faraday.new(url: archive_url(readme_file_name)) do |faraday|
         faraday.response :follow_redirects
+        faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
         faraday.adapter Faraday.default_adapter
       end
       response = conn.get
@@ -624,6 +634,7 @@ class Project < ApplicationRecord
     file_name = readme_file_name.presence || 'README.md'
     conn = Faraday.new(url: raw_url(file_name)) do |faraday|
       faraday.response :follow_redirects
+      faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
       faraday.adapter Faraday.default_adapter
     end
 

@@ -93,11 +93,11 @@ class Project < ApplicationRecord
     if repository && uninteresting_fork?
       # Don't sync tags, commits or issues for uninteresting forks
     else
-      fetch_readme
-      sync_tags
-      sync_advisories
-      sync_issues
-      sync_commits      
+      # fetch_readme
+      # sync_tags
+      # sync_advisories
+      # sync_issues
+      # sync_commits      
     end
     return if destroyed?
     update_column(:last_synced_at, Time.now) 
@@ -145,7 +145,7 @@ class Project < ApplicationRecord
   end
 
   def ping_urls
-    ([repos_ping_url] + [issues_ping_url] + [commits_ping_url] + packages_ping_urls).compact.uniq
+    ([repos_ping_url] + packages_ping_urls).compact.uniq
   end
 
   def repos_ping_url

@@ -419,7 +419,6 @@ DEPENDENCIES
   simple_form
   sitemap_generator
   sprockets-rails
-  tzinfo-data
   web-console
   webmock
 

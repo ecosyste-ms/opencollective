@@ -100,10 +100,14 @@
           <li>
             Funding: 
             <ul>
-              <% @project.repository['metadata']['funding'].each do |k,v| %>
-                <li>
-                  <%= k.humanize %>: <%= Array(v).join(', ') %>
-                </li>
+              <% if @project.repository['metadata']['funding'].respond_to?(:each) %>
+                <% @project.repository['metadata']['funding'].each do |k,v| %>
+                  <li>
+                    <%= k.humanize %>: <%= Array(v).join(', ') %>
+                  </li>
+                <% end %>
+              <% else %>
+                <li><%= @project.repository['metadata']['funding'] %></li>
               <% end %>
             </ul>
           </li>

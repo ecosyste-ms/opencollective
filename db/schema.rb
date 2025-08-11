@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_29_171141) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_11_094820) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -137,13 +137,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_29_171141) do
     t.integer "packages_count"
     t.index ["collective_id"], name: "index_projects_on_collective_id"
     t.index ["url"], name: "index_projects_on_url", unique: true
-  end
-
-  create_table "sboms", force: :cascade do |t|
-    t.text "raw"
-    t.text "converted"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "tags", force: :cascade do |t|

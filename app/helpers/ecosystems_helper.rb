@@ -30,10 +30,6 @@ module EcosystemsHelper
           url: "https://resolve.ecosyste.ms"
         },
         {
-          name: "SBOM Parser",
-          url: "https://sbom.ecosyste.ms"
-        },
-        {
           name: "License Parser",
           url: "https://licenses.ecosyste.ms",
         },

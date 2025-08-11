@@ -69,7 +69,6 @@ Rails.application.routes.draw do
   get 'charts/commits', to: 'charts#commits', as: :commits_chart
   get 'charts/tags', to: 'charts#tags', as: :tags_chart
 
-  resources :sboms
 
   resources :exports, only: [:index], path: 'open-data'
 

@@ -140,7 +140,9 @@ class Project < ApplicationRecord
 
   def ping
     ping_urls.each do |url|
-      Faraday.get(url, nil, {'User-Agent' => 'opencollective.ecosyste.ms'}) rescue nil
+      headers = {'User-Agent' => 'opencollective.ecosyste.ms'}
+      headers['X-API-Key'] = ENV['ECOSYSTEMS_API_KEY'] if ENV['ECOSYSTEMS_API_KEY'] && url.include?('.ecosyste.ms')
+      Faraday.get(url, nil, headers) rescue nil
     end
   end
 
@@ -192,6 +194,7 @@ class Project < ApplicationRecord
     conn = Faraday.new(url: repos_api_url) do |faraday|
       faraday.response :follow_redirects
       faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
+      faraday.headers['X-API-Key'] = ENV['ECOSYSTEMS_API_KEY'] if ENV['ECOSYSTEMS_API_KEY']
       faraday.adapter Faraday.default_adapter
     end
 
@@ -450,6 +453,7 @@ class Project < ApplicationRecord
       conn = Faraday.new(url: tags_api_url(page: page)) do |faraday|
         faraday.response :follow_redirects
         faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
+        faraday.headers['X-API-Key'] = ENV['ECOSYSTEMS_API_KEY'] if ENV['ECOSYSTEMS_API_KEY']
         faraday.adapter Faraday.default_adapter
       end
       response = conn.get

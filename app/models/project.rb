@@ -545,10 +545,6 @@ class Project < ApplicationRecord
     puts "Error fetching packages for #{repository_url}"
   end
 
-  def packages_count
-    # TODO use counter cache instead
-    packages.count
-  end
 
   def advisories_count
     advisories.count

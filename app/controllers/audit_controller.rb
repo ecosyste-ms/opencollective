@@ -10,7 +10,7 @@ class AuditController < ApplicationController
   end
 
   def no_projects
-    @collectives = Collective.opensource.where(projects_count: 0).with_transactions.order('transactions_count desc nulls last').select{|c| c.project_url.present?}
+    @collectives = Collective.opensource.where(projects_count: 0).with_transactions.where.not(repository_url: nil).where.not(repository_url: '').order('transactions_count desc nulls last')
   end
 
   def no_license
@@ -30,6 +30,16 @@ class AuditController < ApplicationController
   end
 
   def duplicates
-    @collectives = Collective.opensource.all.order('transactions_count desc nulls last').select{|c| c.project_url.present?}.group_by{|c| c.project_url.downcase }.select{|k,v| v.length > 1 }.values.flatten
+    # Find duplicate repository URLs using SQL
+    duplicate_urls = Collective.opensource
+      .where.not(repository_url: nil)
+      .where.not(repository_url: '')
+      .group('LOWER(repository_url)')
+      .having('COUNT(*) > 1')
+      .pluck('LOWER(repository_url)')
+
+    @collectives = Collective.opensource
+      .where('LOWER(repository_url) IN (?)', duplicate_urls)
+      .order('transactions_count DESC NULLS LAST')
   end
 end

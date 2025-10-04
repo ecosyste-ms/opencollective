@@ -77,14 +77,23 @@ class Collective < ApplicationRecord
   end
 
   def set_last_project_activity_at
-    self.last_project_activity_at = projects_with_repository.select{|p| p.last_activity_at.present? }.sort_by(&:last_activity_at).last.try(:last_activity_at)
+    self.last_project_activity_at = projects_with_repository
+      .where.not(repository: nil)
+      .where("repository->>'pushed_at' IS NOT NULL")
+      .order(Arel.sql("repository->>'pushed_at' DESC"))
+      .limit(1)
+      .pluck(Arel.sql("repository->>'pushed_at'"))
+      .first
+      .try { |date| Time.parse(date) }
   end
 
   def set_archived
-    if projects_with_repository.length == 0
+    count = projects_with_repository.count
+    if count == 0
       self.archived = false
     else
-      self.archived = projects_with_repository.all?{|p| p.archived? }
+      archived_count = projects_with_repository.where("(repository->>'archived')::boolean = true").count
+      self.archived = (archived_count == count)
     end
   end
 
@@ -333,7 +342,11 @@ class Collective < ApplicationRecord
 
   def load_org_projects
     page = 1
+    max_pages = 100
+
     loop do
+      break if page > max_pages
+
       resp = Faraday.get("https://repos.ecosyste.ms/api/v1/hosts/#{project_host}/owners/#{project_owner}/repositories?per_page=100&page=#{page}", nil, {'User-Agent' => 'opencollective.ecosyste.ms'})
       break unless resp.status == 200
 
@@ -522,18 +535,32 @@ class Collective < ApplicationRecord
   end
 
   def set_no_funding
-    if owner_has_sponsors_listing? || projects_with_repository.empty?
+    if owner_has_sponsors_listing? || !projects_with_repository.exists?
       self.no_funding = false
     else
-      self.no_funding = projects_with_repository.all?{|p| p.no_funding? }
+      # A project has no funding if funding_links is empty
+      # This is determined by repo_funding_links + package_funding_links + owner_funding_links + readme_funding_links
+      # For simplicity, check if ALL projects have metadata->funding as null/empty
+      total_count = projects_with_repository.count
+      no_funding_count = projects_with_repository
+        .where("repository IS NULL OR repository->'metadata'->>'funding' IS NULL OR repository->'metadata'->>'funding' = '{}'")
+        .where("packages_count = 0 OR packages_count IS NULL")
+        .count
+      self.no_funding = (no_funding_count == total_count)
     end
   end
 
   def set_no_license
-    if projects_with_repository.empty?
+    if !projects_with_repository.exists?
       self.no_license = false
     else
-      self.no_license = projects_with_repository.all?{|p| p.no_license? }
+      # A project has a license if repository has license field or metadata->files->license
+      total_count = projects_with_repository.count
+      no_license_count = projects_with_repository
+        .where("repository IS NULL OR (repository->>'license' IS NULL AND repository->'metadata'->'files'->>'license' IS NULL)")
+        .where("packages_count = 0 OR packages_count IS NULL")
+        .count
+      self.no_license = (no_license_count == total_count)
     end
   end
 

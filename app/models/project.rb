@@ -107,7 +107,7 @@ class Project < ApplicationRecord
   def uninteresting_fork?
     return false unless repository.present?
     return false unless repository['fork']
-    return false unless packages_count.zero?
+    return false unless packages_count.to_i.zero?
     return false if repository['archived']
     return false if repository['stargazers_count'] > 10
     true
@@ -166,7 +166,7 @@ class Project < ApplicationRecord
   end
 
   def packages_ping_urls
-    return [] if packages_count.zero?
+    return [] if packages_count.to_i.zero?
     packages.map do |package|
       "https://packages.ecosyste.ms/api/v1/registries/#{package.registry_name}/packages/#{package.name}/ping"
     end
@@ -210,7 +210,7 @@ class Project < ApplicationRecord
   def combined_keywords
     keywords = []
     keywords += repository["topics"] if repository.present?
-    keywords += packages.map(&:keywords).flatten unless packages_count.zero?
+    keywords += packages.map(&:keywords).flatten unless packages_count.to_i.zero?
     keywords.uniq.reject(&:blank?)
   end
   
@@ -301,7 +301,7 @@ class Project < ApplicationRecord
   end
 
   def package_funding_links
-    return [] if packages_count.zero?
+    return [] if packages_count.to_i.zero?
     packages.map(&:funding).compact.map{|f| f.is_a?(Hash) ? f['url'] : f }.flatten.compact
   end
 
@@ -551,22 +551,22 @@ class Project < ApplicationRecord
   end
 
   def monthly_downloads
-    return 0 if packages_count.zero?
+    return 0 if packages_count.to_i.zero?
     packages.select{|p| p.downloads_period == 'last-month' }.map{|p| p.downloads || 0 }.sum
   end
 
   def downloads
-    return 0 if packages_count.zero?
+    return 0 if packages_count.to_i.zero?
     packages.map{|p| p.downloads || 0 }.sum
   end
 
   def dependent_packages
-    return 0 if packages_count.zero?
+    return 0 if packages_count.to_i.zero?
     packages.select{|p| p.dependents }.map{|p| p.dependents || 0 }.sum
   end
 
   def dependent_repositories
-    return 0 if packages_count.zero?
+    return 0 if packages_count.to_i.zero?
     packages.select{|p| p.dependent_repos_count }.map{|p| p.dependent_repos_count || 0 }.sum
   end
 
@@ -575,7 +575,7 @@ class Project < ApplicationRecord
   end
 
   def packages_licenses
-    return [] if packages_count.zero?
+    return [] if packages_count.to_i.zero?
     packages.map{|p| p.licenses }.compact
   end
 
@@ -708,7 +708,7 @@ class Project < ApplicationRecord
   end
 
   def package_badge
-    return if packages_count.zero?
+    return if packages_count.to_i.zero?
     {
       label: 'Package',
       class: 'info'

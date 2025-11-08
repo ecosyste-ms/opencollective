@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_11_101248) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_08_164056) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -85,6 +85,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_101248) do
     t.integer "additions"
     t.integer "deletions"
     t.integer "files_changed"
+    t.index ["project_id", "timestamp"], name: "index_commits_on_project_id_and_timestamp"
     t.index ["project_id"], name: "index_commits_on_project_id"
   end
 
@@ -113,6 +114,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_101248) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "labels", default: [], array: true
+    t.index ["project_id", "pull_request", "closed_at"], name: "index_issues_on_project_id_and_pull_request_and_closed_at"
+    t.index ["project_id", "pull_request", "created_at"], name: "index_issues_on_project_id_and_pull_request_and_created_at"
+    t.index ["project_id", "pull_request", "user"], name: "index_issues_on_project_id_and_pull_request_and_user"
     t.index ["project_id"], name: "index_issues_on_project_id"
   end
 
@@ -168,7 +172,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_101248) do
     t.string "transaction_kind"
     t.string "transaction_expense_type"
     t.index ["collective_id", "transaction_type", "created_at"], name: "idx_on_collective_id_transaction_type_created_at_e56e46ac84"
-    t.index ["collective_id"], name: "index_transactions_on_collective_id"
+    t.index ["collective_id", "updated_at"], name: "index_transactions_on_collective_id_and_updated_at"
     t.index ["uuid"], name: "index_transactions_on_uuid", unique: true
   end
 end

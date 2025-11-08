@@ -41,34 +41,37 @@
   <hr>
 
 
+  <%# Charts disabled for performance - uncomment to re-enable %>
+  <%#
   <br/><br/>
   <%= form_with url: url_for, method: :get do |form| %>
-    <%= form.label :range, 'Select range:' %>
-    <%= form.hidden_field :slugs, value: params[:collective_slugs] %>
-    <%= form.select :range, options_for_select([30, 90, 180, 360], @range.to_i), {}, { onchange: 'this.form.submit()' } %>
-  <% end %><br/>
+    <%#= form.label :range, 'Select range:' %>
+    <%#= form.hidden_field :slugs, value: params[:collective_slugs] %>
+    <%#= form.select :range, options_for_select([30, 90, 180, 360], @range.to_i), {}, { onchange: 'this.form.submit()' } %>
+  <%# end %><br/>
 
-  <%= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'all_transactions', period: @period, range: @range), title: 'All Transactions' %>
-  <%= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'expenses', period: @period, range: @range), title: 'Expenses' %>
-  <%= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'donations', period: @period, range: @range), title: 'Donations' %>
-  <%= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'unique_donors', period: @period, range: @range), title: 'Donors' %>
-  <%= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'unique_expenses', period: @period, range: @range), title: 'Spenders' %>
+  <%#= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'all_transactions', period: @period, range: @range), title: 'All Transactions' %>
+  <%#= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'expenses', period: @period, range: @range), title: 'Expenses' %>
+  <%#= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'donations', period: @period, range: @range), title: 'Donations' %>
+  <%#= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'unique_donors', period: @period, range: @range), title: 'Donors' %>
+  <%#= line_chart transactions_chart_path(collective_slugs:  params[:collective_slugs], chart: 'unique_expenses', period: @period, range: @range), title: 'Spenders' %>
 
-  <%= render_batch_collective_issues_chart 'issues_opened' %>
-  <%= render_batch_collective_issues_chart 'issues_closed' %>
-  <%= render_batch_collective_issues_chart 'issue_authors' %>
-  <%= render_batch_collective_issues_chart 'issue_average_time_to_close', max: nil, ytitle: 'Days' %>
+  <%#= render_batch_collective_issues_chart 'issues_opened' %>
+  <%#= render_batch_collective_issues_chart 'issues_closed' %>
+  <%#= render_batch_collective_issues_chart 'issue_authors' %>
+  <%#= render_batch_collective_issues_chart 'issue_average_time_to_close', max: nil, ytitle: 'Days' %>
 
-  <%= render_batch_collective_issues_chart 'pull_requests_opened' %>
-  <%= render_batch_collective_issues_chart 'pull_requests_closed' %>
-  <%= render_batch_collective_issues_chart 'pull_requests_merged' %>
-  <%= render_batch_collective_issues_chart 'pull_requests_not_merged' %>
-  <%= render_batch_collective_issues_chart 'pull_request_authors' %>
-  <%= render_batch_collective_issues_chart 'pull_request_average_time_to_close', max: nil, ytitle: 'Days' %>
-  <%= render_batch_collective_issues_chart 'pull_request_average_time_to_merge', max: nil, ytitle: 'Days' %>
+  <%#= render_batch_collective_issues_chart 'pull_requests_opened' %>
+  <%#= render_batch_collective_issues_chart 'pull_requests_closed' %>
+  <%#= render_batch_collective_issues_chart 'pull_requests_merged' %>
+  <%#= render_batch_collective_issues_chart 'pull_requests_not_merged' %>
+  <%#= render_batch_collective_issues_chart 'pull_request_authors' %>
+  <%#= render_batch_collective_issues_chart 'pull_request_average_time_to_close', max: nil, ytitle: 'Days' %>
+  <%#= render_batch_collective_issues_chart 'pull_request_average_time_to_merge', max: nil, ytitle: 'Days' %>
 
-  <%= line_chart commits_chart_path(collective_slugs:  params[:collective_slugs], chart: 'commits', range: @range, period: @period), title: 'Commits' %>
-  <%= line_chart commits_chart_path(collective_slugs:  params[:collective_slugs], chart: 'commit_authors', range: @range, period: @period), title: 'Commit Authors' %>
+  <%#= line_chart commits_chart_path(collective_slugs:  params[:collective_slugs], chart: 'commits', range: @range, period: @period), title: 'Commits' %>
+  <%#= line_chart commits_chart_path(collective_slugs:  params[:collective_slugs], chart: 'commit_authors', range: @range, period: @period), title: 'Commit Authors' %>
+  %>
 
   <% if @projects.any? %>
     <h2>Repositories</h2>

@@ -24,6 +24,7 @@ class CollectivesController < ApplicationController
   end
 
   def batch
+    raise ActiveRecord::RecordNotFound
     @slugs = params[:collective_slugs].try(:split, ',') || params[:slugs].try(:split, ',')
     raise ActiveRecord::RecordNotFound if @slugs.nil? || @slugs.empty?
     @collectives = Collective.opensource.where(slug: @slugs).limit(20)

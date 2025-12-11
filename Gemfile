@@ -45,6 +45,7 @@ gem 'octicons_helper'
 gem 'redis'
 gem 'packageurl-ruby', require: 'package_url'
 gem 'dalli'
+gem "connection_pool", "<3"
 gem 'csv'
 gem 'ostruct'
 

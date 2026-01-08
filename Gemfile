@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.4.8'
+ruby '4.0.0'
 
 gem "actionpack", "~> 8.1.1"
 gem "actionview", "~> 8.1.1"
@@ -23,7 +23,6 @@ gem "faraday-retry"
 gem "faraday-follow_redirects"
 gem "pagy", "~> 9.4.0"
 gem "pghero"
-gem "pg_query"
 gem 'bootstrap'
 gem 'bootstrap-icons', require: 'bootstrap_icons'
 gem 'rack-cors'
@@ -35,7 +34,6 @@ gem 'sitemap_generator'
 gem 'sidekiq'
 gem 'sidekiq-unique-jobs'
 gem 'sidekiq-status'
-gem 'google-protobuf'
 gem 'groupdate'
 gem 'simple_form'
 gem 'appsignal'
@@ -63,4 +61,5 @@ group :test do
   gem "webmock"
   gem "mocha"
   gem "rails-controller-testing"
+  gem "minitest", "~> 5"
 end

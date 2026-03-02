@@ -2,6 +2,17 @@ class Collective < ApplicationRecord
   include Charts
   include Stats
 
+  def self.sortable_columns
+    {
+      'updated_at' => 'updated_at',
+      'created_at' => 'created_at',
+      'balance' => 'balance',
+      'projects_count' => 'projects_count',
+      'transactions_count' => 'transactions_count',
+      'name' => 'name',
+    }
+  end
+
   validates :slug, presence: true
 
   has_many :projects, dependent: :destroy

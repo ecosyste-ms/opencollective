@@ -1,6 +1,16 @@
 class Project < ApplicationRecord
   include Stats
 
+  def self.sortable_columns
+    {
+      'updated_at' => 'updated_at',
+      'created_at' => 'created_at',
+      'last_synced_at' => 'last_synced_at',
+      'issues_count' => 'issues_count',
+      'packages_count' => 'packages_count',
+    }
+  end
+
   has_many :issues, dependent: :delete_all
   has_many :commits, dependent: :delete_all
   has_many :tags, dependent: :delete_all

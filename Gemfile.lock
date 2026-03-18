@@ -145,10 +145,10 @@ GEM
     nokogiri (1.19.1-x86_64-linux-musl)
       racc (~> 1.4)
     numerizer (0.1.1)
-    octicons (19.22.1)
-    octicons_helper (19.22.1)
+    octicons (19.23.0)
+    octicons_helper (19.23.0)
       actionview
-      octicons (= 19.22.1)
+      octicons (= 19.23.0)
       railties
     ostruct (0.6.3)
     packageurl-ruby (0.2.0)
@@ -279,7 +279,7 @@ GEM
       actionview (>= 8.0.0)
       bindex (>= 0.4.0)
       railties (>= 8.0.0)
-    webmock (3.26.1)
+    webmock (3.26.2)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -412,8 +412,8 @@ CHECKSUMS
   nokogiri (1.19.1-x86_64-linux-gnu) sha256=1a4902842a186b4f901078e692d12257678e6133858d0566152fe29cdb98456a
   nokogiri (1.19.1-x86_64-linux-musl) sha256=4267f38ad4fc7e52a2e7ee28ed494e8f9d8eb4f4b3320901d55981c7b995fc23
   numerizer (0.1.1) sha256=10ec9efec62472b69a3a0e275a18a44baa595ce6e2e4cfc1678d5cb2974c336f
-  octicons (19.22.1) sha256=b6dc2b39d5ee9a20df7318247dab12cdf6cc8f75ad3609a727e1a9f5d9a7e694
-  octicons_helper (19.22.1) sha256=2580202164df03d9c092ff21f35bc90ff815b9dfc59157f9eec7cd34ca10871f
+  octicons (19.23.0) sha256=9209a19b340ddedbbb5a33d7fddeaf890508ca213302a5b19d32d236bc76cd2a
+  octicons_helper (19.23.0) sha256=700bdfc0cf43555756ca72473ed038f7479589e7da2ec39ce176a956fc1d0257
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   packageurl-ruby (0.2.0) sha256=9bef22c96622b7d3a0087a7fbca8903f9187b66fbfd6a78299ef115768f5012b
   pagy (9.4.0) sha256=db3f2e043f684155f18f78be62a81e8d033e39b9f97b1e1a8d12ad38d7bce738
@@ -472,7 +472,7 @@ CHECKSUMS
   uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
   useragent (0.16.11) sha256=700e6413ad4bb954bb63547fa098dddf7b0ebe75b40cc6f93b8d54255b173844
   web-console (4.3.0) sha256=e13b71301cdfc2093f155b5aa3a622db80b4672d1f2f713119cc7ec7ac6a6da4
-  webmock (3.26.1) sha256=4f696fb57c90a827c20aadb2d4f9058bbff10f7f043bd0d4c3f58791143b1cd7
+  webmock (3.26.2) sha256=774556f2ea6371846cca68c01769b2eac0d134492d21f6d0ab5dd643965a4c90
   zeitwerk (2.7.5) sha256=d8da92128c09ea6ec62c949011b00ed4a20242b255293dd66bf41545398f73dd
 
 RUBY VERSION

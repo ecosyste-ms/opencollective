@@ -145,10 +145,10 @@ GEM
     nokogiri (1.19.3-x86_64-linux-musl)
       racc (~> 1.4)
     numerizer (0.1.1)
-    octicons (19.25.0)
-    octicons_helper (19.25.0)
+    octicons (19.26.0)
+    octicons_helper (19.26.0)
       actionview
-      octicons (= 19.25.0)
+      octicons (= 19.26.0)
       railties
     ostruct (0.6.3)
     packageurl-ruby (0.2.0)
@@ -283,7 +283,7 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    zeitwerk (2.7.5)
+    zeitwerk (2.8.1)
 
 PLATFORMS
   aarch64-linux-musl
@@ -413,8 +413,8 @@ CHECKSUMS
   nokogiri (1.19.3-x86_64-linux-gnu) sha256=2f5078620fe12e83669b5b17311b32532a8153d02eee7ad06948b926d6080976
   nokogiri (1.19.3-x86_64-linux-musl) sha256=248c906d2166eca5efb56d52fdee5f9a1f51d69a72e2b64fdac647b4ce39ea3f
   numerizer (0.1.1) sha256=10ec9efec62472b69a3a0e275a18a44baa595ce6e2e4cfc1678d5cb2974c336f
-  octicons (19.25.0) sha256=d21cf5159eeaf185cf401289ac0198309e2d6e3e465933f3b03fdc6badf8c058
-  octicons_helper (19.25.0) sha256=661ebb1cc0f6aff7c19fe86903ebf372119f5487e9bb02eda361bbb28205b206
+  octicons (19.26.0) sha256=ac92ad5d4928d87de743b40f443ba93f4353697477c2bf8862916954352fa366
+  octicons_helper (19.26.0) sha256=c985eb356aabd2faaa0aaba28386aca038da433cbf9afc57a87222c2a5ec3d98
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   packageurl-ruby (0.2.0) sha256=9bef22c96622b7d3a0087a7fbca8903f9187b66fbfd6a78299ef115768f5012b
   pagy (9.4.0) sha256=db3f2e043f684155f18f78be62a81e8d033e39b9f97b1e1a8d12ad38d7bce738
@@ -474,7 +474,7 @@ CHECKSUMS
   useragent (0.16.11) sha256=700e6413ad4bb954bb63547fa098dddf7b0ebe75b40cc6f93b8d54255b173844
   web-console (4.3.0) sha256=e13b71301cdfc2093f155b5aa3a622db80b4672d1f2f713119cc7ec7ac6a6da4
   webmock (3.26.2) sha256=774556f2ea6371846cca68c01769b2eac0d134492d21f6d0ab5dd643965a4c90
-  zeitwerk (2.7.5) sha256=d8da92128c09ea6ec62c949011b00ed4a20242b255293dd66bf41545398f73dd
+  zeitwerk (2.8.1) sha256=1c85e0f28954d68cd16e575da37f26846f609b68d80b5942ccfd31030c2449d5
 
 RUBY VERSION
   ruby 4.0.3

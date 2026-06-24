@@ -6,7 +6,8 @@ class AuditController < ApplicationController
   end
 
   def user_owners
-    @collectives = Collective.opensource.with_user_owner.order('transactions_count desc nulls last')
+    @collectives = Collective.opensource.with_user_owner.order('transactions_count desc nulls last').to_a
+    Collective.preload_commit_stats(@collectives)
   end
 
   def no_projects

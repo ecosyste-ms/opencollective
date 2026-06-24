@@ -99,6 +99,26 @@ class CollectiveTest < ActiveSupport::TestCase
     assert_equal 'alice', collective.past_year_committers.first['login']
   end
 
+  test "preload_commit_stats avoids per-collective queries" do
+    c1 = build_collective_with_stats(owner_login: 'alice', stats: [{ 'past_year_committers' => [{ 'login' => 'alice', 'name' => 'Alice', 'email' => 'a@x', 'count' => 5 }] }])
+    c2 = build_collective_with_stats(owner_login: 'bob', stats: [{ 'past_year_committers' => [{ 'login' => 'bob', 'name' => 'Bob', 'email' => 'b@x', 'count' => 3 }] }])
+
+    collectives = Collective.where(id: [c1.id, c2.id]).to_a
+    Collective.preload_commit_stats(collectives)
+
+    assert_no_queries do
+      assert_equal 1, collectives.first.past_year_committers_count
+      assert_equal 1, collectives.last.past_year_committers_count
+    end
+  end
+
+  def assert_no_queries(&block)
+    count = 0
+    counter = ->(*) { count += 1 }
+    ActiveSupport::Notifications.subscribed(counter, 'sql.active_record', &block)
+    assert_equal 0, count, "Expected no queries, got #{count}"
+  end
+
   test "committer with no login dedupes by email" do
     stats1 = { 'past_year_committers' => [{ 'name' => 'Anon', 'email' => 'anon@x', 'login' => nil, 'count' => 4 }] }
     stats2 = { 'past_year_committers' => [{ 'name' => 'Anon Different', 'email' => 'anon@x', 'login' => nil, 'count' => 6 }] }

@@ -115,6 +115,24 @@ class Collective < ApplicationRecord
 
   BOT_LOGIN_PATTERNS = [/\[bot\]$/i, /\Adependabot/i, /\Arenovate/i, /\Agreenkeeper/i, /-bot\z/i].freeze
 
+  attr_writer :project_commit_stats
+
+  def self.preload_commit_stats(collectives)
+    by_collective = Project.source
+      .where(collective_id: collectives.map(&:id))
+      .where.not(commit_stats: nil)
+      .pluck(:collective_id, :commit_stats)
+      .group_by(&:first)
+    collectives.each do |c|
+      c.project_commit_stats = (by_collective[c.id] || []).map(&:last)
+    end
+    collectives
+  end
+
+  def project_commit_stats
+    @project_commit_stats ||= projects.source.where.not(commit_stats: nil).pluck(:commit_stats)
+  end
+
   def bot_committer?(committer)
     login = committer['login'].to_s
     name = committer['name'].to_s
@@ -124,7 +142,7 @@ class Collective < ApplicationRecord
   def past_year_committers
     return @past_year_committers if defined?(@past_year_committers)
     merged = {}
-    projects.source.where.not(commit_stats: nil).pluck(:commit_stats).each do |stats|
+    project_commit_stats.each do |stats|
       Array(stats['past_year_committers']).each do |c|
         next if bot_committer?(c)
         key = (c['login'].presence || c['email'].presence || c['name']).to_s.downcase
@@ -163,8 +181,9 @@ class Collective < ApplicationRecord
 
   def owner_commit_share
     total = past_year_total_human_commits
-    return nil if total.zero? || past_year_owner_commits.nil?
-    (past_year_owner_commits.to_f / total * 100).round(1)
+    owner_commits = past_year_owner_commits
+    return nil if total.zero? || owner_commits.nil?
+    (owner_commits.to_f / total * 100).round(1)
   end
 
   def solo_maintainer?

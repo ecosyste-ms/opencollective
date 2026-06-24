@@ -407,8 +407,7 @@ class Project < ApplicationRecord
     "https://commits.ecosyste.ms/api/v1/repositories/lookup?url=#{repository_url}"
   end
 
-  def sync_commits
-    return unless repository.present?
+  def fetch_commit_stats
     conn = Faraday.new(url: commits_api_url) do |faraday|
       faraday.response :follow_redirects
       faraday.headers['User-Agent'] = 'opencollective.ecosyste.ms'
@@ -416,7 +415,19 @@ class Project < ApplicationRecord
     end
     response = conn.get
     return unless response.success?
-    commits_list_url = JSON.parse(response.body)['commits_url'] + '?per_page=100'
+    json = JSON.parse(response.body)
+    update_columns(commit_stats: json.except('commits_url', 'repository_url', 'host', 'created_at', 'updated_at'))
+    json
+  rescue
+    puts "Error fetching commit stats for #{repository_url}"
+    nil
+  end
+
+  def sync_commits
+    return unless repository.present?
+    json = fetch_commit_stats
+    return unless json.present?
+    commits_list_url = json['commits_url'] + '?per_page=100'
 
     page = 1
     loop do

@@ -62,6 +62,23 @@ class AuditControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes result.map(&:id), collective_without_repo.id
   end
 
+  test 'user_owners renders with commit stats' do
+    collective = Collective.create!(slug: 'solo', host: 'opensource', balance: 0, currency: 'USD',
+      owner: { 'kind' => 'user', 'login' => 'alice', 'html_url' => 'https://github.com/alice', 'repositories_count' => 1 })
+    collective.projects.create!(url: 'https://github.com/alice/thing', repository: { 'fork' => false },
+      commit_stats: { 'past_year_committers' => [{ 'name' => 'Alice', 'email' => 'a@x', 'login' => 'alice', 'count' => 50 }] })
+
+    get '/audit/user_owners'
+    assert_response :success
+    assert_match 'solo', response.body
+
+    get '/audit/user_owners.csv'
+    assert_response :success
+    assert_match 'solo_maintainer', response.body
+    assert_match 'solo,alice', response.body
+    assert_match 'true', response.body
+  end
+
   test 'duplicates optimized query matches current logic' do
     collective1 = Collective.create!(slug: 'test-dup-1', repository_url: 'https://github.com/test/repo', host: 'opensource')
     collective2 = Collective.create!(slug: 'test-dup-2', repository_url: 'https://github.com/TEST/REPO', host: 'opensource')

@@ -113,6 +113,84 @@ class Collective < ApplicationRecord
     last_project_activity_at < 1.year.ago
   end
 
+  BOT_LOGIN_PATTERNS = [/\[bot\]$/i, /\Adependabot/i, /\Arenovate/i, /\Agreenkeeper/i, /-bot\z/i].freeze
+
+  attr_writer :project_commit_stats
+
+  def self.preload_commit_stats(collectives)
+    by_collective = Project.source
+      .where(collective_id: collectives.map(&:id))
+      .where.not(commit_stats: nil)
+      .pluck(:collective_id, :commit_stats)
+      .group_by(&:first)
+    collectives.each do |c|
+      c.project_commit_stats = (by_collective[c.id] || []).map(&:last)
+    end
+    collectives
+  end
+
+  def project_commit_stats
+    @project_commit_stats ||= projects.source.where.not(commit_stats: nil).pluck(:commit_stats)
+  end
+
+  def bot_committer?(committer)
+    login = committer['login'].to_s
+    name = committer['name'].to_s
+    BOT_LOGIN_PATTERNS.any? { |p| login.match?(p) || name.match?(p) }
+  end
+
+  def past_year_committers
+    return @past_year_committers if defined?(@past_year_committers)
+    merged = {}
+    project_commit_stats.each do |stats|
+      Array(stats['past_year_committers']).each do |c|
+        next if bot_committer?(c)
+        key = (c['login'].presence || c['email'].presence || c['name']).to_s.downcase
+        merged[key] ||= { 'login' => c['login'], 'name' => c['name'], 'email' => c['email'], 'count' => 0 }
+        merged[key]['count'] += c['count'].to_i
+      end
+    end
+    @past_year_committers = merged.values.sort_by { |c| -c['count'] }
+  end
+
+  def past_year_committers_count
+    past_year_committers.length
+  end
+
+  def owner_login
+    owner.try(:[], 'login')
+  end
+
+  def past_year_other_committers
+    return past_year_committers if owner_login.blank?
+    past_year_committers.reject { |c| c['login'].to_s.casecmp?(owner_login) }
+  end
+
+  def past_year_other_committers_count
+    past_year_other_committers.length
+  end
+
+  def past_year_owner_commits
+    return nil if owner_login.blank?
+    past_year_committers.find { |c| c['login'].to_s.casecmp?(owner_login) }.try(:[], 'count').to_i
+  end
+
+  def past_year_total_human_commits
+    past_year_committers.sum { |c| c['count'] }
+  end
+
+  def owner_commit_share
+    total = past_year_total_human_commits
+    owner_commits = past_year_owner_commits
+    return nil if total.zero? || owner_commits.nil?
+    (owner_commits.to_f / total * 100).round(1)
+  end
+
+  def solo_maintainer?
+    return nil if past_year_committers.empty?
+    past_year_other_committers_count.zero?
+  end
+
   def org_owner?
     return false if owner.nil?
     owner['kind'] == 'organization'

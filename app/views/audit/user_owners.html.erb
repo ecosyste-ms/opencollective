@@ -14,6 +14,17 @@
             <p><%= collective.description %></p>
             <p><%= number_with_delimiter collective.projects_count %> repositories - <%= number_with_delimiter collective.transactions_count %> transactions - Balance: <%= collective.balance.round(2)%> <%= collective.currency %></p>
             <p>Owner: <%= link_to collective.owner['login'], collective.owner['html_url'], target: :_blank %></p>
+            <p>
+              Last activity: <%= collective.last_project_activity_at&.to_date || 'unknown' %>
+              - Past year committers: <%= collective.past_year_committers_count %>
+              (<%= collective.past_year_other_committers_count %> besides owner)
+              <% if collective.owner_commit_share %>
+                - Owner share: <%= collective.owner_commit_share %>%
+              <% end %>
+              <% if collective.solo_maintainer? %>
+                <span class="badge bg-warning text-dark">solo</span>
+              <% end %>
+            </p>
           </div>
           <div class="flex-shrink-0">
             <img src="<%= collective.icon_url %>" class="rounded" height='40' width='40' onerror="this.style.display='none'">

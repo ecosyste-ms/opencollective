@@ -2,6 +2,10 @@ class ApplicationController < ActionController::Base
   skip_forgery_protection
   include Pagy::Backend
 
+  rescue_from Pagy::OverflowError do
+    head :not_found
+  end
+
   def default_url_options(options = {})
     Rails.env.production? ? { :protocol => "https" }.merge(options) : options
   end

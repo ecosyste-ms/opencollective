@@ -46,6 +46,7 @@ gem 'dalli'
 gem "connection_pool", "<3"
 gem 'csv'
 gem 'ostruct'
+gem 'rdoc', '~> 7.0' # rdoc 8 depends on rbs which has a native extension
 
 group :development, :test do
   gem 'dotenv-rails'

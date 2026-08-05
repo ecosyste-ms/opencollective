@@ -1,9 +1,18 @@
 class ApplicationController < ActionController::Base
   skip_forgery_protection
+  before_action { request.session_options[:skip] = true }
   include Pagy::Backend
 
   rescue_from Pagy::OverflowError do
     head :not_found
+  end
+
+  before_action :set_cache_headers
+
+  def set_cache_headers
+    return unless request.get? || request.head?
+    expires_in 5.minutes, public: true, stale_while_revalidate: 1.hour
+    response.cache_control[:extras] = ["s-maxage=#{6.hours.to_i}"]
   end
 
   def default_url_options(options = {})

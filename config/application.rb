@@ -17,5 +17,9 @@ module OpenCollective
     config.load_defaults 7.0
     config.exceptions_app = routes
     config.active_support.to_time_preserves_timezone = :zone
+
+    config.session_store :disabled
+    config.middleware.delete ActionDispatch::Session::CookieStore
+    config.middleware.delete ActionDispatch::Cookies
   end
 end

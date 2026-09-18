@@ -1,4 +1,6 @@
 class ErrorsController < ApplicationController
+  skip_before_action :set_cache_headers
+
   def not_found
     respond_to do |format|
       format.html { render status: :not_found }
@@ -16,6 +18,7 @@ class ErrorsController < ApplicationController
   end
 
   def internal
+    response.cache_control.replace({ no_store: true })
     respond_to do |format|
       format.html { render status: :internal_server_error }
       format.json { render json: { error: "internal server error" }, status: :internal_server_error }

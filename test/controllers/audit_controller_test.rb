@@ -1,65 +1,39 @@
 require 'test_helper'
 
 class AuditControllerTest < ActionDispatch::IntegrationTest
-  test 'duplicates logic identifies collectives with duplicate project URLs' do
-    # Create collectives with duplicate project URLs
-    collective1 = Collective.create!(slug: 'test-1', repository_url: 'https://github.com/test/repo', host: 'opensource')
-    collective2 = Collective.create!(slug: 'test-2', repository_url: 'https://github.com/TEST/REPO', host: 'opensource')
-    collective3 = Collective.create!(slug: 'test-3', repository_url: 'https://github.com/unique/repo', host: 'opensource')
+  test 'no_projects lists collectives whose project_url derives from social_links' do
+    with_link = Collective.create!(
+      slug: 'has-repo', host: 'opensource', projects_count: 0, transactions_count: 1,
+      repository_url: nil, balance: 0, currency: 'USD',
+      social_links: [{ 'type' => 'GITHUB', 'url' => 'https://github.com/test/repo' }]
+    )
+    Collective.create!(slug: 'no-repo', host: 'opensource', projects_count: 0, transactions_count: 1,
+      repository_url: nil, balance: 0, currency: 'USD')
 
-    # Test the current logic
-    result = Collective.opensource.all.order('transactions_count desc nulls last').select{|c| c.project_url.present?}.group_by{|c| c.project_url.downcase }.select{|k,v| v.length > 1 }.values.flatten
+    get '/audit/no_projects'
+    assert_response :success
+    assert_includes assigns(:collectives).map(&:id), with_link.id
+    assert_match 'has-repo', response.body
+    assert_no_match 'no-repo', response.body
 
-    # Should include duplicates but not unique
-    assert_includes result.map(&:id), collective1.id
-    assert_includes result.map(&:id), collective2.id
-    assert_not_includes result.map(&:id), collective3.id
+    get '/audit/no_projects.csv'
+    assert_response :success
+    assert_match 'has-repo,https://github.com/test/repo', response.body
   end
 
-  test 'no_projects logic identifies collectives without projects but with repo URL' do
-    collective_with_repo = Collective.create!(
-      slug: 'has-repo',
-      repository_url: 'https://github.com/test/repo',
-      projects_count: 0,
-      transactions_count: 1,
-      host: 'opensource'
-    )
-    collective_without_repo = Collective.create!(
-      slug: 'no-repo',
-      repository_url: nil,
-      projects_count: 0,
-      transactions_count: 1,
-      host: 'opensource'
-    )
+  test 'duplicates matches on derived project_url across github and social_links' do
+    dup1 = Collective.create!(slug: 'dup-1', host: 'opensource', repository_url: nil, balance: 0, currency: 'USD', github: 'test/repo')
+    dup2 = Collective.create!(slug: 'dup-2', host: 'opensource', repository_url: nil, balance: 0, currency: 'USD',
+      social_links: [{ 'type' => 'GITHUB', 'url' => 'https://github.com/TEST/REPO' }])
+    Collective.create!(slug: 'unique', host: 'opensource', repository_url: nil, balance: 0, currency: 'USD', github: 'other/repo')
 
-    # Test current logic
-    result = Collective.opensource.where(projects_count: 0).with_transactions.order('transactions_count desc nulls last').select{|c| c.project_url.present?}
-
-    assert_includes result.map(&:id), collective_with_repo.id
-    assert_not_includes result.map(&:id), collective_without_repo.id
-  end
-
-  test 'no_projects optimized query matches current logic' do
-    collective_with_repo = Collective.create!(
-      slug: 'has-repo',
-      repository_url: 'https://github.com/test/repo',
-      projects_count: 0,
-      transactions_count: 1,
-      host: 'opensource'
-    )
-    collective_without_repo = Collective.create!(
-      slug: 'no-repo',
-      repository_url: nil,
-      projects_count: 0,
-      transactions_count: 1,
-      host: 'opensource'
-    )
-
-    # Test optimized query
-    result = Collective.opensource.where(projects_count: 0).with_transactions.where.not(repository_url: nil).where.not(repository_url: '').order('transactions_count desc nulls last')
-
-    assert_includes result.map(&:id), collective_with_repo.id
-    assert_not_includes result.map(&:id), collective_without_repo.id
+    get '/audit/duplicates'
+    assert_response :success
+    ids = assigns(:collectives).map(&:id)
+    assert_includes ids, dup1.id
+    assert_includes ids, dup2.id
+    assert_match 'dup-1', response.body
+    assert_no_match 'unique', response.body
   end
 
   test 'user_owners renders with commit stats' do
@@ -79,25 +53,4 @@ class AuditControllerTest < ActionDispatch::IntegrationTest
     assert_match 'true', response.body
   end
 
-  test 'duplicates optimized query matches current logic' do
-    collective1 = Collective.create!(slug: 'test-dup-1', repository_url: 'https://github.com/test/repo', host: 'opensource')
-    collective2 = Collective.create!(slug: 'test-dup-2', repository_url: 'https://github.com/TEST/REPO', host: 'opensource')
-    collective3 = Collective.create!(slug: 'test-unique', repository_url: 'https://github.com/unique/repo', host: 'opensource')
-
-    # Test optimized query
-    duplicate_urls = Collective.opensource
-      .where.not(repository_url: nil)
-      .where.not(repository_url: '')
-      .group('LOWER(repository_url)')
-      .having('COUNT(*) > 1')
-      .pluck('LOWER(repository_url)')
-
-    result = Collective.opensource
-      .where('LOWER(repository_url) IN (?)', duplicate_urls)
-      .order('transactions_count DESC NULLS LAST')
-
-    assert_includes result.map(&:id), collective1.id
-    assert_includes result.map(&:id), collective2.id
-    assert_not_includes result.map(&:id), collective3.id
-  end
 end

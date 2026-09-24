@@ -25,7 +25,7 @@ class Package < ApplicationRecord
   end
 
   def funding
-    metadata['metadata']['funding']
+    metadata.dig('metadata', 'funding')
   end
 
   def downloads_period

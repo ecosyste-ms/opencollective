@@ -45,7 +45,7 @@ gem 'packageurl-ruby', require: 'package_url'
 gem 'dalli'
 gem 'csv'
 gem 'ostruct'
-gem 'rdoc', '~> 7.0' # rdoc 8 depends on rbs which has a native extension
+gem 'rdoc', '~> 8.1' # rdoc 8 depends on rbs which has a native extension
 
 group :development, :test do
   gem 'dotenv-rails'
